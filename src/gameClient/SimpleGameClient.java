@@ -7,11 +7,11 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import dataStructure.edge_data;
+import dataStructure.graph;
 import Server.Game_Server;
 import Server.game_service;
 import dataStructure.DGraph;
-import dataStructure.edge_data;
-import dataStructure.graph;
 /**
  * This class represents a simple example for using the GameServer API:
  * the main file performs the following tasks:
