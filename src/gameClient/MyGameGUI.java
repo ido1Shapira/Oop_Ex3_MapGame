@@ -18,6 +18,8 @@ import utils.StdDraw;
 
 public class MyGameGUI implements Runnable{
 	game_service game;
+	private static Graph_Algo algo;
+
 	public void buildScenario(int scenarioNumber) {
 		if(scenarioNumber < 0 || scenarioNumber>23) {
 			throw new RuntimeException("scenarioNumber must be between 0 to 23");
@@ -26,6 +28,7 @@ public class MyGameGUI implements Runnable{
 		String gJason = game.getGraph();
 		DGraph g = new DGraph();
 		g.init(gJason);
+		algo.init(g);
 		paint(g,this.game.getRobots(),this.game.getFruits());		
 	}
 
@@ -44,8 +47,6 @@ public class MyGameGUI implements Runnable{
 
 	//for scale
 	private static double xmin, ymin, xmax, ymax;
-
-	private static Graph_Algo algo;
 
 	static double Xmin,Xmax,Ymin,Ymax;
 	static boolean firstPaint = true;
@@ -210,11 +211,8 @@ public class MyGameGUI implements Runnable{
 
 	@Override
 	public void run() {
-		String g = game.getGraph();
-		DGraph gg = new DGraph();
-		gg.init(g);
 		while(game.isRunning()) {
-			this.paint(gg, game.getRobots(), game.getFruits());
+			this.paint(algo.myGraph, game.getRobots(), game.getFruits());
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {e.printStackTrace();}
