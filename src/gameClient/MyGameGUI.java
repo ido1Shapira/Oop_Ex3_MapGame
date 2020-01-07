@@ -1,29 +1,22 @@
 package gameClient;
 import java.awt.Color;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
-
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import Server.Fruit;
 import Server.Game_Server;
-import Server.RobotG;
 import Server.game_service;
-import Server.robot;
 import algorithms.Graph_Algo;
 import dataStructure.DGraph;
 import dataStructure.edge_data;
 import dataStructure.graph;
 import dataStructure.node_data;
-import utils.Point3D;
 import utils.StdDraw;
 
-public class MyGameGUI {
+public class MyGameGUI implements Runnable{
 	game_service game;
 	public void buildScenario(int scenarioNumber) {
 		if(scenarioNumber < 0 || scenarioNumber>23) {
@@ -33,18 +26,6 @@ public class MyGameGUI {
 		String gJason = game.getGraph();
 		DGraph g = new DGraph();
 		g.init(gJason);
-		Random r = new Random();
-		int key= r.nextInt(g.nodeSize());
-		while(game.addRobot(key)) {key = r.nextInt(g.nodeSize());}
-		for (Iterator<String> iterator = game.getFruits().iterator(); iterator.hasNext();) {
-			String fruit = (String) iterator.next();
-			System.out.println(fruit);
-		}
-		//		for (int i = 0; i < game.getRobots().size(); i++) {
-		//			Random r = new Random();
-		//			int node= r.nextInt(g.nodeSize());
-		//			this.game.addRobot(node);
-		//		}
 		paint(g,this.game.getRobots(),this.game.getFruits());		
 	}
 
@@ -69,10 +50,10 @@ public class MyGameGUI {
 	static double Xmin,Xmax,Ymin,Ymax;
 	static boolean firstPaint = true;
 
-	private static void paint(graph g, List<String> robots, List<String> fruits) {
+	public void paint(graph g, List<String> robots, List<String> fruits) {
 		if(firstPaint) { StdDraw.setCanvasSize(800,600); firstPaint = false;}
+		StdDraw.clear();
 		if(g != null) {
-			StdDraw.clear();
 			algo = new Graph_Algo(g);
 			if(g.nodeSize() > 0) {
 				Xmin=Double.POSITIVE_INFINITY;
@@ -116,32 +97,47 @@ public class MyGameGUI {
 			}
 		}
 		//paint robots
-		for (int i = 0; i <robots.size() ; i++) {
-			RobotG r=new RobotG (g, i+4);
-			drawRobot(r);
+		for (Iterator<String> iterator = robots.iterator(); iterator.hasNext();) {
+			String robotJ = (String) iterator.next();
+			drawRobot(robotJ);
 		}
 		//paint fruits
-		for (int i = 0; i < fruits.size(); i++) {
-			Random val=new Random();
-			String fs= fruits.get(i);
-//			fs.
-//			Fruit f = new Fruit(val.nextDouble(10.0), 1, e)
+		for (Iterator<String> iterator = game.getFruits().iterator(); iterator.hasNext();) {
+			String fruit = (String) iterator.next();
+			drawFruits(fruit);
 		}
 		StdDraw.show();
 	}
 
-	private static void drawRobot(RobotG r) {
+	private void drawRobot(String robotJ) {
 		StdDraw.setPenColor(Color.pink);
 		StdDraw.setPenRadius(0.06);
-		Point3D src=algo.myGraph.getNode(r.getSrcNode()).getLocation();
-		StdDraw.point(src.x(), src.y());
+		try {
+			JSONObject line = new JSONObject(robotJ);
+			JSONObject jsonforRobot = line.getJSONObject("Robot");
+			String strPos =""+ jsonforRobot.get("pos");
+			String[] xyz = strPos.split(",");
+			double x = Double.valueOf(xyz[0]);
+			double y = Double.valueOf(xyz[1]);
+			StdDraw.point(x,y);
+		} catch (JSONException e) {e.printStackTrace();}
+
 	}
-	
-	private static void drawFruit(Fruit f) {
-//		if()
-		StdDraw.setPenColor(Color.pink);
-		StdDraw.setPenRadius(0.06);
-		StdDraw.point(f.getLocation().x(), f.getLocation().y());
+
+	private void drawFruits(String fruit) {
+		try {
+			JSONObject line = new JSONObject(fruit);
+			JSONObject fruitJ = line.getJSONObject("Fruit");
+			//find pos
+			String strPos =""+ fruitJ.get("pos");
+			String[] xyz = strPos.split(",");
+			double x = Double.valueOf(xyz[0]);
+			double y = Double.valueOf(xyz[1]);
+			//find type
+			int strType = fruitJ.getInt("type");
+			StdDraw.setPenRadius(0.04);
+			StdDraw.picture(x,y,(strType == -1) ? "banana.jpeg" :"apple.jpeg", 0.00075, 0.00075);
+		} catch (JSONException e) {e.printStackTrace();}
 	}
 
 	private static void drawEdge(edge_data edge) {
@@ -162,7 +158,7 @@ public class MyGameGUI {
 		roundafter=roundafter/100;
 		StdDraw.setPenColor(StdDraw.RED);
 		StdDraw.setPenRadius(0.02);
-		StdDraw.text(relativex+(10*rangeX/600.0), relativey+(10*rangeY/600.0),""+roundafter);
+		StdDraw.text(relativex+(10*rangeX/800.0), relativey+(10*rangeY/600.0),""+roundafter);
 	}
 
 	private static void drawNode(node_data node) {
@@ -172,7 +168,7 @@ public class MyGameGUI {
 		StdDraw.setPenColor(node.getInfo().equals("selected") ? StdDraw.GREEN : StdDraw.CYAN);
 		StdDraw.point(node.getLocation().x(), node.getLocation().y());
 		StdDraw.setPenColor(StdDraw.BLUE);
-		StdDraw.text(node.getLocation().x()+(10.0*(rangeX/600.0)), node.getLocation().y()+(10.0*(rangeY)/600.0),""+node.getKey());
+		StdDraw.text(node.getLocation().x()+(10.0*(rangeX/800.0)), node.getLocation().y()+(10.0*(rangeY)/600.0),""+node.getKey());
 	}
 
 	private static void clearSelected() {
@@ -185,25 +181,44 @@ public class MyGameGUI {
 			}
 		}
 	}
-	public static JMenuBar createMenuBar() {
-		JMenuBar menuBar = new JMenuBar();
-		JMenu robots = new JMenu("robots");
-		menuBar.add(robots);
-		return menuBar;
-	}
-
+	
 	public static void main(String[] a) {
 		test1();
 	}
 	public static void test1() {
 		MyGameGUI gui = new MyGameGUI();
 		gui.buildScenario(16);
-		System.out.println(gui.game.getRobots().size());
-		gui.game.addRobot(5);
-		System.out.println(gui.game.getRobots().size());
-		gui.game.addRobot(5);
-		System.out.println(gui.game.getRobots());
+		String g = gui.game.getGraph();
+		DGraph gg = new DGraph();
+		gg.init(g);
+		gui.game.addRobot(1);
+		gui.game.addRobot(0);
+		gui.paint(gg, gui.game.getRobots(), gui.game.getFruits());
 
-		//		gui.game.move();
+	}
+	private static int nextNode(graph g, int src) {
+		int ans = -1;
+		Collection<edge_data> ee = g.getE(src);
+		Iterator<edge_data> itr = ee.iterator();
+		int s = ee.size();
+		int r = (int)(Math.random()*s);
+		int i=0;
+		while(i<r) {itr.next();i++;}
+		ans = itr.next().getDest();
+		return ans;
+	}
+
+	@Override
+	public void run() {
+		String g = game.getGraph();
+		DGraph gg = new DGraph();
+		gg.init(g);
+		while(game.isRunning()) {
+			this.paint(gg, game.getRobots(), game.getFruits());
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {e.printStackTrace();}
+		}
+		
 	}
 }

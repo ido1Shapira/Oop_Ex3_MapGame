@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import dataStructure.edge_data;
 import dataStructure.graph;
+import Server.Fruit;
 import Server.Game_Server;
 import Server.game_service;
 import dataStructure.DGraph;
@@ -33,28 +34,36 @@ public class SimpleGameClient {
 		test1();
 	}
 	public static void test1() {
-		game_service game = Game_Server.getServer(2); // you have [0,23] games
-		String g = game.getGraph();
+		MyGameGUI gui = new MyGameGUI();
+		gui.buildScenario(2); // you have [0,23] games
+		String g = gui.game.getGraph();
 		DGraph gg = new DGraph();
 		gg.init(g);
-		String info = game.toString();
+		String info = gui.game.toString();
 		System.out.println(info);
 		System.out.println(g);
 		// the list of fruits should be considered in your solution
-		Iterator<String> f_iter = game.getFruits().iterator();
+		Iterator<String> f_iter = gui.game.getFruits().iterator();
 		while(f_iter.hasNext()) {System.out.println(f_iter.next());}
 		
-		int src_node = 0;  // arbitrary node, you should start at one of the fruits
-		game.addRobot(src_node);
-		game.startGame();
+		int src_node = 4;  // arbitrary node, you should start at one of the fruits
+		gui.game.addRobot(src_node);
+		gui.game.startGame();
+		gui.paint(gg,gui.game.getRobots(), gui.game.getFruits());
 		int i=0;
-		while(game.isRunning()) {
-			long t = game.timeToEnd();
+		System.out.println("Start game:");
+		while(gui.game.isRunning()) {
+			long t = gui.game.timeToEnd();
 			//System.out.println("roung: "+i+"  seconds to end:"+(t/1000));
-			List<String> log = game.move();
+			List<String> log = gui.game.move();
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e1) {e1.printStackTrace();}
+			gui.paint(gg,gui.game.getRobots(), gui.game.getFruits());
+
 			if(log!=null) {
 				String robot_json = log.get(0);
-			//	System.out.println(robot_json);
+//				gui.drawRobot(robot_json);
 				JSONObject line;
 				try {
 					line = new JSONObject(robot_json);
@@ -65,10 +74,11 @@ public class SimpleGameClient {
 					
 					if(dest==-1) {	
 						dest = nextNode(gg, src);
-						game.chooseNextEdge(rid, dest);
+						gui.game.chooseNextEdge(rid, dest);
 						System.out.println("Turn to node: "+dest);
 						System.out.println(ttt);
 					}
+					
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
