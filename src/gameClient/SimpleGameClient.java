@@ -4,14 +4,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.JOptionPane;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import Server.Fruit;
 import dataStructure.edge_data;
-import dataStructure.node_data;
 import utils.Point3D;
 /**
  * This class represents a simple example for using the GameServer API:
@@ -47,7 +44,6 @@ public class SimpleGameClient {
 		System.out.println("Start game:");
 		while(MyGameGUI.game.isRunning()) {
 			List<String> log = MyGameGUI.game.move();
-			MyGameGUI.paint(MyGameGUI.game.getRobots(), MyGameGUI.game.getFruits());
 			if(log!=null) {
 				for (int j = 0; j < MyGameGUI.game.getRobots().size(); j++) {
 					String robot_json = log.get(j);
@@ -119,7 +115,6 @@ public class SimpleGameClient {
 				try {
 					line = new JSONObject(f);
 					JSONObject ttt = line.getJSONObject("Fruit");
-					double val = ttt.getDouble("value");
 					int type = ttt.getInt("type");
 					String loc = (String) ttt.get("pos");
 					String[] s= loc.split(",", 3);
@@ -142,9 +137,9 @@ public class SimpleGameClient {
 		return -1;
 	}
 
-	private double nearestFruit (int src) {
-
-	}
+//	private double nearestFruit (int src) {
+//
+//	}
 	//		private edge_data isOn(String f) {
 	//			for (int i = 0; i < MyGameGUI.algo.myGraph.nodeSize(); i++) {
 	//				Collection<edge_data> ee = MyGameGUI.algo.myGraph.getE(i);

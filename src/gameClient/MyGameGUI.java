@@ -28,6 +28,11 @@ public class MyGameGUI implements Runnable{
 		robotColor = new Color(r, g, b);
 	}
 
+	private MyGameGUI() {
+		Thread toPaint = new Thread(this);
+		toPaint.start();
+	} 
+	
 	public static void buildScenario() {
 		Object[]scenarioOptions = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23};
 		int scenarioNumber = (Integer)JOptionPane.showInputDialog(null, "Pick the scenario number:",
@@ -37,6 +42,10 @@ public class MyGameGUI implements Runnable{
 		DGraph g = new DGraph();
 		g.init(gJason);
 		algo = new Graph_Algo(g);
+//		JOptionPane.showOptionDialog(frame, "Continue printing?", "Select an Option",
+//		        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, iconArray, iconArray[1]);
+//
+//		  }
 		String info = MyGameGUI.game.toString();
 		try {
 			JSONObject infoJson = new JSONObject(info);
@@ -51,7 +60,7 @@ public class MyGameGUI implements Runnable{
 			}
 		} catch (JSONException e1) {e1.printStackTrace();}
 		StdDraw.enableDoubleBuffering();
-		paint(game.getRobots(),game.getFruits());	
+		MyGameGUI gui = new MyGameGUI();
 	}
 	
 	private static Object[] keysList() {
@@ -212,10 +221,9 @@ public class MyGameGUI implements Runnable{
 	@Override
 	public void run() {
 		while(game.isRunning()) {
-			System.out.println("hi");
 			MyGameGUI.paint(game.getRobots(), game.getFruits());
 			try {
-				Thread.sleep(500);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {e.printStackTrace();}
 		}
 
