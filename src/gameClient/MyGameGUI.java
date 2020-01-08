@@ -1,6 +1,5 @@
 package gameClient;
 import java.awt.Color;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -12,24 +11,24 @@ import Server.game_service;
 import algorithms.Graph_Algo;
 import dataStructure.DGraph;
 import dataStructure.edge_data;
-import dataStructure.graph;
 import dataStructure.node_data;
 import utils.StdDraw;
 
 public class MyGameGUI implements Runnable{
-	game_service game;
-	private static Graph_Algo algo;
+	public static game_service game;
+	public static Graph_Algo algo;
 
-	public void buildScenario(int scenarioNumber) {
+	public static void buildScenario(int scenarioNumber) {
 		if(scenarioNumber < 0 || scenarioNumber>23) {
 			throw new RuntimeException("scenarioNumber must be between 0 to 23");
 		}
-		this.game = Game_Server.getServer(scenarioNumber); // you have [0,23] games
+		game = Game_Server.getServer(scenarioNumber); // you have [0,23] games
 		String gJason = game.getGraph();
 		DGraph g = new DGraph();
 		g.init(gJason);
-		algo.init(g);
-		paint(g,this.game.getRobots(),this.game.getFruits());		
+		algo = new Graph_Algo(g);
+		StdDraw.enableDoubleBuffering();
+		paint(game.getRobots(),game.getFruits());	
 	}
 
 
@@ -39,8 +38,10 @@ public class MyGameGUI implements Runnable{
 	public void playAuto() {
 
 	}
-	public void getTimeOut() {
-
+	private static void paintTimeOut() {
+		long t = game.timeToEnd();
+		StdDraw.setPenColor(Color.black);
+		StdDraw.textRight(Xmax-0.002, Ymin+0.0015, "time to end: "+t/1000);
 	}
 
 	////////////
@@ -51,12 +52,11 @@ public class MyGameGUI implements Runnable{
 	static double Xmin,Xmax,Ymin,Ymax;
 	static boolean firstPaint = true;
 
-	public void paint(graph g, List<String> robots, List<String> fruits) {
+	public static void paint(List<String> robots, List<String> fruits) {
 		if(firstPaint) { StdDraw.setCanvasSize(800,600); firstPaint = false;}
 		StdDraw.clear();
-		if(g != null) {
-			algo = new Graph_Algo(g);
-			if(g.nodeSize() > 0) {
+		if(algo.myGraph != null) {
+			if(algo.myGraph.nodeSize() > 0) {
 				Xmin=Double.POSITIVE_INFINITY;
 				Xmax=Double.NEGATIVE_INFINITY;
 				Ymin=Double.POSITIVE_INFINITY;
@@ -74,18 +74,11 @@ public class MyGameGUI implements Runnable{
 				Ymax += 0.0015;
 			}
 			clearSelected();
-			try {
 				StdDraw.setXscale(Xmin,Xmax);
 				StdDraw.setYscale(Ymin,Ymax);
-			}
-			catch (Exception e) {
-				StdDraw.setScale();
-				Xmin = 0;
-				Xmax = 100;
-				Ymin = 0;
-				Ymax = 100;
-			}
 		}
+		try {paintTimeOut();}
+		catch (Exception e) {}
 		//paint graph
 		for (Iterator<node_data> iterator = algo.myGraph.getV().iterator(); iterator.hasNext();) {
 			node_data node = (node_data) iterator.next();
@@ -97,20 +90,20 @@ public class MyGameGUI implements Runnable{
 				}
 			}
 		}
-		//paint robots
-		for (Iterator<String> iterator = robots.iterator(); iterator.hasNext();) {
-			String robotJ = (String) iterator.next();
-			drawRobot(robotJ);
-		}
 		//paint fruits
 		for (Iterator<String> iterator = game.getFruits().iterator(); iterator.hasNext();) {
 			String fruit = (String) iterator.next();
 			drawFruits(fruit);
 		}
+		//paint robots
+		for (Iterator<String> iterator = robots.iterator(); iterator.hasNext();) {
+			String robotJ = (String) iterator.next();
+			drawRobot(robotJ);
+		}
 		StdDraw.show();
 	}
 
-	private void drawRobot(String robotJ) {
+	private static void drawRobot(String robotJ) {
 		StdDraw.setPenColor(Color.pink);
 		StdDraw.setPenRadius(0.06);
 		try {
@@ -125,7 +118,7 @@ public class MyGameGUI implements Runnable{
 
 	}
 
-	private void drawFruits(String fruit) {
+	private static void drawFruits(String fruit) {
 		try {
 			JSONObject line = new JSONObject(fruit);
 			JSONObject fruitJ = line.getJSONObject("Fruit");
@@ -136,8 +129,7 @@ public class MyGameGUI implements Runnable{
 			double y = Double.valueOf(xyz[1]);
 			//find type
 			int strType = fruitJ.getInt("type");
-			StdDraw.setPenRadius(0.04);
-			StdDraw.picture(x,y,(strType == -1) ? "banana.jpeg" :"apple.jpeg", 0.00075, 0.00075);
+			StdDraw.picture(x,y,(strType == -1) ? "banana.jpeg" :"apple.jpeg", 0.00075, 0.00055);
 		} catch (JSONException e) {e.printStackTrace();}
 	}
 
@@ -182,41 +174,31 @@ public class MyGameGUI implements Runnable{
 			}
 		}
 	}
+
+
+	@Override
+	public void run() {
+		while(game.isRunning()) {
+			System.out.println("hi");
+			MyGameGUI.paint(game.getRobots(), game.getFruits());
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {e.printStackTrace();}
+		}
+
+	}
 	
 	public static void main(String[] a) {
 		test1();
 	}
 	public static void test1() {
-		MyGameGUI gui = new MyGameGUI();
-		gui.buildScenario(16);
-		String g = gui.game.getGraph();
+		buildScenario(16);
+		String g = game.getGraph();
 		DGraph gg = new DGraph();
 		gg.init(g);
-		gui.game.addRobot(1);
-		gui.game.addRobot(0);
-		gui.paint(gg, gui.game.getRobots(), gui.game.getFruits());
+		game.addRobot(1);
+		game.addRobot(0);
+		paint(game.getRobots(), game.getFruits());
 
-	}
-	private static int nextNode(graph g, int src) {
-		int ans = -1;
-		Collection<edge_data> ee = g.getE(src);
-		Iterator<edge_data> itr = ee.iterator();
-		int s = ee.size();
-		int r = (int)(Math.random()*s);
-		int i=0;
-		while(i<r) {itr.next();i++;}
-		ans = itr.next().getDest();
-		return ans;
-	}
-
-	@Override
-	public void run() {
-		while(game.isRunning()) {
-			this.paint(algo.myGraph, game.getRobots(), game.getFruits());
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {e.printStackTrace();}
-		}
-		
 	}
 }

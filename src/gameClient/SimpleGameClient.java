@@ -8,11 +8,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import dataStructure.edge_data;
-import dataStructure.graph;
-import Server.Fruit;
-import Server.Game_Server;
-import Server.game_service;
-import dataStructure.DGraph;
 /**
  * This class represents a simple example for using the GameServer API:
  * the main file performs the following tasks:
@@ -34,36 +29,35 @@ public class SimpleGameClient {
 		test1();
 	}
 	public static void test1() {
-		MyGameGUI gui = new MyGameGUI();
-		gui.buildScenario(2); // you have [0,23] games
-		String g = gui.game.getGraph();
-		DGraph gg = new DGraph();
-		gg.init(g);
-		String info = gui.game.toString();
+		MyGameGUI.buildScenario(2); // you have [0,23] games
+		String info = MyGameGUI.game.toString();
 		System.out.println(info);
-		System.out.println(g);
 		// the list of fruits should be considered in your solution
-		Iterator<String> f_iter = gui.game.getFruits().iterator();
+		Iterator<String> f_iter = MyGameGUI.game.getFruits().iterator();
 		while(f_iter.hasNext()) {System.out.println(f_iter.next());}
 		
 		int src_node = 4;  // arbitrary node, you should start at one of the fruits
-		gui.game.addRobot(src_node);
-		gui.game.startGame();
-		gui.paint(gg,gui.game.getRobots(), gui.game.getFruits());
+		try {
+			JSONObject infoJson = new JSONObject(info);
+			JSONObject jsonforRobot = infoJson.getJSONObject("GameServer");
+			String strNumber =""+ jsonforRobot.get("robots");
+			int numberOfRobots = Integer.parseInt(strNumber);
+			for (int i = 0; i < numberOfRobots; i++) {
+				MyGameGUI.game.addRobot(src_node);
+			}
+		} catch (JSONException e1) {e1.printStackTrace();}
+		MyGameGUI.paint(MyGameGUI.game.getRobots(), MyGameGUI.game.getFruits());
+		MyGameGUI.game.startGame();
 		int i=0;
 		System.out.println("Start game:");
-		while(gui.game.isRunning()) {
-			long t = gui.game.timeToEnd();
+		while(MyGameGUI.game.isRunning()) {
+			long t = MyGameGUI.game.timeToEnd();
 			//System.out.println("roung: "+i+"  seconds to end:"+(t/1000));
-			List<String> log = gui.game.move();
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e1) {e1.printStackTrace();}
-			gui.paint(gg,gui.game.getRobots(), gui.game.getFruits());
+			List<String> log = MyGameGUI.game.move();
+			MyGameGUI.paint(MyGameGUI.game.getRobots(), MyGameGUI.game.getFruits());
 
 			if(log!=null) {
 				String robot_json = log.get(0);
-//				gui.drawRobot(robot_json);
 				JSONObject line;
 				try {
 					line = new JSONObject(robot_json);
@@ -73,16 +67,13 @@ public class SimpleGameClient {
 					int dest = ttt.getInt("dest");
 					
 					if(dest==-1) {	
-						dest = nextNode(gg, src);
-						gui.game.chooseNextEdge(rid, dest);
+						dest = nextNode(src);
+						MyGameGUI.game.chooseNextEdge(rid, dest);
 						System.out.println("Turn to node: "+dest);
 						System.out.println(ttt);
 					}
 					
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				} catch (JSONException e) {e.printStackTrace();}
 	
 				
 				}
@@ -95,9 +86,9 @@ public class SimpleGameClient {
 	 * @param src
 	 * @return
 	 */
-	private static int nextNode(graph g, int src) {
+	private static int nextNode(int src) {
 		int ans = -1;
-		Collection<edge_data> ee = g.getE(src);
+		Collection<edge_data> ee = MyGameGUI.algo.myGraph.getE(src);
 		Iterator<edge_data> itr = ee.iterator();
 		int s = ee.size();
 		int r = (int)(Math.random()*s);
