@@ -4,10 +4,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import dataStructure.edge_data;
+import dataStructure.node_data;
 /**
  * This class represents a simple example for using the GameServer API:
  * the main file performs the following tasks:
@@ -29,24 +32,12 @@ public class SimpleGameClient {
 		test1();
 	}
 	public static void test1() {
-		MyGameGUI.buildScenario(2); // you have [0,23] games
+		MyGameGUI.buildScenario(); // you have [0,23] games
 		String info = MyGameGUI.game.toString();
 		System.out.println(info);
 		// the list of fruits should be considered in your solution
 		Iterator<String> f_iter = MyGameGUI.game.getFruits().iterator();
-		while(f_iter.hasNext()) {System.out.println(f_iter.next());}
-		
-		int src_node = 4;  // arbitrary node, you should start at one of the fruits
-		try {
-			JSONObject infoJson = new JSONObject(info);
-			JSONObject jsonforRobot = infoJson.getJSONObject("GameServer");
-			String strNumber =""+ jsonforRobot.get("robots");
-			int numberOfRobots = Integer.parseInt(strNumber);
-			for (int i = 0; i < numberOfRobots; i++) {
-				MyGameGUI.game.addRobot(src_node);
-			}
-		} catch (JSONException e1) {e1.printStackTrace();}
-		MyGameGUI.paint(MyGameGUI.game.getRobots(), MyGameGUI.game.getFruits());
+		while(f_iter.hasNext()) {System.out.println(f_iter.next());}				
 		MyGameGUI.game.startGame();
 		int i=0;
 		System.out.println("Start game:");
