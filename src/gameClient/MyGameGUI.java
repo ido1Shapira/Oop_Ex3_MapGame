@@ -29,11 +29,8 @@ public class MyGameGUI implements Runnable{
 	}
 
 	public static void buildScenario() {
-//		if(scenarioNumber < 0 || scenarioNumber>23) {
-//			throw new RuntimeException("scenarioNumber must be between 0 to 23");
-//		}
 		Object[]scenarioOptions = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23};
-		int scenarioNumber = (Integer)JOptionPane.showInputDialog(null, "Pick a number scenario:",
+		int scenarioNumber = (Integer)JOptionPane.showInputDialog(null, "Pick the scenario number:",
 				"scenario options", JOptionPane.QUESTION_MESSAGE, null, scenarioOptions, null);
 		game = Game_Server.getServer(scenarioNumber); // you have [0,23] games
 		String gJason = game.getGraph();
