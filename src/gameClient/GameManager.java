@@ -7,13 +7,11 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import Server.game_service;
-import algorithms.Graph_Algo;
 import dataStructure.edge_data;
 import utils.Point3D;
 
 public class GameManager implements Runnable {
-	
+
 	public GameManager() {
 		Thread Master = new Thread(this);
 		Master.start();
@@ -45,7 +43,7 @@ public class GameManager implements Runnable {
 				try {
 					line = new JSONObject(f);
 					JSONObject ttt = line.getJSONObject("Fruit");
-					double val = ttt.getDouble("value");
+//					double val = ttt.getDouble("value");
 					int type = ttt.getInt("type");
 					String loc = (String) ttt.get("pos");
 					String[] s= loc.split(",", 3);
@@ -83,32 +81,31 @@ public class GameManager implements Runnable {
 	public void run() {
 		while(MyGameGUI.game.isRunning()) {
 			List<String> log = MyGameGUI.game.move();
-			MyGameGUI.paint(MyGameGUI.game.getRobots(), MyGameGUI.game.getFruits());
-			if(log!=null) {
-				for (int j = 0; j < MyGameGUI.game.getRobots().size(); j++) {
-					String robot_json = log.get(j);
-					JSONObject line;
-					try {
-						line = new JSONObject(robot_json);
-						JSONObject ttt = line.getJSONObject("Robot");
-						int rid = ttt.getInt("id");
-						int src = ttt.getInt("src");
-						int dest = ttt.getInt("dest");
+			if(!MyGameGUI.isManual) {
+				if(log!=null) {
+					for (int j = 0; j < MyGameGUI.game.getRobots().size(); j++) {
+						String robot_json = log.get(j);
+						JSONObject line;
+						try {
+							line = new JSONObject(robot_json);
+							JSONObject ttt = line.getJSONObject("Robot");
+							int rid = ttt.getInt("id");
+							int src = ttt.getInt("src");
+							int dest = ttt.getInt("dest");
 
-						if(dest==-1) {	
-							if(nextDest(src)!=-1) {
-								System.out.println("not randomm!!!!");
-								MyGameGUI.game.chooseNextEdge(rid, nextDest(src));
+							if(dest==-1) {	
+								if(nextDest(src)!=-1) {
+									System.out.println("not randomm!!!!");
+									MyGameGUI.game.chooseNextEdge(rid, nextDest(src));
+								}
+								else {
+									dest = randomNextNode(src);
+									MyGameGUI.game.chooseNextEdge(rid, dest);
+								}
 							}
-							else {
-								dest = randomNextNode(src);
-								MyGameGUI.game.chooseNextEdge(rid, dest);
-								//						System.out.println("Turn to node: "+dest);
-								//						System.out.println(ttt);
-							}
-						}
 
-					} catch (JSONException e) {e.printStackTrace();}
+						} catch (JSONException e) {e.printStackTrace();}
+					}
 				}
 			}
 		}

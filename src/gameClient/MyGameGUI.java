@@ -1,5 +1,7 @@
 package gameClient;
 import java.awt.Color;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -15,12 +17,14 @@ import algorithms.Graph_Algo;
 import dataStructure.DGraph;
 import dataStructure.edge_data;
 import dataStructure.node_data;
+import utils.Point3D;
 import utils.StdDraw;
 
-public class MyGameGUI implements Runnable{
+public class MyGameGUI implements Runnable,MouseListener {
 	public static game_service game;
 	public static Graph_Algo algo;
 	private static Color robotColor;
+	public static boolean isManual;
 	static {
 		Random random = new Random();
 		int r = random.nextInt(256); int g = random.nextInt(256); int b = random.nextInt(256);
@@ -32,7 +36,7 @@ public class MyGameGUI implements Runnable{
 		Thread toPaint = new Thread(this);
 		toPaint.start();
 	} 
-	
+
 	public static void buildScenario() {
 		Object[]scenarioOptions = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23};
 		int scenarioNumber = (Integer)JOptionPane.showInputDialog(null, "Pick the scenario number:",
@@ -42,10 +46,16 @@ public class MyGameGUI implements Runnable{
 		DGraph g = new DGraph();
 		g.init(gJason);
 		algo = new Graph_Algo(g);
-//		JOptionPane.showOptionDialog(frame, "Continue printing?", "Select an Option",
-//		        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, iconArray, iconArray[1]);
-//
-//		  }
+		Object stringArray[] = { "Manual", "Automatic" };
+		int kindOfGame = JOptionPane.showOptionDialog(null, "Are you want to play manual or automatic?", "Select an Option",
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, stringArray,
+				null);
+		if(kindOfGame == 0) { //Manual
+			playManual();
+		}
+		else { //Automatic
+			playAuto();
+		}
 		String info = MyGameGUI.game.toString();
 		try {
 			JSONObject infoJson = new JSONObject(info);
@@ -62,7 +72,7 @@ public class MyGameGUI implements Runnable{
 		StdDraw.enableDoubleBuffering();
 		MyGameGUI gui = new MyGameGUI();
 	}
-	
+
 	private static Object[] keysList() {
 		Object[] keys = new Object[algo.myGraph.nodeSize()];
 		int i = 0;
@@ -72,23 +82,18 @@ public class MyGameGUI implements Runnable{
 		}
 		return keys;
 	}
-	
-	public void playManual() {
 
+	private static void playManual() {
+		isManual = true;
 	}
-	public void playAuto() {
-
+	private static void playAuto() {
+		isManual = false;
 	}
 	private static void paintTimeOut() {
 		long t = game.timeToEnd();
 		StdDraw.setPenColor(Color.black);
-		StdDraw.textRight(Xmax-0.002, Ymin+0.0015, "time to end: "+t/1000);
+		StdDraw.textRight(Xmax-0.002, Ymax-0.001, "time to end: "+t/1000);
 	}
-
-	////////////
-
-	//for scale
-	private static double xmin, ymin, xmax, ymax;
 
 	static double Xmin,Xmax,Ymin,Ymax;
 	static boolean firstPaint = true;
@@ -115,12 +120,10 @@ public class MyGameGUI implements Runnable{
 				Ymax += 0.0015;
 			}
 			clearSelected();
-				StdDraw.setXscale(Xmin,Xmax);
-				StdDraw.setYscale(Ymin,Ymax);
+			StdDraw.setXscale(Xmin,Xmax);
+			StdDraw.setYscale(Ymin,Ymax);
 		}
-		try {paintTimeOut();}
-		catch (Exception e) {}
-		//paint graph
+		paintTimeOut();
 		for (Iterator<node_data> iterator = algo.myGraph.getV().iterator(); iterator.hasNext();) {
 			node_data node = (node_data) iterator.next();
 			drawNode(node);
@@ -145,7 +148,7 @@ public class MyGameGUI implements Runnable{
 	}
 
 	private static void drawRobot(String robotJ) {
-		
+
 		StdDraw.setPenColor(robotColor);
 		StdDraw.setPenRadius(0.06);
 		try {
@@ -176,8 +179,8 @@ public class MyGameGUI implements Runnable{
 	}
 
 	private static void drawEdge(edge_data edge) {
-		double rangeX=xmax-xmin;
-		double rangeY=ymax-ymin;
+		double rangeX=Xmax-Xmin;
+		double rangeY=Ymax-Ymin;
 		StdDraw.setPenRadius(0.005);
 		StdDraw.setPenColor(edge.getInfo().equals("shortest path") ? StdDraw.YELLOW : StdDraw.BLACK);
 		node_data src = algo.myGraph.getNode(edge.getSrc());
@@ -197,8 +200,8 @@ public class MyGameGUI implements Runnable{
 	}
 
 	private static void drawNode(node_data node) {
-		double rangeX=xmax-xmin;
-		double rangeY=ymax-ymin;
+		double rangeX=Xmax-Xmin;
+		double rangeY=Ymax-Ymin;
 		StdDraw.setPenRadius(0.0255);
 		StdDraw.setPenColor(node.getInfo().equals("selected") ? StdDraw.GREEN : StdDraw.CYAN);
 		StdDraw.point(node.getLocation().x(), node.getLocation().y());
@@ -228,7 +231,77 @@ public class MyGameGUI implements Runnable{
 		}
 
 	}
-	
+
+	//not working yet
+	int key = -1;
+	public static final double EPSILON = 10;
+
+
+	private boolean similar(Point3D p1 , Point3D p2) {
+		return (Math.abs(p1.x() - p2.x()) <= EPSILON)
+				&& (Math.abs(p1.y() - p2.y()) <= EPSILON)
+				&& (Math.abs(p1.z() - p2.z()) <= EPSILON);
+	}
+	private int findVertexWhenClicked(Point3D p) {
+		for (Iterator<node_data> iterator = algo.myGraph.getV().iterator(); iterator.hasNext();) {
+			node_data v = (node_data) iterator.next();
+			if(similar(v.getLocation(),p)) {return v.getKey();}
+		}
+		return -1;
+	}
+
+	private Point3D getCordinateOnScreen(Point3D PbyPixle) {
+		double XPixle=PbyPixle.x();
+		double YPixle=PbyPixle.y();
+
+		double mX = (Xmax-Xmin)/800.0;
+		double mY=(Ymin-Ymax)/600.0;
+		return new Point3D((mX*XPixle+Xmin), (mY*YPixle+Ymax));
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		System.out.println(e.getClickCount());
+		if(isManual) {
+			Point3D p = getCordinateOnScreen(new Point3D (e.getX(),e.getY()));
+			System.out.println(p);
+			key = findVertexWhenClicked(p);
+			System.out.println(key);
+			if(key != -1) {
+				if(algo.myGraph.getNode(key).getInfo().equals("selected")) {
+					algo.myGraph.getNode(key).setInfo("");
+				}
+				else {
+					algo.myGraph.getNode(key).setInfo("selected");
+				}
+			}
+		}
+	}
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+
 	public static void main(String[] a) {
 		test1();
 	}

@@ -1,18 +1,5 @@
 package gameClient;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.swing.JOptionPane;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import Server.Fruit;
-import dataStructure.edge_data;
-import dataStructure.node_data;
-import utils.Point3D;
 /**
  * This class represents a simple example for using the GameServer API:
  * the main file performs the following tasks:
