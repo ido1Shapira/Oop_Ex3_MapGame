@@ -63,6 +63,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.TreeSet;
 import java.util.NoSuchElementException;
 import javax.imageio.ImageIO;
@@ -74,6 +75,9 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import dataStructure.node_data;
 import gameClient.MyGameGUI;
@@ -1718,16 +1722,21 @@ public final class myStdDraw implements ActionListener, MouseListener, MouseMoti
 	}
 
 
-	public int key = -1;
-	public int id = -1;
-	private static final double EPSILON = 0.002;
+	public int key = -1; //for vertex
+	public int id = -1; //for robot
+	private static final double EPSILON = 0.00145; //to find the vertex or robot that the user clicked on
 
-
+	/*
+	 * return true if the to point similar and false otherwise
+	 */
 	private boolean similar(Point3D p1 , Point3D p2) {
 		return (Math.abs(p1.x() - p2.x()) <= EPSILON)
 				&& (Math.abs(p1.y() - p2.y()) <= EPSILON)
 				&& (Math.abs(p1.z() - p2.z()) <= EPSILON);
 	}
+	/**
+	 * return the node key that the user has clicked on
+	 */
 	private int findVertexWhenClicked(Point3D p) {
 		for (Iterator<node_data> iterator = MyGameGUI.algo.myGraph.getV().iterator(); iterator.hasNext();) {
 			node_data v = (node_data) iterator.next();
@@ -1737,48 +1746,84 @@ public final class myStdDraw implements ActionListener, MouseListener, MouseMoti
 		}
 		return -1;
 	}
-	
+	/*
+	 * return the robot id that the user has clicked on
+	 */
 	private int findRobotWhenClicked(Point3D p) {
-		for (Iterator<node_data> iterator = MyGameGUI.algo.myGraph.getV().iterator(); iterator.hasNext();) {
-			node_data v = (node_data) iterator.next();
-			if(similar(v.getLocation(),p)) {return v.getKey();}
+		List<String> robots = MyGameGUI.game.getRobots();
+		for (Iterator<String> iterator = robots.iterator(); iterator.hasNext();) {
+			String rJson = (String) iterator.next();
+			Point3D rPos = getRobotPosition(rJson);
+			if(similar(rPos,p)) {return getRobotkey(rJson);}
 		}
 		return -1;
 	}
-	
-	private Point3D getCordinateOnScreen(Point3D PbyPixle) {
-//		double XPixle=PbyPixle.x();
-//		double YPixle=PbyPixle.y();
-//
-//		double mX = (MyGameGUI.Xmax-MyGameGUI.Xmin)/800.0;
-//		double mY=(MyGameGUI.Ymin-MyGameGUI.Ymax)/600.0;
-//		return new Point3D((mX*XPixle+MyGameGUI.Xmin), (mY*YPixle+MyGameGUI.Ymax));
+	/*
+	 * get a Json string that represent a robot and extract the robot key 
+	 */
+	private int getRobotkey(String rJson) {
+		try {
+			JSONObject line = new JSONObject(rJson);
+			JSONObject jsonforRobot = line.getJSONObject("Robot");
+			String strKey =""+ jsonforRobot.get("id");
+			return Integer.parseInt(strKey);
+		}
+		catch (JSONException e) {e.printStackTrace();}
+		return -1;
+	}
+	/*
+	 * get a Json string that represent a robot and extract the robot position 
+	 */
+	private Point3D getRobotPosition(String rJson) {
+		try {
+			JSONObject line = new JSONObject(rJson);
+			JSONObject jsonforRobot = line.getJSONObject("Robot");
+			String strPos =""+ jsonforRobot.get("pos");
+			String[] xyz = strPos.split(",");
+			double x = Double.valueOf(xyz[0]);
+			double y = Double.valueOf(xyz[1]);
+			return new Point3D(x,y);
+		}
+		catch (JSONException e) {e.printStackTrace();}
+		return null;
+	}
+	/*
+	 * return the point coordinate on screen when the user has clicked
+	 */
+	private Point3D getCoordinateOnScreen(Point3D PbyPixle) {
+		//		double XPixle=PbyPixle.x();
+		//		double YPixle=PbyPixle.y();
+		//
+		//		double mX = (MyGameGUI.Xmax-MyGameGUI.Xmin)/800.0;
+		//		double mY=(MyGameGUI.Ymin-MyGameGUI.Ymax)/600.0;
+		//		return new Point3D((mX*XPixle+MyGameGUI.Xmin), (mY*YPixle+MyGameGUI.Ymax));
 		return new Point3D(userX(PbyPixle.x()),userY(PbyPixle.y()));
 	}
-	boolean firstClick = true;
-	ManualGui manual;
+	private static boolean firstClick = true;
+	private static ManualGui manual;
+
+	/*
+	 * In manual mode the user need to choose which robot move to which vertex.
+	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if(MyGameGUI.isManual) {
-			Point3D p = getCordinateOnScreen(new Point3D (e.getX(),e.getY()));
+			Point3D p = getCoordinateOnScreen(new Point3D (e.getX(),e.getY()));
 			key = findVertexWhenClicked(p);
 			id = findRobotWhenClicked(p);
-			System.out.println(key);
-			
+
 			if(firstClick) {
-				System.out.println("first");
 				manual = new ManualGui(key,id);
 				Thread tManual = new Thread(manual);
 				tManual.start();
 				firstClick = false;
 			}
 			else {
-				System.out.println("sec");
-				manual.setKey(key);
-				manual.setIdRobot(id);
+				if(key != -1) {manual.setKey(key);}
+				if(id != -1) {manual.setIdRobot(id);}
 			}
 		}
-		
+
 	}
 
 	/**
