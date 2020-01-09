@@ -138,7 +138,7 @@ public class GameManager implements Runnable {
 							int src = ttt.getInt("src");
 							int dest = ttt.getInt("dest");
 							if(dest==-1) {
-								System.out.println(getFruitSrc());
+								//System.out.println(getFruitSrc());
 								if(iHaveFruits(src)) {
 									//System.out.println("I have a fruit "+src +" ans i need to go to"+bestNeighbor(src));
 									MyGameGUI.game.chooseNextEdge(rid, bestNeighbor(src));
@@ -181,7 +181,7 @@ public class GameManager implements Runnable {
 	private static double isOnEdge(Point3D fruit, double value, int type,  edge_data e ) {
 		Point3D src=MyGameGUI.algo.myGraph.getNode(e.getSrc()).getLocation();
 		Point3D dest=MyGameGUI.algo.myGraph.getNode(e.getDest()).getLocation();
-		if ( Math.abs(fruit.distance2D(src) + fruit.distance2D(dest)-src.distance2D(dest))<0.0001) { //fruit is on the edge
+		if ( Math.abs(fruit.distance2D(src) + fruit.distance2D(dest)-src.distance2D(dest))<0.000001) { //fruit is on the edge
 			if((e.getSrc()>e.getDest() && type==-1)||(e.getSrc()<e.getDest() && type==1)) //type of fruit matches edge
 				return value;
 		}
