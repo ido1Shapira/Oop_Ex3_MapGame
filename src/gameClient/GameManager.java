@@ -131,6 +131,7 @@ public class GameManager implements Runnable {
 				System.out.print(MyGameGUI.algo.shortestPath(src, togo).get(i).getKey()+" ");
 			}
 			System.out.println();
+
 			System.out.println("ERRORRRRRR");
 			System.out.println("after all I go to "+MyGameGUI.algo.shortestPath(src, togo).get(1).getKey());
 			return MyGameGUI.algo.shortestPath(src, togo).get(1).getKey();

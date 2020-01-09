@@ -6,9 +6,6 @@ import java.util.Random;
 
 import javax.swing.JOptionPane;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import Server.Game_Server;
 import Server.game_service;
 import algorithms.Graph_Algo;
@@ -17,6 +14,7 @@ import dataStructure.edge_data;
 import dataStructure.node_data;
 import myUtils.HelpMe;
 import myUtils.myStdDraw;
+import utils.Point3D;
 
 public class MyGameGUI implements Runnable {
 	public static game_service game;
@@ -73,18 +71,13 @@ public class MyGameGUI implements Runnable {
 		isManual = true;
 		String info = MyGameGUI.game.toString();
 		MyGameGUI.paint(game.getRobots(), game.getFruits());
-		try {
-			JSONObject infoJson = new JSONObject(info);
-			JSONObject jsonforRobot = infoJson.getJSONObject("GameServer");
-			String strNumber =""+ jsonforRobot.get("robots");
-			int numberOfRobots = Integer.parseInt(strNumber);
-			for (int i = 1; i <= numberOfRobots; i++) {
-				Object[] tempkeys = keysList();
-				int src_node = (Integer)JOptionPane.showInputDialog(null, "Pick a vertex to put robot "+i +":",
-						"Add robot", JOptionPane.QUESTION_MESSAGE, null, tempkeys, null);
-				MyGameGUI.game.addRobot(src_node);
-			}
-		} catch (JSONException e1) {e1.printStackTrace();}
+		int numberOfRobots = HelpMe.getRobotsNum(info);
+		for (int i = 1; i <= numberOfRobots; i++) {
+			Object[] tempkeys = keysList();
+			int src_node = (Integer)JOptionPane.showInputDialog(null, "Pick a vertex to put robot "+i +":",
+					"Add robot", JOptionPane.QUESTION_MESSAGE, null, tempkeys, null);
+			MyGameGUI.game.addRobot(src_node);
+		}
 	}
 	private static void playAuto() {
 		isManual = false;
@@ -156,52 +149,37 @@ public class MyGameGUI implements Runnable {
 
 		myStdDraw.setPenColor(robotColor);
 		myStdDraw.setPenRadius(0.06);
-		try {
-			JSONObject line = new JSONObject(robotJ);
-			JSONObject jsonforRobot = line.getJSONObject("Robot");
-			String strPos =""+ jsonforRobot.get("pos");
-			String[] xyz = strPos.split(",");
-			double x = Double.valueOf(xyz[0]);
-			double y = Double.valueOf(xyz[1]);
-			myStdDraw.point(x,y);
-		} catch (JSONException e) {e.printStackTrace();}
+		Point3D pos = HelpMe.getRobotPosition(robotJ);
+		myStdDraw.point(pos.x(),pos.y());
 
 	}
 
-	private static void drawFruits(String fruit) {
-		try {
-			JSONObject line = new JSONObject(fruit);
-			JSONObject fruitJ = line.getJSONObject("Fruit");
-			//find pos
-			String strPos =""+ fruitJ.get("pos");
-			String[] xyz = strPos.split(",");
-			double x = Double.valueOf(xyz[0]);
-			double y = Double.valueOf(xyz[1]);
+	private static void drawFruits(String fruitJ) {
+			Point3D pos = HelpMe.getRobotPosition(fruitJ);
 			//find type
-			int strType = fruitJ.getInt("type");
-			myStdDraw.picture(x,y,(strType == -1) ? "banana.jpeg" :"apple.jpeg", 0.00075, 0.00055);
-		} catch (JSONException e) {e.printStackTrace();}
+			int type = HelpMe.getFruitType(fruitJ);
+			myStdDraw.picture(pos.x(),pos.y(),(type == -1) ? "banana.jpeg" :"apple.jpeg", 0.00075, 0.00055);
 	}
 
 	private static void drawEdge(edge_data edge) {
-//		double rangeX=Xmax-Xmin;
-//		double rangeY=Ymax-Ymin;
+		//		double rangeX=Xmax-Xmin;
+		//		double rangeY=Ymax-Ymin;
 		myStdDraw.setPenRadius(0.005);
 		myStdDraw.setPenColor(edge.getInfo().equals("shortest path") ? myStdDraw.YELLOW : myStdDraw.BLACK);
 		node_data src = algo.myGraph.getNode(edge.getSrc());
 		node_data dest = algo.myGraph.getNode(edge.getDest());
 		myStdDraw.line(src.getLocation().x(),src.getLocation().y(),dest.getLocation().x() , dest.getLocation().y());
-//		myStdDraw.setPenRadius(0.02);
-//		myStdDraw.setPenColor(myStdDraw.ORANGE);
-//		double relativex=(src.getLocation().x()+dest.getLocation().x()*7)/8;
-//		double relativey=(src.getLocation().y()+dest.getLocation().y()*7)/8;
-//		myStdDraw.point(relativex, relativey);
-//		int round=(int)(edge.getWeight()*100);
-//		double roundafter=round;
-//		roundafter=roundafter/100;
-//		myStdDraw.setPenColor(myStdDraw.RED);
-//		myStdDraw.setPenRadius(0.02);
-//		myStdDraw.text(relativex+(10*rangeX/800.0), relativey+(10*rangeY/600.0),""+roundafter);
+		//		myStdDraw.setPenRadius(0.02);
+		//		myStdDraw.setPenColor(myStdDraw.ORANGE);
+		//		double relativex=(src.getLocation().x()+dest.getLocation().x()*7)/8;
+		//		double relativey=(src.getLocation().y()+dest.getLocation().y()*7)/8;
+		//		myStdDraw.point(relativex, relativey);
+		//		int round=(int)(edge.getWeight()*100);
+		//		double roundafter=round;
+		//		roundafter=roundafter/100;
+		//		myStdDraw.setPenColor(myStdDraw.RED);
+		//		myStdDraw.setPenRadius(0.02);
+		//		myStdDraw.text(relativex+(10*rangeX/800.0), relativey+(10*rangeY/600.0),""+roundafter);
 	}
 
 	private static void drawNode(node_data node) {
@@ -233,15 +211,15 @@ public class MyGameGUI implements Runnable {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {e.printStackTrace();}
-			
+
 		}
-		
+
 		int points = 0;
 		for (Iterator<String> iterator = game.getRobots().iterator(); iterator.hasNext();) {
 			String robotj = (String) iterator.next();
 			points += HelpMe.getRobotValue(robotj);
 		}
-		
+
 		JOptionPane.showMessageDialog(null, "Game over:\nyou got "+points+" points","Game over",JOptionPane.INFORMATION_MESSAGE);
 	}
 
