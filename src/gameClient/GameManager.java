@@ -169,12 +169,20 @@ public class GameManager implements Runnable {
 			}
 		}
 		int firstStep;
-		//System.out.println("size of moves ="+MyGameGUI.algo.shortestPath(src, togo).size());
-		if(MyGameGUI.algo.shortestPath(src, togo).size()>1)
-			firstStep=MyGameGUI.algo.shortestPath(src, togo).get(1).getKey(); //get the second node on the list going from src to the edge has a fruit
-		else
-			firstStep=MyGameGUI.algo.shortestPath(src, togo).get(0).getKey();
+		try {
+		System.out.println(MyGameGUI.algo.shortestPath(src, togo).size());
+		firstStep=MyGameGUI.algo.shortestPath(src, togo).get(1).getKey(); //get the second node on the list going from src to the edge has a fruit
+		//		else
+		//			firstStep=MyGameGUI.algo.shortestPath(src, togo).get(0).getKey();
 		return firstStep;
+		}
+		catch (Exception e) {
+			System.out.println("src "+src+" fruit are in "+fruitSrc+" i go to "+togo);
+			
+			System.out.println("ERRORRRRRRr");
+			return 0;
+		}
+
 	}
 
 	private static double isOnEdge(Point3D fruit, double value, int type,  edge_data e ) {
