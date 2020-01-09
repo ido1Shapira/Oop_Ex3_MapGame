@@ -15,7 +15,7 @@ import algorithms.Graph_Algo;
 import dataStructure.DGraph;
 import dataStructure.edge_data;
 import dataStructure.node_data;
-import myUtils.HelpsMe;
+import myUtils.HelpMe;
 import myUtils.myStdDraw;
 
 public class MyGameGUI implements Runnable {
@@ -55,6 +55,7 @@ public class MyGameGUI implements Runnable {
 		else { //Automatic
 			playAuto();
 		}
+		myStdDraw.enableDoubleBuffering();
 		MyGameGUI gui = new MyGameGUI();
 	}
 
@@ -71,7 +72,6 @@ public class MyGameGUI implements Runnable {
 	private static void playManual() {
 		isManual = true;
 		String info = MyGameGUI.game.toString();
-		myStdDraw.enableDoubleBuffering();
 		MyGameGUI.paint(game.getRobots(), game.getFruits());
 		try {
 			JSONObject infoJson = new JSONObject(info);
@@ -239,7 +239,7 @@ public class MyGameGUI implements Runnable {
 		int points = 0;
 		for (Iterator<String> iterator = game.getRobots().iterator(); iterator.hasNext();) {
 			String robotj = (String) iterator.next();
-			points += HelpsMe.getRobotValue(robotj);
+			points += HelpMe.getRobotValue(robotj);
 		}
 		
 		JOptionPane.showMessageDialog(null, "Game over:\nyou got "+points+" points","Game over",JOptionPane.INFORMATION_MESSAGE);
@@ -248,21 +248,21 @@ public class MyGameGUI implements Runnable {
 
 
 	public static void main(String[] a) {
-		//test unit for helpsMe
+		//test unit for HelpMe
 		for (Iterator<String> iterator = game.getRobots().iterator(); iterator.hasNext();) {
 			String robotj = (String) iterator.next();
-			System.out.println(HelpsMe.getRobotValue(robotj));
-			System.out.println(HelpsMe.getRobotDest(robotj));
-			System.out.println(HelpsMe.getRobotId(robotj));
-			System.out.println(HelpsMe.getRobotSpeed(robotj));
-			System.out.println(HelpsMe.getRobotSrc(robotj));
-			System.out.println(HelpsMe.getRobotPosition(robotj));
+			System.out.println(HelpMe.getRobotValue(robotj));
+			System.out.println(HelpMe.getRobotDest(robotj));
+			System.out.println(HelpMe.getRobotId(robotj));
+			System.out.println(HelpMe.getRobotSpeed(robotj));
+			System.out.println(HelpMe.getRobotSrc(robotj));
+			System.out.println(HelpMe.getRobotPosition(robotj));
 		}
 		for (Iterator<String> iterator = game.getFruits().iterator(); iterator.hasNext();) {
 			String robotj = (String) iterator.next();
-			System.out.println(HelpsMe.getFruitType(robotj));
-			System.out.println(HelpsMe.getFruitValue(robotj));
-			System.out.println(HelpsMe.getFruitPosition(robotj));
+			System.out.println(HelpMe.getFruitType(robotj));
+			System.out.println(HelpMe.getFruitValue(robotj));
+			System.out.println(HelpMe.getFruitPosition(robotj));
 		}
 		test1();
 	}

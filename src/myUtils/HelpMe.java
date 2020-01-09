@@ -5,7 +5,7 @@ import org.json.JSONObject;
 
 import utils.Point3D;
 
-public final class HelpsMe {
+public final class HelpMe {
 
 	/*
 	 * Returns the requested field from the object
@@ -16,7 +16,13 @@ public final class HelpsMe {
 		JSONObject jsonforObject = line.getJSONObject(object);
 		return ""+ jsonforObject.get(field);
 	}
-
+	public static int getRobotsNum(String json) {
+		try {
+			return Integer.parseInt(Json2value(json,"GameServer","robots"));
+		}
+		catch (JSONException e) {e.printStackTrace();}
+		return -1;
+	}
 	//getter for robot
 	
 	public static int getRobotId(String json){

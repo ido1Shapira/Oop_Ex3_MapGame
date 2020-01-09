@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import dataStructure.edge_data;
+import myUtils.HelpMe;
 import utils.Point3D;
 
 public class GameManager implements Runnable {
@@ -170,17 +171,21 @@ public class GameManager implements Runnable {
 		}
 		int firstStep;
 		try {
-		System.out.println(MyGameGUI.algo.shortestPath(src, togo).size());
-		firstStep=MyGameGUI.algo.shortestPath(src, togo).get(1).getKey(); //get the second node on the list going from src to the edge has a fruit
-		//		else
-		//			firstStep=MyGameGUI.algo.shortestPath(src, togo).get(0).getKey();
-		return firstStep;
+			System.out.println(MyGameGUI.algo.shortestPath(src, togo).size());
+			firstStep=MyGameGUI.algo.shortestPath(src, togo).get(1).getKey(); //get the second node on the list going from src to the edge has a fruit
+			System.out.println("i go to "+firstStep);
+			//		else
+			//			firstStep=MyGameGUI.algo.shortestPath(src, togo).get(0).getKey();
+			return firstStep;
 		}
 		catch (Exception e) {
 			System.out.println("src "+src+" fruit are in "+fruitSrc+" i go to "+togo);
 			System.out.println("i have "+MyGameGUI.algo.shortestPath(src, togo).size()+" nodes on my way");
-			System.out.println("which are "+MyGameGUI.algo.shortestPath(src, togo));
-
+			System.out.println("which are: ");
+			for (int i = 0; i < MyGameGUI.algo.shortestPath(src, togo).size(); i++) {
+				System.out.print(MyGameGUI.algo.shortestPath(src, togo).get(i).getKey()+" ,");
+			}
+			System.out.println();
 			//System.out.println("firstStep is "+firstStep);
 			System.out.println("ERRORRRRRRr");
 			return 0;
@@ -198,8 +203,67 @@ public class GameManager implements Runnable {
 		return 0;
 	}
 
+	private static double getNodeVal(int node) {
+		double ans=0;
+		for(int i=0; i<getFruitSrc().size();i++) {
+			if(getFruitSrc().get(i)==node)
+				ans+=HelpMe.getFruitValue(MyGameGUI.game.getFruits().get(i));
+		}
+		return ans;
+	}
+
+	private static List<Integer> nodesByValue(){
+		List<Integer> nodesToCheck=getFruitSrc();
+		List<Integer> nodes=new ArrayList<Integer>();
+		for (Integer currNode : nodesToCheck) {
+			if(!nodes.contains(currNode))
+				nodes.add(currNode);
+		}
+		List<Integer> ans= new ArrayList<Integer>();
+		int differanteNodes=nodes.size();
+		for(int i=0; i<differanteNodes; i++) {
+			ans.add(getMax(nodes));
+			nodes.remove((Integer)getMax(nodes));	
+		}
+		return ans;
+	}
+	private static int getMax(List<Integer> list) {
+		int maxNode=0;
+		double maxVal=0;
+		for (int i = 0; i < list.size(); i++) {
+			int curr=list.get(i);
+			if(maxVal< getNodeVal(curr)) {
+				maxVal=getNodeVal(curr);
+				maxNode=curr;
+			}
+		}
+		return maxNode;
+	}
+	//	private static double getMax(List<Double> list) {
+	//		double maxVal=0;
+	//		for (int i = 0; i < list.size(); i++) {
+	//			double curr=list.get(i);
+	//			if(maxVal < curr) {
+	//				maxVal=curr;
+	//			}
+	//		}
+	//		return maxVal;
+	//	}
+	//	private static int valToNode (double val) {
+	//		
+	//	}
 	public static void addRobot() {
-		// TODO Auto-generated method stub
-		
+		int robotSize = HelpMe.getRobotsNum(MyGameGUI.game.toString());
+		System.out.println("robots num="+robotSize);
+		//		ArrayList<Double> valuesFruitsList = new ArrayList<Double>();
+		//		for (Iterator<String> iterator = MyGameGUI.game.getFruits().iterator(); iterator.hasNext();) {
+		//			String jfruit = (String) iterator.next();
+		//			valuesFruitsList.add(HelpMe.getFruitValue(jfruit));
+		//		}
+		List<Integer> nodesByVal= nodesByValue();
+		System.out.println(nodesByVal);
+		for (int i = 0; i < robotSize; i++) {
+			MyGameGUI.game.addRobot(nodesByVal.get(i));			
+		}
 	}
 }

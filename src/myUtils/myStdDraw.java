@@ -1753,8 +1753,8 @@ public final class myStdDraw implements ActionListener, MouseListener, MouseMoti
 		List<String> robots = MyGameGUI.game.getRobots();
 		for (Iterator<String> iterator = robots.iterator(); iterator.hasNext();) {
 			String rJson = (String) iterator.next();
-			Point3D rPos = HelpsMe.getRobotPosition(rJson);
-			if(similar(rPos,p)) {return HelpsMe.getRobotId(rJson);}
+			Point3D rPos = HelpMe.getRobotPosition(rJson);
+			if(similar(rPos,p)) {return HelpMe.getRobotId(rJson);}
 		}
 		return -1;
 	}
