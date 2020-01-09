@@ -35,6 +35,7 @@ public class MyGameGUI implements Runnable,MouseListener {
 	private MyGameGUI() {
 		Thread toPaint = new Thread(this);
 		toPaint.start();
+//		addMouseListener(this);
 	} 
 
 	public static void buildScenario() {
@@ -57,6 +58,8 @@ public class MyGameGUI implements Runnable,MouseListener {
 			playAuto();
 		}
 		String info = MyGameGUI.game.toString();
+		StdDraw.enableDoubleBuffering();
+		MyGameGUI.paint(game.getRobots(), game.getFruits());
 		try {
 			JSONObject infoJson = new JSONObject(info);
 			JSONObject jsonforRobot = infoJson.getJSONObject("GameServer");
@@ -69,7 +72,6 @@ public class MyGameGUI implements Runnable,MouseListener {
 				MyGameGUI.game.addRobot(src_node);
 			}
 		} catch (JSONException e1) {e1.printStackTrace();}
-		StdDraw.enableDoubleBuffering();
 		MyGameGUI gui = new MyGameGUI();
 	}
 
@@ -229,7 +231,7 @@ public class MyGameGUI implements Runnable,MouseListener {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {e.printStackTrace();}
 		}
-
+//		JOptionPane.showMessageDialog(null, "Game over:\nyou got "+game.stopGame()+" points","Game over",JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	//not working yet
@@ -243,6 +245,8 @@ public class MyGameGUI implements Runnable,MouseListener {
 				&& (Math.abs(p1.z() - p2.z()) <= EPSILON);
 	}
 	private int findVertexWhenClicked(Point3D p) {
+		System.out.println(p);
+
 		for (Iterator<node_data> iterator = algo.myGraph.getV().iterator(); iterator.hasNext();) {
 			node_data v = (node_data) iterator.next();
 			if(similar(v.getLocation(),p)) {return v.getKey();}
@@ -251,6 +255,8 @@ public class MyGameGUI implements Runnable,MouseListener {
 	}
 
 	private Point3D getCordinateOnScreen(Point3D PbyPixle) {
+		System.out.println(PbyPixle);
+
 		double XPixle=PbyPixle.x();
 		double YPixle=PbyPixle.y();
 
