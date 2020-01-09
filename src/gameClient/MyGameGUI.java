@@ -19,9 +19,12 @@ import utils.Point3D;
 public class MyGameGUI implements Runnable {
 	public static game_service game;
 	public static Graph_Algo algo;
-	private static Color robotColor;
-	public static boolean isManual;
-	private static int scenarioNumber;
+	private static Color robotColor = Color.BLACK;
+	public static boolean isManual = false;
+	private static int scenarioNumber = 0;
+	private static int points = 0;
+
+	
 	static {
 		Random random = new Random();
 		int r = random.nextInt(256); int g = random.nextInt(256); int b = random.nextInt(256);
@@ -55,6 +58,7 @@ public class MyGameGUI implements Runnable {
 		}
 		myStdDraw.enableDoubleBuffering();
 		MyGameGUI gui = new MyGameGUI();
+		GameManager man = new GameManager();
 	}
 
 	private static Object[] keysList() {
@@ -83,9 +87,15 @@ public class MyGameGUI implements Runnable {
 		isManual = false;
 		GameManager.addRobot();
 	}
-	private static void paintTimeOut() {
+	private static void paintInfoGame() {
 		long t = game.timeToEnd();
+		points =0;
+		for (Iterator<String> iterator = game.getRobots().iterator(); iterator.hasNext();) {
+			String robotj = (String) iterator.next();
+			points += HelpMe.getRobotValue(robotj);
+		}
 		myStdDraw.setPenColor(Color.black);
+		myStdDraw.text((Xmax+Xmin)/2, Ymax-0.001, "points: "+points);
 		myStdDraw.textRight(Xmax-0.002, Ymax-0.001, "time to end: "+t/1000);
 		myStdDraw.textLeft(Xmin+0.002, Ymax-0.001, "Number scenario: "+scenarioNumber);
 	}
@@ -121,7 +131,7 @@ public class MyGameGUI implements Runnable {
 			myStdDraw.setXscale(Xmin,Xmax);
 			myStdDraw.setYscale(Ymin,Ymax);
 		}
-		paintTimeOut();
+		paintInfoGame();
 		for (Iterator<node_data> iterator = algo.myGraph.getV().iterator(); iterator.hasNext();) {
 			node_data node = (node_data) iterator.next();
 			drawNode(node);
@@ -155,7 +165,7 @@ public class MyGameGUI implements Runnable {
 	}
 
 	private static void drawFruits(String fruitJ) {
-			Point3D pos = HelpMe.getRobotPosition(fruitJ);
+			Point3D pos = HelpMe.getFruitPosition(fruitJ);
 			//find type
 			int type = HelpMe.getFruitType(fruitJ);
 			myStdDraw.picture(pos.x(),pos.y(),(type == -1) ? "banana.jpeg" :"apple.jpeg", 0.00075, 0.00055);
@@ -211,15 +221,7 @@ public class MyGameGUI implements Runnable {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {e.printStackTrace();}
-
 		}
-
-		int points = 0;
-		for (Iterator<String> iterator = game.getRobots().iterator(); iterator.hasNext();) {
-			String robotj = (String) iterator.next();
-			points += HelpMe.getRobotValue(robotj);
-		}
-
 		JOptionPane.showMessageDialog(null, "Game over:\nyou got "+points+" points","Game over",JOptionPane.INFORMATION_MESSAGE);
 	}
 

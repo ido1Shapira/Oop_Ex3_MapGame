@@ -16,6 +16,8 @@ public final class HelpMe {
 		JSONObject jsonforObject = line.getJSONObject(object);
 		return ""+ jsonforObject.get(field);
 	}
+	
+	//getters for server
 	public static int getRobotsNum(String json) {
 		try {
 			return Integer.parseInt(Json2value(json,"GameServer","robots"));
@@ -23,7 +25,7 @@ public final class HelpMe {
 		catch (JSONException e) {e.printStackTrace();}
 		return -1;
 	}
-	//getter for robot
+	//getters for robot
 	
 	public static int getRobotId(String json){
 		try {
@@ -40,7 +42,6 @@ public final class HelpMe {
 		catch (JSONException e) {e.printStackTrace();}
 		return null;
 	}
-
 
 	public static int getRobotSrc(String json){
 		try {
@@ -72,7 +73,7 @@ public final class HelpMe {
 	}
 	
 	
-	///getter for fruit
+	///getters for fruit
 	public static double getFruitValue(String json){
 		try {
 			return Double.valueOf(Json2value(json,"Fruit","value"));

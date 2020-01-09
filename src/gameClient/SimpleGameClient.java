@@ -23,26 +23,5 @@ public class SimpleGameClient {
 	public static void test1() {
 		MyGameGUI.buildScenario(); // you have [0,23] games	
 		MyGameGUI.game.startGame();
-		GameManager man = new GameManager();
-//		nearestFruit(0);
 	}
-
-
-	
-
-//		private edge_data isOn(String f) {
-//			for (int i = 0; i < MyGameGUI.algo.myGraph.nodeSize(); i++) {
-//				Collection<edge_data> ee = MyGameGUI.algo.myGraph.getE(i);
-//				for (Iterator<edge_data> iterator = ee.iterator(); iterator.hasNext();) {
-//					edge_data edge = (edge_data) iterator.next();
-//					if(edge.getSrc()-edge.getDest()<0 && f.getType()==-1) {
-//					}
-//	
-//					}
-//				}
-//			}
-//			
-//			Iterator<edge_data> itr = ee.iterator();
-//			return null;
-//		}
 }
