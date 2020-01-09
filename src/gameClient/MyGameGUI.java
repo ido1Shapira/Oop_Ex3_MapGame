@@ -15,6 +15,7 @@ import algorithms.Graph_Algo;
 import dataStructure.DGraph;
 import dataStructure.edge_data;
 import dataStructure.node_data;
+import myUtils.HelpsMe;
 import myUtils.myStdDraw;
 
 public class MyGameGUI implements Runnable {
@@ -232,13 +233,37 @@ public class MyGameGUI implements Runnable {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {e.printStackTrace();}
+			
 		}
-//		JOptionPane.showMessageDialog(null, "Game over:\nyou got "+game.stopGame()+" points","Game over",JOptionPane.INFORMATION_MESSAGE);
+		
+		int points = 0;
+		for (Iterator<String> iterator = game.getRobots().iterator(); iterator.hasNext();) {
+			String robotj = (String) iterator.next();
+			points += HelpsMe.getRobotValue(robotj);
+		}
+		
+		JOptionPane.showMessageDialog(null, "Game over:\nyou got "+points+" points","Game over",JOptionPane.INFORMATION_MESSAGE);
 	}
 
 
 
 	public static void main(String[] a) {
+		//test unit for helpsMe
+		for (Iterator<String> iterator = game.getRobots().iterator(); iterator.hasNext();) {
+			String robotj = (String) iterator.next();
+			System.out.println(HelpsMe.getRobotValue(robotj));
+			System.out.println(HelpsMe.getRobotDest(robotj));
+			System.out.println(HelpsMe.getRobotId(robotj));
+			System.out.println(HelpsMe.getRobotSpeed(robotj));
+			System.out.println(HelpsMe.getRobotSrc(robotj));
+			System.out.println(HelpsMe.getRobotPosition(robotj));
+		}
+		for (Iterator<String> iterator = game.getFruits().iterator(); iterator.hasNext();) {
+			String robotj = (String) iterator.next();
+			System.out.println(HelpsMe.getFruitType(robotj));
+			System.out.println(HelpsMe.getFruitValue(robotj));
+			System.out.println(HelpsMe.getFruitPosition(robotj));
+		}
 		test1();
 	}
 	public static void test1() {

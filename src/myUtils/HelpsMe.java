@@ -50,16 +50,16 @@ public final class HelpsMe {
 		catch (JSONException e) {e.printStackTrace();}
 		return -1;
 	}
-	public static int getRobotValue(String json){
+	public static double getRobotValue(String json){
 		try {
-			return Integer.parseInt(Json2value(json,"Robot","value"));
+			return Double.valueOf(Json2value(json,"Robot","value"));
 		}
 		catch (JSONException e) {e.printStackTrace();}
 		return -1;
 	}
-	public static int getRobotSpeed(String json){
+	public static double getRobotSpeed(String json){
 		try {
-			return Integer.parseInt(Json2value(json,"Robot","speed"));
+			return Double.valueOf(Json2value(json,"Robot","speed"));
 		}
 		catch (JSONException e) {e.printStackTrace();}
 		return 1;
@@ -67,9 +67,9 @@ public final class HelpsMe {
 	
 	
 	///getter for fruit
-	public static int getFruitValue(String json){
+	public static double getFruitValue(String json){
 		try {
-			return Integer.parseInt(Json2value(json,"Fruit","value"));
+			return Double.valueOf(Json2value(json,"Fruit","value"));
 		}
 		catch (JSONException e) {e.printStackTrace();}
 		return -1;
