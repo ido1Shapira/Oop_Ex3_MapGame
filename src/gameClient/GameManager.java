@@ -138,7 +138,6 @@ public class GameManager implements Runnable {
 							int src = ttt.getInt("src");
 							int dest = ttt.getInt("dest");
 							if(dest==-1) {
-								//System.out.println(getFruitSrc());
 								if(iHaveFruits(src)) {
 									//System.out.println("I have a fruit "+src +" ans i need to go to"+bestNeighbor(src));
 									MyGameGUI.game.chooseNextEdge(rid, bestNeighbor(src));
@@ -188,4 +187,3 @@ public class GameManager implements Runnable {
 		return 0;
 	}
 }
-
