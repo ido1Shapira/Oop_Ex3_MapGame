@@ -53,6 +53,34 @@ public class GameManager implements Runnable {
 		return ans;
 	}
 
+	private static int bestNeighbor(int src) {
+		double maxEvalue=0;
+		int maxEidDest=-1;
+		Collection<edge_data> ee = MyGameGUI.algo.myGraph.getE(src);
+		for (Iterator<edge_data> iterator = ee.iterator(); iterator.hasNext();) {
+			edge_data edge = (edge_data) iterator.next();
+			double edgeVal=0;
+			Collection<String> fruits=MyGameGUI.game.getFruits();
+			for (String f : fruits) {
+				JSONObject line;
+				try {
+					line = new JSONObject(f);
+					JSONObject ttt = line.getJSONObject("Fruit");
+					double val = ttt.getDouble("value");
+					int type = ttt.getInt("type");
+					String loc = (String) ttt.get("pos");
+					Point3D floc= new Point3D(loc);
+					edgeVal+=isOnEdge(floc, val, type, edge);
+				}
+				catch (Exception e) {System.out.println(e.toString());}
+			}			
+			if(maxEvalue<edgeVal) {
+				maxEvalue=edgeVal;
+				maxEidDest=edge.getDest();
+			}
+		}
+		return maxEidDest;
+	}
 
 	private static int nextDest(int src) {
 		int ans=-1;
@@ -112,17 +140,16 @@ public class GameManager implements Runnable {
 							if(dest==-1) {
 								System.out.println(getFruitSrc());
 								if(iHaveFruits(src)) {
-									System.out.println("I have a fruit "+src +" ans i need to go to"+nextDest(src));
-									MyGameGUI.game.chooseNextEdge(rid, nextDest(src));
+									//System.out.println("I have a fruit "+src +" ans i need to go to"+bestNeighbor(src));
+									MyGameGUI.game.chooseNextEdge(rid, bestNeighbor(src));
 								}
 								else
 								{
 									int favNode= whereToGo(src, getFruitSrc());
-									System.out.println("heading to "+favNode);
+									//System.out.println("heading to "+favNode);
 									MyGameGUI.game.chooseNextEdge(rid, favNode);
 								}
 							}
-
 						} catch (JSONException e) {e.printStackTrace();}
 					}
 				}
@@ -143,7 +170,7 @@ public class GameManager implements Runnable {
 			}
 		}
 		int firstStep;
-		System.out.println("size of moves ="+MyGameGUI.algo.shortestPath(src, togo).size());
+		//System.out.println("size of moves ="+MyGameGUI.algo.shortestPath(src, togo).size());
 		if(MyGameGUI.algo.shortestPath(src, togo).size()>1)
 			firstStep=MyGameGUI.algo.shortestPath(src, togo).get(1).getKey(); //get the second node on the list going from src to the edge has a fruit
 		else
