@@ -1,7 +1,5 @@
 package gameClient;
 import java.awt.Color;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -17,25 +15,24 @@ import algorithms.Graph_Algo;
 import dataStructure.DGraph;
 import dataStructure.edge_data;
 import dataStructure.node_data;
-import utils.Point3D;
-import utils.StdDraw;
+import myUtils.myStdDraw;
 
-public class MyGameGUI implements Runnable,MouseListener {
+public class MyGameGUI implements Runnable {
 	public static game_service game;
 	public static Graph_Algo algo;
 	private static Color robotColor;
 	public static boolean isManual;
+	
 	static {
 		Random random = new Random();
 		int r = random.nextInt(256); int g = random.nextInt(256); int b = random.nextInt(256);
-		StdDraw.setPenColor(r,g,b);
+		myStdDraw.setPenColor(r,g,b);
 		robotColor = new Color(r, g, b);
 	}
 
 	private MyGameGUI() {
 		Thread toPaint = new Thread(this);
 		toPaint.start();
-//		addMouseListener(this);
 	} 
 
 	public static void buildScenario() {
@@ -58,7 +55,7 @@ public class MyGameGUI implements Runnable,MouseListener {
 			playAuto();
 		}
 		String info = MyGameGUI.game.toString();
-		StdDraw.enableDoubleBuffering();
+		myStdDraw.enableDoubleBuffering();
 		MyGameGUI.paint(game.getRobots(), game.getFruits());
 		try {
 			JSONObject infoJson = new JSONObject(info);
@@ -93,16 +90,19 @@ public class MyGameGUI implements Runnable,MouseListener {
 	}
 	private static void paintTimeOut() {
 		long t = game.timeToEnd();
-		StdDraw.setPenColor(Color.black);
-		StdDraw.textRight(Xmax-0.002, Ymax-0.001, "time to end: "+t/1000);
+		myStdDraw.setPenColor(Color.black);
+		myStdDraw.textRight(Xmax-0.002, Ymax-0.001, "time to end: "+t/1000);
 	}
 
-	static double Xmin,Xmax,Ymin,Ymax;
-	static boolean firstPaint = true;
+	public static double Xmin;
+	public static double Xmax;
+	public static double Ymin;
+	public static double Ymax;
+	private static boolean firstPaint = true;
 
 	public static void paint(List<String> robots, List<String> fruits) {
-		if(firstPaint) { StdDraw.setCanvasSize(800,600); firstPaint = false;}
-		StdDraw.clear();
+		if(firstPaint) { myStdDraw.setCanvasSize(800,600); firstPaint = false;}
+		myStdDraw.clear();
 		if(algo.myGraph != null) {
 			if(algo.myGraph.nodeSize() > 0) {
 				Xmin=Double.POSITIVE_INFINITY;
@@ -122,8 +122,8 @@ public class MyGameGUI implements Runnable,MouseListener {
 				Ymax += 0.0015;
 			}
 			clearSelected();
-			StdDraw.setXscale(Xmin,Xmax);
-			StdDraw.setYscale(Ymin,Ymax);
+			myStdDraw.setXscale(Xmin,Xmax);
+			myStdDraw.setYscale(Ymin,Ymax);
 		}
 		paintTimeOut();
 		for (Iterator<node_data> iterator = algo.myGraph.getV().iterator(); iterator.hasNext();) {
@@ -146,13 +146,13 @@ public class MyGameGUI implements Runnable,MouseListener {
 			String robotJ = (String) iterator.next();
 			drawRobot(robotJ);
 		}
-		StdDraw.show();
+		myStdDraw.show();
 	}
 
 	private static void drawRobot(String robotJ) {
 
-		StdDraw.setPenColor(robotColor);
-		StdDraw.setPenRadius(0.06);
+		myStdDraw.setPenColor(robotColor);
+		myStdDraw.setPenRadius(0.06);
 		try {
 			JSONObject line = new JSONObject(robotJ);
 			JSONObject jsonforRobot = line.getJSONObject("Robot");
@@ -160,7 +160,7 @@ public class MyGameGUI implements Runnable,MouseListener {
 			String[] xyz = strPos.split(",");
 			double x = Double.valueOf(xyz[0]);
 			double y = Double.valueOf(xyz[1]);
-			StdDraw.point(x,y);
+			myStdDraw.point(x,y);
 		} catch (JSONException e) {e.printStackTrace();}
 
 	}
@@ -176,39 +176,39 @@ public class MyGameGUI implements Runnable,MouseListener {
 			double y = Double.valueOf(xyz[1]);
 			//find type
 			int strType = fruitJ.getInt("type");
-			StdDraw.picture(x,y,(strType == -1) ? "banana.jpeg" :"apple.jpeg", 0.00075, 0.00055);
+			myStdDraw.picture(x,y,(strType == -1) ? "banana.jpeg" :"apple.jpeg", 0.00075, 0.00055);
 		} catch (JSONException e) {e.printStackTrace();}
 	}
 
 	private static void drawEdge(edge_data edge) {
-		double rangeX=Xmax-Xmin;
-		double rangeY=Ymax-Ymin;
-		StdDraw.setPenRadius(0.005);
-		StdDraw.setPenColor(edge.getInfo().equals("shortest path") ? StdDraw.YELLOW : StdDraw.BLACK);
+//		double rangeX=Xmax-Xmin;
+//		double rangeY=Ymax-Ymin;
+		myStdDraw.setPenRadius(0.005);
+		myStdDraw.setPenColor(edge.getInfo().equals("shortest path") ? myStdDraw.YELLOW : myStdDraw.BLACK);
 		node_data src = algo.myGraph.getNode(edge.getSrc());
 		node_data dest = algo.myGraph.getNode(edge.getDest());
-		StdDraw.line(src.getLocation().x(),src.getLocation().y(),dest.getLocation().x() , dest.getLocation().y());
-		StdDraw.setPenRadius(0.02);
-		StdDraw.setPenColor(StdDraw.ORANGE);
-		double relativex=(src.getLocation().x()+dest.getLocation().x()*7)/8;
-		double relativey=(src.getLocation().y()+dest.getLocation().y()*7)/8;
-		StdDraw.point(relativex, relativey);
-		int round=(int)(edge.getWeight()*100);
-		double roundafter=round;
-		roundafter=roundafter/100;
-		StdDraw.setPenColor(StdDraw.RED);
-		StdDraw.setPenRadius(0.02);
-		StdDraw.text(relativex+(10*rangeX/800.0), relativey+(10*rangeY/600.0),""+roundafter);
+		myStdDraw.line(src.getLocation().x(),src.getLocation().y(),dest.getLocation().x() , dest.getLocation().y());
+//		myStdDraw.setPenRadius(0.02);
+//		myStdDraw.setPenColor(myStdDraw.ORANGE);
+//		double relativex=(src.getLocation().x()+dest.getLocation().x()*7)/8;
+//		double relativey=(src.getLocation().y()+dest.getLocation().y()*7)/8;
+//		myStdDraw.point(relativex, relativey);
+//		int round=(int)(edge.getWeight()*100);
+//		double roundafter=round;
+//		roundafter=roundafter/100;
+//		myStdDraw.setPenColor(myStdDraw.RED);
+//		myStdDraw.setPenRadius(0.02);
+//		myStdDraw.text(relativex+(10*rangeX/800.0), relativey+(10*rangeY/600.0),""+roundafter);
 	}
 
 	private static void drawNode(node_data node) {
 		double rangeX=Xmax-Xmin;
 		double rangeY=Ymax-Ymin;
-		StdDraw.setPenRadius(0.0255);
-		StdDraw.setPenColor(node.getInfo().equals("selected") ? StdDraw.GREEN : StdDraw.CYAN);
-		StdDraw.point(node.getLocation().x(), node.getLocation().y());
-		StdDraw.setPenColor(StdDraw.BLUE);
-		StdDraw.text(node.getLocation().x()+(10.0*(rangeX/800.0)), node.getLocation().y()+(10.0*(rangeY)/600.0),""+node.getKey());
+		myStdDraw.setPenRadius(0.0255);
+		myStdDraw.setPenColor(node.getInfo().equals("selected") ? myStdDraw.GREEN : myStdDraw.CYAN);
+		myStdDraw.point(node.getLocation().x(), node.getLocation().y());
+		myStdDraw.setPenColor(myStdDraw.BLUE);
+		myStdDraw.text(node.getLocation().x()+(10.0*(rangeX/800.0)), node.getLocation().y()+(10.0*(rangeY)/600.0),""+node.getKey());
 	}
 
 	private static void clearSelected() {
@@ -234,78 +234,6 @@ public class MyGameGUI implements Runnable,MouseListener {
 //		JOptionPane.showMessageDialog(null, "Game over:\nyou got "+game.stopGame()+" points","Game over",JOptionPane.INFORMATION_MESSAGE);
 	}
 
-	//not working yet
-	int key = -1;
-	public static final double EPSILON = 10;
-
-
-	private boolean similar(Point3D p1 , Point3D p2) {
-		return (Math.abs(p1.x() - p2.x()) <= EPSILON)
-				&& (Math.abs(p1.y() - p2.y()) <= EPSILON)
-				&& (Math.abs(p1.z() - p2.z()) <= EPSILON);
-	}
-	private int findVertexWhenClicked(Point3D p) {
-		System.out.println(p);
-
-		for (Iterator<node_data> iterator = algo.myGraph.getV().iterator(); iterator.hasNext();) {
-			node_data v = (node_data) iterator.next();
-			if(similar(v.getLocation(),p)) {return v.getKey();}
-		}
-		return -1;
-	}
-
-	private Point3D getCordinateOnScreen(Point3D PbyPixle) {
-		System.out.println(PbyPixle);
-
-		double XPixle=PbyPixle.x();
-		double YPixle=PbyPixle.y();
-
-		double mX = (Xmax-Xmin)/800.0;
-		double mY=(Ymin-Ymax)/600.0;
-		return new Point3D((mX*XPixle+Xmin), (mY*YPixle+Ymax));
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		System.out.println(e.getClickCount());
-		if(isManual) {
-			Point3D p = getCordinateOnScreen(new Point3D (e.getX(),e.getY()));
-			System.out.println(p);
-			key = findVertexWhenClicked(p);
-			System.out.println(key);
-			if(key != -1) {
-				if(algo.myGraph.getNode(key).getInfo().equals("selected")) {
-					algo.myGraph.getNode(key).setInfo("");
-				}
-				else {
-					algo.myGraph.getNode(key).setInfo("selected");
-				}
-			}
-		}
-	}
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
 
 
 	public static void main(String[] a) {
