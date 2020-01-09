@@ -1,13 +1,10 @@
 package gameClient;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import dataStructure.edge_data;
 import myUtils.HelpMe;
 import utils.Point3D;
@@ -19,39 +16,25 @@ public class GameManager implements Runnable {
 		Master.start();
 	} 
 
-	public static List<Integer>  getFruitSrc(){
+	public static List<Integer> getFruitSrc(){
 		Collection<String> fruits=MyGameGUI.game.getFruits();
 		ArrayList<Integer> list= new ArrayList<Integer>();
 		for (String f : fruits) {
-			JSONObject line;
-			try {
-				line = new JSONObject(f);
-				JSONObject ttt = line.getJSONObject("Fruit");
-				double val = ttt.getDouble("value");
-				int type = ttt.getInt("type");
-				String loc = (String) ttt.get("pos");
-				Point3D floc= new Point3D(loc);
-				list.add(findFruitSrc(floc,val, type));
-			} 
-			catch (JSONException e) {e.printStackTrace();}
+			list.add(findFruitSrc(f));
 		}
 		return list;
 	}
-
-
-	private static int findFruitSrc(Point3D floc,double val, int type) {
+	private static int findFruitSrc(String jfruit) {
 		int ans=-1;
 		for (int i = 0; i < MyGameGUI.algo.myGraph.nodeSize(); i++) {
 			Collection<edge_data> e =MyGameGUI.algo.myGraph.getE(i);
 			for (Iterator<edge_data> iterator = e.iterator(); iterator.hasNext();) {
 				edge_data currE = (edge_data) iterator.next();
-				if(isOnEdge(floc, val, type, currE)!=0)
+				if(isOnEdge(jfruit, currE)!=0)
 					return i;
 			}
 		}
-		if (ans==-1)  
-			System.out.println("loc="+floc+" type="+type+" is not on an edge:(");
-		return ans;
+			return ans;
 	}
 
 	private static int bestNeighbor(int src) {
@@ -63,17 +46,7 @@ public class GameManager implements Runnable {
 			double edgeVal=0;
 			Collection<String> fruits=MyGameGUI.game.getFruits();
 			for (String f : fruits) {
-				JSONObject line;
-				try {
-					line = new JSONObject(f);
-					JSONObject ttt = line.getJSONObject("Fruit");
-					double val = ttt.getDouble("value");
-					int type = ttt.getInt("type");
-					String loc = (String) ttt.get("pos");
-					Point3D floc= new Point3D(loc);
-					edgeVal+=isOnEdge(floc, val, type, edge);
-				}
-				catch (Exception e) {System.out.println(e.toString());}
+				edgeVal+=isOnEdge(f, edge);
 			}			
 			if(maxEvalue<edgeVal) {
 				maxEvalue=edgeVal;
@@ -83,45 +56,17 @@ public class GameManager implements Runnable {
 		return maxEidDest;
 	}
 
-	private static int nextDest(int src) {
-		int ans=-1;
-		double maxVal=0;
-		Collection<edge_data> ee = MyGameGUI.algo.myGraph.getE(src);
-		for (Iterator<edge_data> iterator = ee.iterator(); iterator.hasNext();) {
-			edge_data edge = (edge_data) iterator.next();
-			double edgeVal=0;
-			Collection<String> fruits=MyGameGUI.game.getFruits();
-			for (String f : fruits) {
-				JSONObject line;
-				try {
-					line = new JSONObject(f);
-					JSONObject ttt = line.getJSONObject("Fruit");
-					double val = ttt.getDouble("value");
-					int type = ttt.getInt("type");
-					String loc = (String) ttt.get("pos");
-					Point3D floc= new Point3D(loc);
-					edgeVal=+isOnEdge(floc, val, type, edge);
-				}
-				catch (Exception e) {System.out.println(e.toString());}
-			}
-			if(edgeVal>maxVal) {
-				maxVal=edgeVal;
-				ans=edge.getDest();
-			}
-		}
-		return ans;
-	}
-	private static int randomNextNode(int src) {
-		int ans = -1;
-		Collection<edge_data> ee = MyGameGUI.algo.myGraph.getE(src);
-		Iterator<edge_data> itr = ee.iterator();
-		int s = ee.size();
-		int r = (int)(Math.random()*s);
-		int i=0;
-		while(i<r) {itr.next();i++;}
-		ans = itr.next().getDest();
-		return ans;
-	}
+//	private static int randomNextNode(int src) {
+//		int ans = -1;
+//		Collection<edge_data> ee = MyGameGUI.algo.myGraph.getE(src);
+//		Iterator<edge_data> itr = ee.iterator();
+//		int s = ee.size();
+//		int r = (int)(Math.random()*s);
+//		int i=0;
+//		while(i<r) {itr.next();i++;}
+//		ans = itr.next().getDest();
+//		return ans;
+//	}
 
 	@Override
 	public void run() {
@@ -183,22 +128,24 @@ public class GameManager implements Runnable {
 			System.out.println("i have "+MyGameGUI.algo.shortestPath(src, togo).size()+" nodes on my way");
 			System.out.println("which are: ");
 			for (int i = 0; i < MyGameGUI.algo.shortestPath(src, togo).size(); i++) {
-				System.out.print(MyGameGUI.algo.shortestPath(src, togo).get(i).getKey()+" ,");
+				System.out.print(MyGameGUI.algo.shortestPath(src, togo).get(i).getKey()+" ");
 			}
 			System.out.println();
-			//System.out.println("firstStep is "+firstStep);
-			System.out.println("ERRORRRRRRr");
-			return 0;
+			System.out.println("ERRORRRRRR");
+			System.out.println("after all I go to "+MyGameGUI.algo.shortestPath(src, togo).get(1).getKey());
+			return MyGameGUI.algo.shortestPath(src, togo).get(1).getKey();
 		}
 
 	}
 
-	private static double isOnEdge(Point3D fruit, double value, int type,  edge_data e ) {
+	private static double isOnEdge(String jfruit,  edge_data e ) {
 		Point3D src=MyGameGUI.algo.myGraph.getNode(e.getSrc()).getLocation();
 		Point3D dest=MyGameGUI.algo.myGraph.getNode(e.getDest()).getLocation();
+		Point3D fruit=HelpMe.getFruitPosition(jfruit);
+		double type=HelpMe.getFruitType(jfruit);
 		if ( Math.abs(fruit.distance2D(src) + fruit.distance2D(dest)-src.distance2D(dest))<0.000001) { //fruit is on the edge
 			if((e.getSrc()>e.getDest() && type==-1)||(e.getSrc()<e.getDest() && type==1)) //type of fruit matches edge
-				return value;
+				return HelpMe.getFruitValue(jfruit);
 		}
 		return 0;
 	}
@@ -239,27 +186,10 @@ public class GameManager implements Runnable {
 		}
 		return maxNode;
 	}
-	//	private static double getMax(List<Double> list) {
-	//		double maxVal=0;
-	//		for (int i = 0; i < list.size(); i++) {
-	//			double curr=list.get(i);
-	//			if(maxVal < curr) {
-	//				maxVal=curr;
-	//			}
-	//		}
-	//		return maxVal;
-	//	}
-	//	private static int valToNode (double val) {
-	//		
-	//	}
+
 	public static void addRobot() {
 		int robotSize = HelpMe.getRobotsNum(MyGameGUI.game.toString());
 		System.out.println("robots num="+robotSize);
-		//		ArrayList<Double> valuesFruitsList = new ArrayList<Double>();
-		//		for (Iterator<String> iterator = MyGameGUI.game.getFruits().iterator(); iterator.hasNext();) {
-		//			String jfruit = (String) iterator.next();
-		//			valuesFruitsList.add(HelpMe.getFruitValue(jfruit));
-		//		}
 		List<Integer> nodesByVal= nodesByValue();
 		System.out.println(nodesByVal);
 		for (int i = 0; i < robotSize; i++) {
