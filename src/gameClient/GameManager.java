@@ -18,7 +18,7 @@ public class GameManager implements Runnable {
 		Master.start();
 	} 
 
-	private static List<Integer>  getFruitSrc(){
+	public static List<Integer>  getFruitSrc(){
 		Collection<String> fruits=MyGameGUI.game.getFruits();
 		ArrayList<Integer> list= new ArrayList<Integer>();
 		for (String f : fruits) {
@@ -178,7 +178,10 @@ public class GameManager implements Runnable {
 		}
 		catch (Exception e) {
 			System.out.println("src "+src+" fruit are in "+fruitSrc+" i go to "+togo);
-			
+			System.out.println("i have "+MyGameGUI.algo.shortestPath(src, togo).size()+" nodes on my way");
+			System.out.println("which are "+MyGameGUI.algo.shortestPath(src, togo));
+
+			//System.out.println("firstStep is "+firstStep);
 			System.out.println("ERRORRRRRRr");
 			return 0;
 		}
@@ -193,5 +196,10 @@ public class GameManager implements Runnable {
 				return value;
 		}
 		return 0;
+	}
+
+	public static void addRobot() {
+		// TODO Auto-generated method stub
+		
 	}
 }

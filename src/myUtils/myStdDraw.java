@@ -1753,40 +1753,12 @@ public final class myStdDraw implements ActionListener, MouseListener, MouseMoti
 		List<String> robots = MyGameGUI.game.getRobots();
 		for (Iterator<String> iterator = robots.iterator(); iterator.hasNext();) {
 			String rJson = (String) iterator.next();
-			Point3D rPos = getRobotPosition(rJson);
-			if(similar(rPos,p)) {return getRobotkey(rJson);}
+			Point3D rPos = HelpsMe.getRobotPosition(rJson);
+			if(similar(rPos,p)) {return HelpsMe.getRobotId(rJson);}
 		}
 		return -1;
 	}
-	/*
-	 * get a Json string that represent a robot and extract the robot key 
-	 */
-	private int getRobotkey(String rJson) {
-		try {
-			JSONObject line = new JSONObject(rJson);
-			JSONObject jsonforRobot = line.getJSONObject("Robot");
-			String strKey =""+ jsonforRobot.get("id");
-			return Integer.parseInt(strKey);
-		}
-		catch (JSONException e) {e.printStackTrace();}
-		return -1;
-	}
-	/*
-	 * get a Json string that represent a robot and extract the robot position 
-	 */
-	private Point3D getRobotPosition(String rJson) {
-		try {
-			JSONObject line = new JSONObject(rJson);
-			JSONObject jsonforRobot = line.getJSONObject("Robot");
-			String strPos =""+ jsonforRobot.get("pos");
-			String[] xyz = strPos.split(",");
-			double x = Double.valueOf(xyz[0]);
-			double y = Double.valueOf(xyz[1]);
-			return new Point3D(x,y);
-		}
-		catch (JSONException e) {e.printStackTrace();}
-		return null;
-	}
+
 	/*
 	 * return the point coordinate on screen when the user has clicked
 	 */

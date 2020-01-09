@@ -22,7 +22,7 @@ public class MyGameGUI implements Runnable {
 	public static Graph_Algo algo;
 	private static Color robotColor;
 	public static boolean isManual;
-	
+	private static int scenarioNumber;
 	static {
 		Random random = new Random();
 		int r = random.nextInt(256); int g = random.nextInt(256); int b = random.nextInt(256);
@@ -37,7 +37,7 @@ public class MyGameGUI implements Runnable {
 
 	public static void buildScenario() {
 		Object[]scenarioOptions = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23};
-		int scenarioNumber = (Integer)JOptionPane.showInputDialog(null, "Pick the scenario number:",
+		scenarioNumber = (Integer)JOptionPane.showInputDialog(null, "Pick the scenario number:",
 				"scenario options", JOptionPane.QUESTION_MESSAGE, null, scenarioOptions, null);
 		game = Game_Server.getServer(scenarioNumber); // you have [0,23] games
 		String gJason = game.getGraph();
@@ -54,21 +54,6 @@ public class MyGameGUI implements Runnable {
 		else { //Automatic
 			playAuto();
 		}
-		String info = MyGameGUI.game.toString();
-		myStdDraw.enableDoubleBuffering();
-		MyGameGUI.paint(game.getRobots(), game.getFruits());
-		try {
-			JSONObject infoJson = new JSONObject(info);
-			JSONObject jsonforRobot = infoJson.getJSONObject("GameServer");
-			String strNumber =""+ jsonforRobot.get("robots");
-			int numberOfRobots = Integer.parseInt(strNumber);
-			for (int i = 1; i <= numberOfRobots; i++) {
-				Object[] tempkeys = keysList();
-				int src_node = (Integer)JOptionPane.showInputDialog(null, "Pick a vertex to put robot "+i +":",
-						"Add robot", JOptionPane.QUESTION_MESSAGE, null, tempkeys, null);
-				MyGameGUI.game.addRobot(src_node);
-			}
-		} catch (JSONException e1) {e1.printStackTrace();}
 		MyGameGUI gui = new MyGameGUI();
 	}
 
@@ -84,14 +69,31 @@ public class MyGameGUI implements Runnable {
 
 	private static void playManual() {
 		isManual = true;
+		String info = MyGameGUI.game.toString();
+		myStdDraw.enableDoubleBuffering();
+		MyGameGUI.paint(game.getRobots(), game.getFruits());
+		try {
+			JSONObject infoJson = new JSONObject(info);
+			JSONObject jsonforRobot = infoJson.getJSONObject("GameServer");
+			String strNumber =""+ jsonforRobot.get("robots");
+			int numberOfRobots = Integer.parseInt(strNumber);
+			for (int i = 1; i <= numberOfRobots; i++) {
+				Object[] tempkeys = keysList();
+				int src_node = (Integer)JOptionPane.showInputDialog(null, "Pick a vertex to put robot "+i +":",
+						"Add robot", JOptionPane.QUESTION_MESSAGE, null, tempkeys, null);
+				MyGameGUI.game.addRobot(src_node);
+			}
+		} catch (JSONException e1) {e1.printStackTrace();}
 	}
 	private static void playAuto() {
 		isManual = false;
+		GameManager.addRobot();
 	}
 	private static void paintTimeOut() {
 		long t = game.timeToEnd();
 		myStdDraw.setPenColor(Color.black);
 		myStdDraw.textRight(Xmax-0.002, Ymax-0.001, "time to end: "+t/1000);
+		myStdDraw.textLeft(Xmin+0.002, Ymax-0.001, "Number scenario: "+scenarioNumber);
 	}
 
 	public static double Xmin;
@@ -101,7 +103,7 @@ public class MyGameGUI implements Runnable {
 	private static boolean firstPaint = true;
 
 	public static void paint(List<String> robots, List<String> fruits) {
-		if(firstPaint) { myStdDraw.setCanvasSize(800,600); firstPaint = false;}
+		if(firstPaint) {myStdDraw.setCanvasSize(800,600); firstPaint = false;}
 		myStdDraw.clear();
 		if(algo.myGraph != null) {
 			if(algo.myGraph.nodeSize() > 0) {
