@@ -48,30 +48,12 @@ public class GameManager implements Runnable {
 					return i;
 			}
 		}
-		if (ans==-1)
+		if (ans==-1)  
 			System.out.println("loc="+floc+" type="+type+" is not on an edge:(");
 		return ans;
 	}
 
-	//		private static double nearestFruit (int src) {
-	//			int dest=nextDest(src);
-	//			if(dest !=-1) {
-	//				System.out.println("dest is"+ dest);
-	//				return MyGameGUI.algo.myGraph.getEdge(src,dest).getWeight();
-	//			}
-	//			else {
-	//				double min=Double.POSITIVE_INFINITY;
-	//				Collection <edge_data> edges=MyGameGUI.algo.myGraph.getE(src);
-	//				for (Iterator<edge_data> iterator = edges.iterator(); iterator.hasNext();) {
-	//					edge_data edge = (edge_data) iterator.next();
-	//					double curr= nearestFruit(edge.getDest())+edge.getWeight();
-	//					if(curr<min)
-	//						min=curr;				
-	//				}
-	//				return min;
-	//			}
-	//			//return 10000;
-	//		}
+
 	private static int nextDest(int src) {
 		int ans=-1;
 		double maxVal=0;
@@ -114,9 +96,9 @@ public class GameManager implements Runnable {
 
 	@Override
 	public void run() {
-		while(MyGameGUI.game.isRunning()) {
-			List<String> log = MyGameGUI.game.move();
-			if(!MyGameGUI.isManual) {
+		if(!MyGameGUI.isManual) {
+			while(MyGameGUI.game.isRunning()) {
+				List<String> log = MyGameGUI.game.move();
 				if(log!=null) {
 					for (int j = 0; j < MyGameGUI.game.getRobots().size(); j++) {
 						String robot_json = log.get(j);
@@ -127,31 +109,17 @@ public class GameManager implements Runnable {
 							int rid = ttt.getInt("id");
 							int src = ttt.getInt("src");
 							int dest = ttt.getInt("dest");
-							if(dest==-1) {	
-								if(nextDest(src)!=-1) {
-									System.out.println("not randomm!!!!");
+							if(dest==-1) {
+								System.out.println(getFruitSrc());
+								if(iHaveFruits(src)) {
+									System.out.println("I have a fruit "+src +" ans i need to go to"+nextDest(src));
 									MyGameGUI.game.chooseNextEdge(rid, nextDest(src));
 								}
 								else
 								{
-									System.out.println("fruits are in: "+getFruitSrc());
 									int favNode= whereToGo(src, getFruitSrc());
 									System.out.println("heading to "+favNode);
-//									int firstStep= MyGameGUI.algo.shortestPath(src, favNode).get(1).getKey();
-//									if(src==firstStep) {
-//										System.out.println("ERROR!!!!!!");
-									//	dest = randomNextNode(src);
-									//	MyGameGUI.game.chooseNextEdge(rid, dest);
-//									}
-//									else {
-//										if(MyGameGUI.algo.myGraph.getEdge(src, firstStep)==null) {
-//											System.out.println("ERROR222222");
-//											dest = randomNextNode(src);
-//											MyGameGUI.game.chooseNextEdge(rid, dest);
-//										}
-//										else
-											MyGameGUI.game.chooseNextEdge(rid, favNode);
-//									}
+									MyGameGUI.game.chooseNextEdge(rid, favNode);
 								}
 							}
 
@@ -160,6 +128,9 @@ public class GameManager implements Runnable {
 				}
 			}
 		}
+	}
+	private boolean iHaveFruits(int src) {				
+		return getFruitSrc().contains(src);
 	}
 	private int whereToGo(int src, List<Integer> fruitSrc) {
 		double minDist=Double.MAX_VALUE;
@@ -171,20 +142,19 @@ public class GameManager implements Runnable {
 				togo=fruitSrc.get(i);
 			}
 		}
-		//return togo;
-				int firstStep;
-				System.out.println("size of moves ="+MyGameGUI.algo.shortestPath(src, togo).size());
-				if(MyGameGUI.algo.shortestPath(src, togo).size()>1)
-					firstStep=MyGameGUI.algo.shortestPath(src, togo).get(1).getKey(); //get the second node on the list going from src to the edge has a fruit
-				else
-					firstStep=MyGameGUI.algo.shortestPath(src, togo).get(0).getKey();
-				return firstStep;
+		int firstStep;
+		System.out.println("size of moves ="+MyGameGUI.algo.shortestPath(src, togo).size());
+		if(MyGameGUI.algo.shortestPath(src, togo).size()>1)
+			firstStep=MyGameGUI.algo.shortestPath(src, togo).get(1).getKey(); //get the second node on the list going from src to the edge has a fruit
+		else
+			firstStep=MyGameGUI.algo.shortestPath(src, togo).get(0).getKey();
+		return firstStep;
 	}
 
 	private static double isOnEdge(Point3D fruit, double value, int type,  edge_data e ) {
 		Point3D src=MyGameGUI.algo.myGraph.getNode(e.getSrc()).getLocation();
 		Point3D dest=MyGameGUI.algo.myGraph.getNode(e.getDest()).getLocation();
-		if ( Math.abs(fruit.distance2D(src) + fruit.distance2D(dest)-src.distance2D(dest))<0.001) { //fruit is on the edge
+		if ( Math.abs(fruit.distance2D(src) + fruit.distance2D(dest)-src.distance2D(dest))<0.0001) { //fruit is on the edge
 			if((e.getSrc()>e.getDest() && type==-1)||(e.getSrc()<e.getDest() && type==1)) //type of fruit matches edge
 				return value;
 		}
