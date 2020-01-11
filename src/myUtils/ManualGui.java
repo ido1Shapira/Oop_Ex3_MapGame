@@ -38,16 +38,21 @@ public class ManualGui implements Runnable {
 		while(MyGameGUI.game.isRunning()) {
 			List<String> log = MyGameGUI.game.move();
 			if(key != -1 && idRobot != -1) {
+//				if(prev_key != key || prev_idRobot != idRobot) {
+//					MyGameGUI.game.chooseNextEdge(idRobot,key);
+//					System.out.println("robot "+ idRobot+ " moved to: " +key +"\n" +log);
+//					prev_key = key;
+//					prev_idRobot = idRobot;
+//				}
 				if(prev_key != key || prev_idRobot != idRobot) {
 					MyGameGUI.game.chooseNextEdge(idRobot,key);
 					System.out.println("robot "+ idRobot+ " moved to: " +key +"\n" +log);
+					if(prev_key != key) {
+					prev_key = key;}
+					if(prev_idRobot != idRobot) {
+					prev_idRobot = idRobot;}
 				}
-				prev_key = key;
-				prev_idRobot = idRobot;
 			}
 		}
-
 	}
-
-
 }

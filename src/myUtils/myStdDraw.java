@@ -1737,8 +1737,6 @@ public final class myStdDraw implements ActionListener, MouseListener, MouseMoti
 	private int findVertexWhenClicked(Point3D p) {
 		for (Iterator<node_data> iterator = MyGameGUI.algo.myGraph.getV().iterator(); iterator.hasNext();) {
 			node_data v = (node_data) iterator.next();
-//			System.out.println(p);
-//			System.out.println(v.getLocation());
 			if(similar(v.getLocation(),p)) {return v.getKey();}
 		}
 		return -1;

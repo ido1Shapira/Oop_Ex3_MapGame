@@ -50,15 +50,14 @@ public class MyGameGUI implements Runnable {
 		int kindOfGame = JOptionPane.showOptionDialog(null, "Are you want to play manual or automatic?", "Select an Option",
 				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, stringArray,
 				null);
+		myStdDraw.enableDoubleBuffering();
 		if(kindOfGame == 0) { //Manual
 			playManual();
 		}
 		else { //Automatic
 			playAuto();
 		}
-		myStdDraw.enableDoubleBuffering();
 		MyGameGUI gui = new MyGameGUI();
-		GameManager man = new GameManager();
 	}
 
 	private static Object[] keysList() {
@@ -86,6 +85,7 @@ public class MyGameGUI implements Runnable {
 	private static void playAuto() {
 		isManual = false;
 		GameManager.addRobot();
+		GameManager man = new GameManager();
 	}
 	private static void paintInfoGame() {
 		long t = game.timeToEnd();
@@ -127,20 +127,22 @@ public class MyGameGUI implements Runnable {
 				Ymin -= 0.0015;
 				Ymax += 0.0015;
 			}
-			clearSelected();
 			myStdDraw.setXscale(Xmin,Xmax);
 			myStdDraw.setYscale(Ymin,Ymax);
 		}
 		paintInfoGame();
 		for (Iterator<node_data> iterator = algo.myGraph.getV().iterator(); iterator.hasNext();) {
 			node_data node = (node_data) iterator.next();
-			drawNode(node);
 			if(algo.myGraph.getE(node.getKey()) != null) {
 				for (Iterator<edge_data> iterator2 = algo.myGraph.getE(node.getKey()).iterator(); iterator2.hasNext();) {
 					edge_data edge = (edge_data) iterator2.next();
 					drawEdge(edge);
 				}
 			}
+		}
+		for (Iterator<node_data> iterator = algo.myGraph.getV().iterator(); iterator.hasNext();) {
+			node_data node = (node_data) iterator.next();
+			drawNode(node);
 		}
 		//paint fruits
 		for (Iterator<String> iterator = game.getFruits().iterator(); iterator.hasNext();) {
@@ -175,7 +177,7 @@ public class MyGameGUI implements Runnable {
 		//		double rangeX=Xmax-Xmin;
 		//		double rangeY=Ymax-Ymin;
 		myStdDraw.setPenRadius(0.005);
-		myStdDraw.setPenColor(edge.getInfo().equals("shortest path") ? myStdDraw.YELLOW : myStdDraw.BLACK);
+		myStdDraw.setPenColor(myStdDraw.BLACK);
 		node_data src = algo.myGraph.getNode(edge.getSrc());
 		node_data dest = algo.myGraph.getNode(edge.getDest());
 		myStdDraw.line(src.getLocation().x(),src.getLocation().y(),dest.getLocation().x() , dest.getLocation().y());
@@ -193,26 +195,12 @@ public class MyGameGUI implements Runnable {
 	}
 
 	private static void drawNode(node_data node) {
-		double rangeX=Xmax-Xmin;
-		double rangeY=Ymax-Ymin;
-		myStdDraw.setPenRadius(0.0255);
-		myStdDraw.setPenColor(node.getInfo().equals("selected") ? myStdDraw.GREEN : myStdDraw.CYAN);
+		myStdDraw.setPenRadius(0.03);
+		myStdDraw.setPenColor(myStdDraw.CYAN);
 		myStdDraw.point(node.getLocation().x(), node.getLocation().y());
 		myStdDraw.setPenColor(myStdDraw.BLUE);
-		myStdDraw.text(node.getLocation().x()+(10.0*(rangeX/800.0)), node.getLocation().y()+(10.0*(rangeY)/600.0),""+node.getKey());
+		myStdDraw.text(node.getLocation().x(), node.getLocation().y(),""+node.getKey());
 	}
-
-	private static void clearSelected() {
-		for (Iterator<node_data> iterator = algo.myGraph.getV().iterator(); iterator.hasNext();) {
-			node_data v = (node_data) iterator.next();
-			v.setInfo("");
-			for (Iterator<edge_data> iterator2 = algo.myGraph.getE(v.getKey()).iterator(); iterator2.hasNext();) {
-				edge_data e = (edge_data) iterator2.next();
-				e.setInfo("");
-			}
-		}
-	}
-
 
 	@Override
 	public void run() {
