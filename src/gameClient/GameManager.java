@@ -34,7 +34,7 @@ public class GameManager implements Runnable {
 					return i;
 			}
 		}
-			return ans;
+		return ans;
 	}
 
 	private static int bestNeighbor(int src) {
@@ -56,17 +56,17 @@ public class GameManager implements Runnable {
 		return maxEidDest;
 	}
 
-//	private static int randomNextNode(int src) {
-//		int ans = -1;
-//		Collection<edge_data> ee = MyGameGUI.algo.myGraph.getE(src);
-//		Iterator<edge_data> itr = ee.iterator();
-//		int s = ee.size();
-//		int r = (int)(Math.random()*s);
-//		int i=0;
-//		while(i<r) {itr.next();i++;}
-//		ans = itr.next().getDest();
-//		return ans;
-//	}
+	//	private static int randomNextNode(int src) {
+	//		int ans = -1;
+	//		Collection<edge_data> ee = MyGameGUI.algo.myGraph.getE(src);
+	//		Iterator<edge_data> itr = ee.iterator();
+	//		int s = ee.size();
+	//		int r = (int)(Math.random()*s);
+	//		int i=0;
+	//		while(i<r) {itr.next();i++;}
+	//		ans = itr.next().getDest();
+	//		return ans;
+	//	}
 
 	@Override
 	public void run() {
@@ -74,33 +74,62 @@ public class GameManager implements Runnable {
 			while(MyGameGUI.game.isRunning()) {
 				List<String> log = MyGameGUI.game.move();
 				if(log!=null) {
+					ArrayList<Integer> destList= new ArrayList<Integer>();
+					int commensrc=-1;
+					ArrayList<Integer> srcList= new ArrayList<Integer>();
 					for (int j = 0; j < MyGameGUI.game.getRobots().size(); j++) {
 						String robot_json = log.get(j);
-						JSONObject line;
-						try {
-							line = new JSONObject(robot_json);
-							JSONObject ttt = line.getJSONObject("Robot");
-							int rid = ttt.getInt("id");
-							int src = ttt.getInt("src");
-							int dest = ttt.getInt("dest");
-							if(dest==-1) {
-								if(iHaveFruits(src)) {
-									//System.out.println("I have a fruit "+src +" ans i need to go to"+bestNeighbor(src));
-									MyGameGUI.game.chooseNextEdge(rid, bestNeighbor(src));
+						if(HelpMe.getRobotDest(robot_json)==-1 && destList.contains(-1)) {
+							if(HelpMe.getRobotSrc(robot_json)== srcList.get(destList.indexOf(-1)))
+								commensrc=HelpMe.getRobotSrc(robot_json);
+						}
+						destList.add(HelpMe.getRobotDest(robot_json));	
+						destList.add(HelpMe.getRobotSrc(robot_json));			
+
+					}
+					for (int j = 0; j < MyGameGUI.game.getRobots().size(); j++) {
+						String robot_json = log.get(j);
+						int rid=HelpMe.getRobotId(robot_json);
+						int src=HelpMe.getRobotSrc(robot_json);
+						int dest=HelpMe.getRobotDest(robot_json);
+						if(dest==-1) {
+							if(iHaveFruits(src)) {
+								//System.out.println("I have a fruit "+src +" ans i need to go to"+bestNeighbor(src));
+								MyGameGUI.game.chooseNextEdge(rid, bestNeighbor(src));
+							}
+							else
+							{
+								int favNode= whereToGo(src, getFruitSrc());
+								if(destList.contains(favNode)) {
+									int secondOp=second(src, favNode);
+									MyGameGUI.game.chooseNextEdge(rid, secondOp);
 								}
-								else
-								{
-									int favNode= whereToGo(src, getFruitSrc());
-									//System.out.println("heading to "+favNode);
-									MyGameGUI.game.chooseNextEdge(rid, favNode);
+								else {
+									if(destList.contains(favNode)) {
+										int secondOp=second(src, favNode);
+										if(commensrc!=-1 && src == commensrc) 
+											MyGameGUI.game.chooseNextEdge(rid, secondOp);
+										else 
+											MyGameGUI.game.chooseNextEdge(rid, favNode);
+									}
 								}
 							}
-						} catch (JSONException e) {e.printStackTrace();}
+						}
 					}
 				}
 			}
 		}
 	}
+	private int second(int src, int favNode) {
+		Collection<edge_data> edges= MyGameGUI.algo.myGraph.getE(src);
+		for (Iterator<edge_data> it = edges.iterator(); it.hasNext();) {
+			edge_data e = (edge_data) it.next();
+			if(e.getDest()!=favNode)
+				return e.getDest();
+		}
+		return favNode;
+	}
+
 	private boolean iHaveFruits(int src) {				
 		return getFruitSrc().contains(src);
 	}
@@ -119,8 +148,6 @@ public class GameManager implements Runnable {
 			System.out.println(MyGameGUI.algo.shortestPath(src, togo).size());
 			firstStep=MyGameGUI.algo.shortestPath(src, togo).get(1).getKey(); //get the second node on the list going from src to the edge has a fruit
 			System.out.println("i go to "+firstStep);
-			//		else
-			//			firstStep=MyGameGUI.algo.shortestPath(src, togo).get(0).getKey();
 			return firstStep;
 		}
 		catch (Exception e) {
@@ -131,12 +158,10 @@ public class GameManager implements Runnable {
 				System.out.print(MyGameGUI.algo.shortestPath(src, togo).get(i).getKey()+" ");
 			}
 			System.out.println();
-
 			System.out.println("ERRORRRRRR");
 			System.out.println("after all I go to "+MyGameGUI.algo.shortestPath(src, togo).get(1).getKey());
 			return MyGameGUI.algo.shortestPath(src, togo).get(1).getKey();
 		}
-
 	}
 
 	private static double isOnEdge(String jfruit,  edge_data e ) {
