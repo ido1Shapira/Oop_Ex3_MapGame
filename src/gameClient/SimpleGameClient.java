@@ -7,8 +7,8 @@ package gameClient;
  * 2. Constructs the graph from JSON String (lines 37-39)
  * 3. Gets the scenario JSON String (lines 40-41)
  * 4. Prints the fruits data (lines 44-45)
- * 5. Add a single robot (line 48) // note: in genera a list of robots should be added
- * 6. Starts game (line 49)
+ * 5. Add a single robot (line 48) // note: in general a list of robots should be added
+ * 6. Starts game (line 49) 
  * 7. Main loop (should be a thread)
  * 8. move the robot along the current edge (line 54)
  * 9. direct to the next edge (if on a node) (line 68)

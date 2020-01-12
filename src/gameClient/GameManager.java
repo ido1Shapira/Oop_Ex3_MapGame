@@ -32,7 +32,7 @@ public class GameManager implements Runnable {
 					return i;
 			}
 		}
-			return ans;
+		return ans;
 	}
 
 	private static int bestNeighbor(int src) {
@@ -59,54 +59,25 @@ public class GameManager implements Runnable {
 		if(!MyGameGUI.isManual) {
 			while(MyGameGUI.game.isRunning()) {
 				List<String> log = MyGameGUI.game.move();
-				if(log!=null) {
-//					ArrayList<Integer> destList= new ArrayList<Integer>();
-//					int commensrc=-1;
-//					ArrayList<Integer> srcList= new ArrayList<Integer>();
-//					for (int j = 0; j < MyGameGUI.game.getRobots().size(); j++) {
-//						String robot_json = log.get(j);
-//						if(HelpMe.getRobotDest(robot_json)==-1 && destList.contains(-1)) {
-//							if(HelpMe.getRobotSrc(robot_json)== srcList.get(destList.indexOf(-1)))
-//								commensrc=HelpMe.getRobotSrc(robot_json);
-//						}
-//						destList.add(HelpMe.getRobotDest(robot_json));	
-//						destList.add(HelpMe.getRobotSrc(robot_json));
-					for (int j = 0; j < MyGameGUI.game.getRobots().size(); j++) {
-						String robot_json = log.get(j);
-							int rid = HelpMe.getRobotId(robot_json);
-							int src = HelpMe.getRobotSrc(robot_json);
-							int dest = HelpMe.getRobotDest(robot_json);
-							if(dest==-1) {
-								if(iHaveFruits(src)) {
-									//System.out.println("I have a fruit "+src +" ans i need to go to"+bestNeighbor(src));
-									MyGameGUI.game.chooseNextEdge(rid, bestNeighbor(src));
-								}
-								else
-								{
-									int favNode= whereToGo(src, getFruitSrc());
-									//System.out.println("heading to "+favNode);
-									MyGameGUI.game.chooseNextEdge(rid, favNode);
-								}
-							}
-					}
-				}
+				logicWalk(log);
 			}
 		}
 	}
-	private int second(int src, int favNode) {
+
+	private static int second(int src, List<Integer> list) {
 		Collection<edge_data> edges= MyGameGUI.algo.myGraph.getE(src);
 		for (Iterator<edge_data> it = edges.iterator(); it.hasNext();) {
 			edge_data e = (edge_data) it.next();
-			if(e.getDest()!=favNode)
+			if(!list.contains(e.getDest()))
 				return e.getDest();
 		}
-		return favNode;
+		return whereToGo(src, getFruitSrc());
 	}
-	
-	private boolean iHaveFruits(int src) {				
+
+	private static boolean iHaveFruits(int src) {				
 		return getFruitSrc().contains(src);
 	}
-	private int whereToGo(int src, List<Integer> fruitSrc) {
+	private static int whereToGo(int src, List<Integer> fruitSrc) {
 		double minDist=Double.MAX_VALUE;
 		int togo=-1;
 		for (int i = 0; i < fruitSrc.size(); i++) {
@@ -194,5 +165,40 @@ public class GameManager implements Runnable {
 		for (int i = 0; i < robotSize; i++) {
 			MyGameGUI.game.addRobot(nodesByVal.get(i));			
 		}
+	}
+	public static void logicWalk(List<String> log) {
+		ArrayList<Integer> destList= new ArrayList<Integer>();
+		for (int k = 0; k < MyGameGUI.game.getRobots().size(); k++) {
+			String rob_json = log.get(k);
+			destList.add(HelpMe.getRobotDest(rob_json));	
+		}
+		for (int j = 0; j < MyGameGUI.game.getRobots().size(); j++) {
+			String robot_json = log.get(j);
+			int rid = HelpMe.getRobotId(robot_json);
+			int src = HelpMe.getRobotSrc(robot_json);
+			int dest = HelpMe.getRobotDest(robot_json);
+			if(dest==-1) {
+				if(GameManager.iHaveFruits(src)) {
+					//System.out.println("I have a fruit "+src +" ans i need to go to"+bestNeighbor(src));
+					MyGameGUI.game.chooseNextEdge(rid, bestNeighbor(src));
+					destList.add(bestNeighbor(src));
+				}
+				else
+				{
+					int favNode= whereToGo(src, getFruitSrc());
+					if(!destList.contains(favNode)) {
+						MyGameGUI.game.chooseNextEdge(rid, favNode);
+						destList.add(favNode);
+					}
+					else {
+						int secondOption=second(src, destList);
+						//System.out.println("heading to "+favNode);
+						MyGameGUI.game.chooseNextEdge(rid, secondOption);
+						destList.add(secondOption);
+					}
+				}
+			}
+
+	}
 	}
 }
