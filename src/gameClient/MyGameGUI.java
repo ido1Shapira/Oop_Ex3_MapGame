@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 import Server.Game_Server;
 import Server.game_service;
 import algorithms.Graph_Algo;
+import algorithms.MovingAlgo;
 import dataStructure.DGraph;
 import dataStructure.edge_data;
 import dataStructure.node_data;
@@ -42,7 +43,15 @@ public class MyGameGUI implements Runnable {
 		scenarioNumber = (Integer)JOptionPane.showInputDialog(null, "Pick the scenario number:",
 				"scenario options", JOptionPane.QUESTION_MESSAGE, null, scenarioOptions, null);
 		game = Game_Server.getServer(scenarioNumber); // you have [0,23] games
+		
 		String gJason = game.getGraph();
+		System.out.println(gJason);
+		String[] NE= gJason.split("Nodes", 2);
+		System.out.println(NE[1]);
+		String [] nodes= NE[1].split("\\}\\,\\{");
+		for (int i = 0; i < nodes.length; i++) {
+			System.out.println(nodes[i]);
+		}
 		DGraph g = new DGraph();
 		g.init(gJason);
 		algo = new Graph_Algo(g);
@@ -84,7 +93,7 @@ public class MyGameGUI implements Runnable {
 	}
 	private static void playAuto() {
 		isManual = false;
-		GameManager.addRobot();
+		MovingAlgo.addRobot();
 		GameManager man = new GameManager();
 	}
 	private static void paintInfoGame() {
@@ -215,25 +224,25 @@ public class MyGameGUI implements Runnable {
 
 
 
-	public static void main(String[] a) {
-		//test unit for HelpMe
-		for (Iterator<String> iterator = game.getRobots().iterator(); iterator.hasNext();) {
-			String robotj = (String) iterator.next();
-			System.out.println(HelpMe.getRobotValue(robotj));
-			System.out.println(HelpMe.getRobotDest(robotj));
-			System.out.println(HelpMe.getRobotId(robotj));
-			System.out.println(HelpMe.getRobotSpeed(robotj));
-			System.out.println(HelpMe.getRobotSrc(robotj));
-			System.out.println(HelpMe.getRobotPosition(robotj));
-		}
-		for (Iterator<String> iterator = game.getFruits().iterator(); iterator.hasNext();) {
-			String robotj = (String) iterator.next();
-			System.out.println(HelpMe.getFruitType(robotj));
-			System.out.println(HelpMe.getFruitValue(robotj));
-			System.out.println(HelpMe.getFruitPosition(robotj));
-		}
-		test1();
-	}
+//	public static void main(String[] a) {
+//		//test unit for HelpMe
+//		for (Iterator<String> iterator = game.getRobots().iterator(); iterator.hasNext();) {
+//			String robotj = (String) iterator.next();
+//			System.out.println(HelpMe.getRobotValue(robotj));
+//			System.out.println(HelpMe.getRobotDest(robotj));
+//			System.out.println(HelpMe.getRobotId(robotj));
+//			System.out.println(HelpMe.getRobotSpeed(robotj));
+//			System.out.println(HelpMe.getRobotSrc(robotj));
+//			System.out.println(HelpMe.getRobotPosition(robotj));
+//		}
+//		for (Iterator<String> iterator = game.getFruits().iterator(); iterator.hasNext();) {
+//			String robotj = (String) iterator.next();
+//			System.out.println(HelpMe.getFruitType(robotj));
+//			System.out.println(HelpMe.getFruitValue(robotj));
+//			System.out.println(HelpMe.getFruitPosition(robotj));
+//		}
+//		test1();
+//	}
 	public static void test1() {
 		buildScenario();
 		String g = game.getGraph();
