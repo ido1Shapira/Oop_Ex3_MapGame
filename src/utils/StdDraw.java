@@ -1,4 +1,4 @@
-package myUtils;
+package utils;
 
 //package stdDraw;
 // https://introcs.cs.princeton.edu/java/stdlib/StdDraw.java.html
@@ -79,6 +79,8 @@ import javax.swing.KeyStroke;
 import algorithms.MovingAlgo;
 import dataStructure.node_data;
 import gameClient.GameManager;
+import myUtils.HelpMe;
+import myUtils.ManualGui;
 import utils.Point3D;
 
 /**
@@ -484,7 +486,7 @@ import utils.Point3D;
  *  @author Robert Sedgewick
  *  @author Kevin Wayne
  */
-public final class myStdDraw implements ActionListener, MouseListener, MouseMotionListener, KeyListener {
+public final class StdDraw implements ActionListener, MouseListener, MouseMotionListener, KeyListener {
 
 	/**
 	 *  The color black.
@@ -620,7 +622,7 @@ public final class myStdDraw implements ActionListener, MouseListener, MouseMoti
 	private static Graphics2D offscreen, onscreen;
 
 	// singleton for callbacks: avoids generation of extra .class files
-	private static myStdDraw std = new myStdDraw();
+	private static StdDraw std = new StdDraw();
 
 	// the frame for drawing to the screen
 	private static JFrame frame;
@@ -637,7 +639,7 @@ public final class myStdDraw implements ActionListener, MouseListener, MouseMoti
 	private static TreeSet<Integer> keysDown = new TreeSet<Integer>();
 
 	// singleton pattern: client can't instantiate
-	private myStdDraw() { }
+	private StdDraw() { }
 
 
 	// static initializer
@@ -947,7 +949,7 @@ public final class myStdDraw implements ActionListener, MouseListener, MouseMoti
 	 */
 	public static void setFont(Font font) {
 		if (font == null) throw new IllegalArgumentException();
-		myStdDraw.font = font;
+		StdDraw.font = font;
 	}
 
 
@@ -1278,14 +1280,14 @@ public final class myStdDraw implements ActionListener, MouseListener, MouseMoti
 
 		// in case file is inside a .jar (classpath relative to StdDraw)
 		if ((icon == null) || (icon.getImageLoadStatus() != MediaTracker.COMPLETE)) {
-			URL url = myStdDraw.class.getResource(filename);
+			URL url = StdDraw.class.getResource(filename);
 			if (url != null)
 				icon = new ImageIcon(url);
 		}
 
 		// in case file is inside a .jar (classpath relative to root of jar)
 		if ((icon == null) || (icon.getImageLoadStatus() != MediaTracker.COMPLETE)) {
-			URL url = myStdDraw.class.getResource("/" + filename);
+			URL url = StdDraw.class.getResource("/" + filename);
 			if (url == null) throw new IllegalArgumentException("image " + filename + " not found");
 			icon = new ImageIcon(url);
 		}
@@ -1660,11 +1662,11 @@ public final class myStdDraw implements ActionListener, MouseListener, MouseMoti
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		FileDialog chooser = new FileDialog(myStdDraw.frame, "Use a .png or .jpg extension", FileDialog.SAVE);
+		FileDialog chooser = new FileDialog(StdDraw.frame, "Use a .png or .jpg extension", FileDialog.SAVE);
 		chooser.setVisible(true);
 		String filename = chooser.getFile();
 		if (filename != null) {
-			myStdDraw.save(chooser.getDirectory() + File.separator + chooser.getFile());
+			StdDraw.save(chooser.getDirectory() + File.separator + chooser.getFile());
 		}
 	}
 
@@ -1816,8 +1818,8 @@ public final class myStdDraw implements ActionListener, MouseListener, MouseMoti
 	@Override
 	public void mousePressed(MouseEvent e) {
 		synchronized (mouseLock) {
-			mouseX = myStdDraw.userX(e.getX());
-			mouseY = myStdDraw.userY(e.getY());
+			mouseX = StdDraw.userX(e.getX());
+			mouseY = StdDraw.userY(e.getY());
 			isMousePressed = true;
 		}
 	}
@@ -1838,8 +1840,8 @@ public final class myStdDraw implements ActionListener, MouseListener, MouseMoti
 	@Override
 	public void mouseDragged(MouseEvent e)  {
 		synchronized (mouseLock) {
-			mouseX = myStdDraw.userX(e.getX());
-			mouseY = myStdDraw.userY(e.getY());
+			mouseX = StdDraw.userX(e.getX());
+			mouseY = StdDraw.userY(e.getY());
 		}
 	}
 
@@ -1849,8 +1851,8 @@ public final class myStdDraw implements ActionListener, MouseListener, MouseMoti
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		synchronized (mouseLock) {
-			mouseX = myStdDraw.userX(e.getX());
-			mouseY = myStdDraw.userY(e.getY());
+			mouseX = StdDraw.userX(e.getX());
+			mouseY = StdDraw.userY(e.getY());
 		}
 	}
 
@@ -1951,26 +1953,26 @@ public final class myStdDraw implements ActionListener, MouseListener, MouseMoti
 	 * @param args the command-line arguments
 	 */
 	public static void main(String[] args) {
-		myStdDraw.square(0.2, 0.8, 0.1);
-		myStdDraw.filledSquare(0.8, 0.8, 0.2);
-		myStdDraw.circle(0.8, 0.2, 0.2);
+		StdDraw.square(0.2, 0.8, 0.1);
+		StdDraw.filledSquare(0.8, 0.8, 0.2);
+		StdDraw.circle(0.8, 0.2, 0.2);
 
-		myStdDraw.setPenColor(myStdDraw.BOOK_RED);
-		myStdDraw.setPenRadius(0.02);
-		myStdDraw.arc(0.8, 0.2, 0.1, 200, 45);
+		StdDraw.setPenColor(StdDraw.BOOK_RED);
+		StdDraw.setPenRadius(0.02);
+		StdDraw.arc(0.8, 0.2, 0.1, 200, 45);
 
 		// draw a blue diamond
-		myStdDraw.setPenRadius();
-		myStdDraw.setPenColor(myStdDraw.BOOK_BLUE);
+		StdDraw.setPenRadius();
+		StdDraw.setPenColor(StdDraw.BOOK_BLUE);
 		double[] x = { 0.1, 0.2, 0.3, 0.2 };
 		double[] y = { 0.2, 0.3, 0.2, 0.1 };
-		myStdDraw.filledPolygon(x, y);
+		StdDraw.filledPolygon(x, y);
 
 		// text
-		myStdDraw.setPenColor(myStdDraw.BLACK);
-		myStdDraw.text(0.2, 0.5, "black text");
-		myStdDraw.setPenColor(myStdDraw.WHITE);
-		myStdDraw.text(0.8, 0.8, "white text");
+		StdDraw.setPenColor(StdDraw.BLACK);
+		StdDraw.text(0.2, 0.5, "black text");
+		StdDraw.setPenColor(StdDraw.WHITE);
+		StdDraw.text(0.8, 0.8, "white text");
 	}
 
 }

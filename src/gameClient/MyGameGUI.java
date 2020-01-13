@@ -13,8 +13,8 @@ import dataStructure.DGraph;
 import dataStructure.edge_data;
 import dataStructure.node_data;
 import myUtils.HelpMe;
-import myUtils.myStdDraw;
 import utils.Point3D;
+import utils.StdDraw;
 
 public class MyGameGUI implements Runnable {
 	
@@ -26,7 +26,7 @@ public class MyGameGUI implements Runnable {
 	static {
 		Random random = new Random();
 		int r = random.nextInt(256); int g = random.nextInt(256); int b = random.nextInt(256);
-		myStdDraw.setPenColor(r,g,b);
+		StdDraw.setPenColor(r,g,b);
 		robotColor = new Color(r, g, b);
 	}
 
@@ -56,7 +56,7 @@ public class MyGameGUI implements Runnable {
 		int kindOfGame = JOptionPane.showOptionDialog(null, "Are you want to play manual or automatic?", "Select an Option",
 				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, stringArray,
 				null);
-		myStdDraw.enableDoubleBuffering();
+		StdDraw.enableDoubleBuffering();
 		if(kindOfGame == 0) { //Manual
 			playManual();
 		}
@@ -100,10 +100,10 @@ public class MyGameGUI implements Runnable {
 			String robotj = (String) iterator.next();
 			points += HelpMe.getRobotValue(robotj);
 		}
-		myStdDraw.setPenColor(Color.black);
-		myStdDraw.text((Xmax+Xmin)/2, Ymax-0.001, "points: "+points);
-		myStdDraw.textRight(Xmax-0.002, Ymax-0.001, "time to end: "+t/1000);
-		myStdDraw.textLeft(Xmin+0.002, Ymax-0.001, "Number scenario: "+scenarioNumber);
+		StdDraw.setPenColor(Color.black);
+		StdDraw.text((Xmax+Xmin)/2, Ymax-0.001, "points: "+points);
+		StdDraw.textRight(Xmax-0.002, Ymax-0.001, "time to end: "+t/1000);
+		StdDraw.textLeft(Xmin+0.002, Ymax-0.001, "Number scenario: "+scenarioNumber);
 	}
 
 	public static double Xmin;
@@ -113,8 +113,8 @@ public class MyGameGUI implements Runnable {
 	private static boolean firstPaint = true;
 
 	public static void paint(List<String> robots, List<String> fruits) {
-		if(firstPaint) {myStdDraw.setCanvasSize(800,600); firstPaint = false;}
-		myStdDraw.clear();
+		if(firstPaint) {StdDraw.setCanvasSize(800,600); firstPaint = false;}
+		StdDraw.clear();
 		if(MovingAlgo.algo.myGraph != null) {
 			if(MovingAlgo.algo.myGraph.nodeSize() > 0) {
 				Xmin=Double.POSITIVE_INFINITY;
@@ -133,8 +133,8 @@ public class MyGameGUI implements Runnable {
 				Ymin -= 0.0015;
 				Ymax += 0.0015;
 			}
-			myStdDraw.setXscale(Xmin,Xmax);
-			myStdDraw.setYscale(Ymin,Ymax);
+			StdDraw.setXscale(Xmin,Xmax);
+			StdDraw.setYscale(Ymin,Ymax);
 		}
 		paintInfoGame();
 		for (Iterator<node_data> iterator = MovingAlgo.algo.myGraph.getV().iterator(); iterator.hasNext();) {
@@ -160,15 +160,15 @@ public class MyGameGUI implements Runnable {
 			String robotJ = (String) iterator.next();
 			drawRobot(robotJ);
 		}
-		myStdDraw.show();
+		StdDraw.show();
 	}
 
 	private static void drawRobot(String robotJ) {
 
-		myStdDraw.setPenColor(robotColor);
-		myStdDraw.setPenRadius(0.06);
+		StdDraw.setPenColor(robotColor);
+		StdDraw.setPenRadius(0.06);
 		Point3D pos = HelpMe.getRobotPosition(robotJ);
-		myStdDraw.point(pos.x(),pos.y());
+		StdDraw.point(pos.x(),pos.y());
 
 	}
 
@@ -176,17 +176,17 @@ public class MyGameGUI implements Runnable {
 			Point3D pos = HelpMe.getFruitPosition(fruitJ);
 			//find type
 			int type = HelpMe.getFruitType(fruitJ);
-			myStdDraw.picture(pos.x(),pos.y(),(type == -1) ? "banana.jpeg" :"apple.jpeg", 0.00075, 0.00055);
+			StdDraw.picture(pos.x(),pos.y(),(type == -1) ? "banana.jpeg" :"apple.jpeg", 0.00075, 0.00055);
 	}
 
 	private static void drawEdge(edge_data edge) {
 		//		double rangeX=Xmax-Xmin;
 		//		double rangeY=Ymax-Ymin;
-		myStdDraw.setPenRadius(0.005);
-		myStdDraw.setPenColor(myStdDraw.BLACK);
+		StdDraw.setPenRadius(0.005);
+		StdDraw.setPenColor(StdDraw.BLACK);
 		node_data src = MovingAlgo.algo.myGraph.getNode(edge.getSrc());
 		node_data dest = MovingAlgo.algo.myGraph.getNode(edge.getDest());
-		myStdDraw.line(src.getLocation().x(),src.getLocation().y(),dest.getLocation().x() , dest.getLocation().y());
+		StdDraw.line(src.getLocation().x(),src.getLocation().y(),dest.getLocation().x() , dest.getLocation().y());
 		//		myStdDraw.setPenRadius(0.02);
 		//		myStdDraw.setPenColor(myStdDraw.ORANGE);
 		//		double relativex=(src.getLocation().x()+dest.getLocation().x()*7)/8;
@@ -201,11 +201,11 @@ public class MyGameGUI implements Runnable {
 	}
 
 	private static void drawNode(node_data node) {
-		myStdDraw.setPenRadius(0.03);
-		myStdDraw.setPenColor(myStdDraw.CYAN);
-		myStdDraw.point(node.getLocation().x(), node.getLocation().y());
-		myStdDraw.setPenColor(myStdDraw.BLUE);
-		myStdDraw.text(node.getLocation().x(), node.getLocation().y(),""+node.getKey());
+		StdDraw.setPenRadius(0.03);
+		StdDraw.setPenColor(StdDraw.CYAN);
+		StdDraw.point(node.getLocation().x(), node.getLocation().y());
+		StdDraw.setPenColor(StdDraw.BLUE);
+		StdDraw.text(node.getLocation().x(), node.getLocation().y(),""+node.getKey());
 	}
 
 	@Override
