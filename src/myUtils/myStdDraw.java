@@ -76,8 +76,9 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
+import algorithms.MovingAlgo;
 import dataStructure.node_data;
-import gameClient.MyGameGUI;
+import gameClient.GameManager;
 import utils.Point3D;
 
 /**
@@ -1735,7 +1736,7 @@ public final class myStdDraw implements ActionListener, MouseListener, MouseMoti
 	 * return the node key that the user has clicked on
 	 */
 	private int findVertexWhenClicked(Point3D p) {
-		for (Iterator<node_data> iterator = MyGameGUI.algo.myGraph.getV().iterator(); iterator.hasNext();) {
+		for (Iterator<node_data> iterator = MovingAlgo.algo.myGraph.getV().iterator(); iterator.hasNext();) {
 			node_data v = (node_data) iterator.next();
 			if(similar(v.getLocation(),p)) {return v.getKey();}
 		}
@@ -1745,7 +1746,7 @@ public final class myStdDraw implements ActionListener, MouseListener, MouseMoti
 	 * return the robot id that the user has clicked on
 	 */
 	private int findRobotWhenClicked(Point3D p) {
-		List<String> robots = MyGameGUI.game.getRobots();
+		List<String> robots = MovingAlgo.game.getRobots();
 		for (Iterator<String> iterator = robots.iterator(); iterator.hasNext();) {
 			String rJson = (String) iterator.next();
 			Point3D rPos = HelpMe.getRobotPosition(rJson);
@@ -1774,7 +1775,7 @@ public final class myStdDraw implements ActionListener, MouseListener, MouseMoti
 	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if(MyGameGUI.isManual) {
+		if(GameManager.isManual) {
 			Point3D p = getCoordinateOnScreen(new Point3D (e.getX(),e.getY()));
 			key = findVertexWhenClicked(p);
 			id = findRobotWhenClicked(p);

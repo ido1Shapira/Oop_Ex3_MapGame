@@ -1,5 +1,7 @@
 package gameClient;
 
+import algorithms.MovingAlgo;
+
 /**
  * This class represents a simple example for using the GameServer API:
  * the main file performs the following tasks:
@@ -22,6 +24,6 @@ public class SimpleGameClient {
 	}
 	public static void test1() {
 		MyGameGUI.buildScenario(); // you have [0,23] games	
-		MyGameGUI.game.startGame();
+		MovingAlgo.game.startGame();
 	}
 }
