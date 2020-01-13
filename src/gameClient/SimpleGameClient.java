@@ -18,7 +18,9 @@ import algorithms.MovingAlgo;
  * @author boaz.benmoshe
  *
  */
+
 public class SimpleGameClient {
+
 	public static void main(String[] a) {
 		test1();
 	}

@@ -20,12 +20,13 @@ public class DGraph implements graph, Serializable{
 
 	/////////Default constructor//////////
 	public DGraph() {
-		this.id =0;
+		this.id =-1;
 		this.idToVertex = new HashMap<Integer,node_data>();
 		this.idToEdge = new HashMap<Integer,HashMap<Integer,edge_data>>();
 		this.mc = 0;
 		this.edgeNum=0;
 	}
+	
 	/**
 	 * return the node_data by the node_id,
 	 * @param key - the node_id
@@ -91,7 +92,7 @@ public class DGraph implements graph, Serializable{
 			this.idToEdge.get(src).put(dest, new Edge(src,dest,w));
 			this.edgeNum++;
 		}
-		if(this.edgeSize() -1 == sizeBefore) {this.mc++;}
+		if(this.edgeSize() -1 == sizeBefore) {this.mc++; }
 	}
 	/**
 	 * This method return a pointer (shallow copy) for the
@@ -181,5 +182,33 @@ public class DGraph implements graph, Serializable{
 	@Override
 	public int getMC() {
 		return this.mc;
+	}
+	/**
+	 * this method initiate a Dgraph from a given string representing the graph in a json version
+	 * @param gJason the graph in a json string
+	 */
+	public void init(String gJason) {
+		String[] NE= gJason.split("Nodes", 2); //splits the string to nodes and edges
+		String [] nodes= NE[1].split("\\}\\,\\{"); //each string is a node
+		String [] edges =NE[0].split("\\}\\,\\{");  //each string is an edge
+		for (int i = 0; i < nodes.length; i++) {
+			nodes[i]= nodes[i].replace('"', '#'); //cannot split according to the char "
+			nodes[i]= nodes[i].substring(nodes[i].indexOf("#:#")+3, nodes[i].indexOf("#,#")); //Separate the location from the rest info
+			this.addNode(new Vertex(new Point3D(nodes[i]))); //create a node and adds it to the graph
+		}
+		edges[0] = edges[0].substring(edges[0].indexOf('[')); //the first and last edges' strings are different so we change them
+		edges[edges.length-1] = edges[edges.length-1].substring(0, edges[edges.length-1].indexOf('}'));
+		for (int i = 0; i < edges.length; i++) {
+			int src, dest;
+			double w;
+			String [] oneEdge= edges[i].split(",",3);
+			oneEdge[0] = oneEdge[0].substring(oneEdge[0].lastIndexOf(':')+1); //string represents the src
+			src=Integer.parseInt(oneEdge[0]);	
+			oneEdge[1] = oneEdge[1].substring(oneEdge[1].indexOf(':')+1);  //string represents the weight
+			w=Double.parseDouble(oneEdge[1]);	
+			oneEdge[2] = oneEdge[2].substring(oneEdge[2].lastIndexOf(':')+1);  //string represents the dest
+			dest= Integer.parseInt(oneEdge[2]);
+			this.connect(src, dest, w);  //create an edge and adds it to the graph
+		}		
 	}
 }

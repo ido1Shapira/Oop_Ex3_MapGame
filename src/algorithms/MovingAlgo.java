@@ -28,7 +28,6 @@ public class MovingAlgo {
 			int dest = HelpMe.getRobotDest(robot_json);
 			if(dest==-1) {
 				if(MovingAlgo.iHaveFruits(src)) {
-					//System.out.println("I have a fruit "+src +" ans i need to go to"+bestNeighbor(src));
 					MovingAlgo.game.chooseNextEdge(rid, MovingAlgo.bestNeighbor(src));
 					destList.add(bestNeighbor(src));
 				}
@@ -41,7 +40,6 @@ public class MovingAlgo {
 					}
 					else {
 						int secondOption=second(src, destList);
-						//System.out.println("heading to "+favNode);
 						MovingAlgo.game.chooseNextEdge(rid, secondOption);
 						destList.add(secondOption);
 					}
@@ -107,9 +105,7 @@ public class MovingAlgo {
 
 	public static void addRobot() {
 		int robotSize = HelpMe.getRobotsNum(MovingAlgo.game.toString());
-		//	System.out.println("robots num="+robotSize);
 		List<Integer> nodesByVal= nodesByValue();
-		//	System.out.println(nodesByVal);
 		for (int i = 0; i < robotSize; i++) {
 			MovingAlgo.game.addRobot(nodesByVal.get(i));			
 		}
@@ -141,22 +137,11 @@ public class MovingAlgo {
 				togo=fruitSrc.get(i);
 			}
 		}
-		int firstStep;
 		try {
-			//System.out.println(MyGameGUI.algo.shortestPath(src, togo).size());
-			firstStep=MovingAlgo.algo.shortestPath(src, togo).get(1).getKey(); //get the second node on the list going from src to the edge has a fruit
-			//System.out.println("i go to "+firstStep);
-			return firstStep;
+			return MovingAlgo.algo.shortestPath(src, togo).get(1).getKey(); //get the second node on the list going from src to the edge has a fruit
+		
 		}
 		catch (Exception e) {
-			//			System.out.println("src "+src+" fruit are in "+fruitSrc+" i go to "+togo);
-			//			System.out.println("i have "+MyGameGUI.algo.shortestPath(src, togo).size()+" nodes on my way");
-			//			System.out.println("which are: ");
-			for (int i = 0; i < MovingAlgo.algo.shortestPath(src, togo).size(); i++) {
-				//				System.out.print(MyGameGUI.algo.shortestPath(src, togo).get(i).getKey()+" ");
-			}
-			//			System.out.println("\nERRORRRRRR");
-			//			System.out.println("after all I go to "+MyGameGUI.algo.shortestPath(src, togo).get(1).getKey());
 			return MovingAlgo.algo.shortestPath(src, togo).get(1).getKey();
 		}
 	}

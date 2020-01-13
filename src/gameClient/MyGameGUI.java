@@ -40,15 +40,7 @@ public class MyGameGUI implements Runnable {
 		scenarioNumber = (Integer)JOptionPane.showInputDialog(null, "Pick the scenario number:",
 				"scenario options", JOptionPane.QUESTION_MESSAGE, null, scenarioOptions, null);
 		MovingAlgo.game = Game_Server.getServer(scenarioNumber); // you have [0,23] games
-		
 		String gJason = MovingAlgo.game.getGraph();
-		System.out.println(gJason);
-		String[] NE= gJason.split("Nodes", 2);
-		System.out.println(NE[1]);
-		String [] nodes= NE[1].split("\\}\\,\\{");
-		for (int i = 0; i < nodes.length; i++) {
-			System.out.println(nodes[i]);
-		}
 		DGraph g = new DGraph();
 		g.init(gJason);
 		MovingAlgo.algo = new Graph_Algo(g);
