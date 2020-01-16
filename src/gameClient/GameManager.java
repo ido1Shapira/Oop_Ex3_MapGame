@@ -1,5 +1,6 @@
 package gameClient;
 
+import java.util.Calendar;
 import java.util.List;
 
 import algorithms.MovingAlgo;
@@ -45,13 +46,32 @@ public class GameManager implements Runnable {
 			moveRobots = MovingAlgo.getMovingAlgo(g);
 			moveRobots.addRobot();
 			server.game.startGame();
+			double speed;
 			while(server.game.isRunning()) {
-
 				i++;
 				List<String> log = server.game.move();
-				moveRobots.logicWalk(log);
+				long start = System.currentTimeMillis();
+				speed = moveRobots.logicWalk(log);
+				long end = System.currentTimeMillis();
+			//	System.out.println(-start+end);
 				try {
-					Thread.sleep(100);
+					if(speed==1)
+						Thread.sleep(250);//(int)(100/speed));
+					if(speed==2)
+						Thread.sleep(210);
+					if(speed==3)
+						Thread.sleep(200);
+					if(speed==4)
+						Thread.sleep(200);
+					if(speed==5)
+						Thread.sleep(150);
+					if(speed> 5)
+						System.out.println(speed);
+					if(speed==-1)
+						Thread.sleep(100);
+
+						
+					
 				} catch (InterruptedException e) {
 					System.out.println("the error is here");
 				}

@@ -28,6 +28,12 @@ public class SimpleGameClient {
 	public static void test1() {
 		MyGameGUI.buildScenario(); // you have [0,23] games
 		server = myServer.getServer();
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		server.game.startGame();
 	}
 }

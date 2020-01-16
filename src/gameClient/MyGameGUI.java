@@ -118,15 +118,24 @@ public class MyGameGUI implements Runnable {
 			server.game.addRobot(src_node);
 		}
 	}
-
+	/**
+	 * starts a game played automatically by our moving algorithm
+	 * @param scenarioNumber the scenario to begin
+	 */
 	private static void playAuto(int scenarioNumber) {
-		GameManager man = GameManager.getGameManager(false ,scenarioNumber);
+		GameManager man = GameManager.getGameManager(false ,scenarioNumber); //calling the game manager to start the game
 		try {
-			Thread.sleep(800);
+			Thread.sleep(2000); //estimated time to locate all the robots in order to begin
 		} catch(InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
+	/**
+	 * prints some information about the game on the screen
+	 * 1) time left to play
+	 * 2) current point state
+	 * 3) scenario number
+	 */
 	private static void paintInfoGame() {
 		long t = server.game.timeToEnd();
 		points =0;
@@ -145,10 +154,15 @@ public class MyGameGUI implements Runnable {
 	public static double Ymin;
 	public static double Ymax;
 	private static boolean firstPaint = true;
-
+	/**
+	 * Illustrate the game on the screen showing the graph we play on, robots and fruits
+	 * all according to the current state given from the server
+	 * @param robots robots objects in a json format
+	 * @param fruits fruits objects in a json format
+	 */
 	public static void paint(List<String> robots, List<String> fruits) {
 		if(firstPaint) {StdDraw.setCanvasSize(800,600); firstPaint = false;}
-		StdDraw.clear();
+		StdDraw.clear(); //clear previous screen
 		if(g != null) {
 			if(g.nodeSize() > 0) {
 				Xmin=Double.POSITIVE_INFINITY;
@@ -171,6 +185,7 @@ public class MyGameGUI implements Runnable {
 			StdDraw.setYscale(Ymin,Ymax);
 		}
 		paintInfoGame();
+		//draw edges
 		for (Iterator<node_data> iterator = g.getV().iterator(); iterator.hasNext();) {
 			node_data node = (node_data) iterator.next();
 			if(g.getE(node.getKey()) != null) {
@@ -180,39 +195,47 @@ public class MyGameGUI implements Runnable {
 				}
 			}
 		}
+		//draw nodes
 		for (Iterator<node_data> iterator = g.getV().iterator(); iterator.hasNext();) {
 			node_data node = (node_data) iterator.next();
 			drawNode(node);
 		}
-		//paint fruits
+		//draw fruits
 		for (Iterator<String> iterator = server.game.getFruits().iterator(); iterator.hasNext();) {
 			String fruit = (String) iterator.next();
 			drawFruits(fruit);
 		}
-		//paint robots
+		//draw robots
 		for (Iterator<String> iterator = robots.iterator(); iterator.hasNext();) {
 			String robotJ = (String) iterator.next();
 			drawRobot(robotJ);
 		}
 		StdDraw.show();
 	}
-
+	/**
+	 * draw robots according to the string given
+	 * @param robotJ a robot object in a json format
+	 */
 	private static void drawRobot(String robotJ) {
-
 		StdDraw.setPenColor(robotColor);
 		StdDraw.setPenRadius(0.06);
 		Point3D pos = HelpMe.getRobotPosition(robotJ);
 		StdDraw.point(pos.x(),pos.y());
-
 	}
-
+	/**
+	 * draw fruit according to the string given
+	 * @param fruitJ a fruit object in a json format
+	 */
 	private static void drawFruits(String fruitJ) {
 		Point3D pos = HelpMe.getFruitPosition(fruitJ);
 		//find type
 		int type = HelpMe.getFruitType(fruitJ);
 		StdDraw.picture(pos.x(),pos.y(),(type == -1) ? "banana.jpeg" :"apple.jpeg", 0.00075, 0.00055);
 	}
-
+	/**
+	 * draw edge according to the edge_data given
+	 * @param edge the edge to draw
+	 */
 	private static void drawEdge(edge_data edge) {
 		StdDraw.setPenRadius(0.005);
 		StdDraw.setPenColor(StdDraw.BLACK);
@@ -220,7 +243,10 @@ public class MyGameGUI implements Runnable {
 		node_data dest = g.getNode(edge.getDest());
 		StdDraw.line(src.getLocation().x(),src.getLocation().y(),dest.getLocation().x() , dest.getLocation().y());
 	}
-
+	/**
+	 * draw node according to the node_data given
+	 * @param node the node to draw
+	 */
 	private static void drawNode(node_data node) {
 		StdDraw.setPenRadius(0.03);
 		StdDraw.setPenColor(StdDraw.CYAN);
@@ -228,7 +254,11 @@ public class MyGameGUI implements Runnable {
 		StdDraw.setPenColor(StdDraw.BLUE);
 		StdDraw.text(node.getLocation().x(), node.getLocation().y(),""+node.getKey());
 	}
-
+	/**
+	 * the thread routine during the game
+	 * display the current state of the game every 100 milliseconds
+	 * after the game ends give the user the option to save the game as a KML file 
+	 */
 	@Override
 	public void run() {
 		while(server.game.isRunning()) {
@@ -269,14 +299,14 @@ public class MyGameGUI implements Runnable {
 	//		}
 	//		test1();
 	//	}
-	public static void test1() {
-		buildScenario();
-		String g = server.game.getGraph();
-		DGraph gg = DGraph.getDGraph();
-		gg.init(g);
-		server.game.addRobot(1);
-		server.game.addRobot(0);
-		paint(server.game.getRobots(), server.game.getFruits());
-
-	}
+//	public static void test1() {
+//		buildScenario();
+//		String g = server.game.getGraph();
+//		DGraph gg = DGraph.getDGraph();
+//		gg.init(g);
+//		server.game.addRobot(1);
+//		server.game.addRobot(0);
+//		paint(server.game.getRobots(), server.game.getFruits());
+//
+//	}
 }

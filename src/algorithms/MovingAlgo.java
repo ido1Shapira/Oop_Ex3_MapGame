@@ -46,11 +46,19 @@ public class MovingAlgo {
 	 * 
 	 * @param log the current state of robots and fruits given from the server
 	 */
-	public void logicWalk(List<String> log) {
+	long time=0;
+	public double logicWalk(List<String> log) {
+		long start = System.currentTimeMillis();
+		
+		
 		ArrayList<Integer> destList= new ArrayList<Integer>(); //list of nodes we know that there is a robot going toward them
+		double minSpeed=10;
 		for (int k = 0; k < server.game.getRobots().size(); k++) { //Initialize the list with the known robots dests nodes
 			String rob_json = log.get(k);
-			destList.add(HelpMe.getRobotDest(rob_json));	
+			destList.add(HelpMe.getRobotDest(rob_json));
+			double currspeed=HelpMe.getRobotSpeed(rob_json);
+			if(currspeed<minSpeed )
+				minSpeed= currspeed;
 		}
 		for (int j = 0; j < server.game.getRobots().size(); j++) {
 			String robot_json = log.get(j);
@@ -70,13 +78,23 @@ public class MovingAlgo {
 						destList.add(favNode); //adding the new dest to the list
 					}
 					else { //there isn't a robot going there already
-						int secondOption=second(src, destList);  //go the other way
+						int secondOption=second(src,favNode, destList);  //go the other way
 						server.game.chooseNextEdge(rid, secondOption);
 						destList.add(secondOption); ////adding the new dest to the list
 					}
 				}
 			}
 		}
+		for (int k = 0; k < server.game.getRobots().size(); k++) { //Initialize the list with the known robots dests nodes
+			String rob_json = log.get(k);
+			if(HelpMe.getRobotDest(rob_json)==-1);
+			return -1;
+		}
+		long end = System.currentTimeMillis();
+		time+=(end-start);
+		if (start!=end)
+		System.out.println(time);
+		return minSpeed;
 	}
 
 	/**
@@ -118,12 +136,7 @@ public class MovingAlgo {
 	 * 
 	 */
 	private static List<Integer> nodesByValue(){
-		List<Integer> nodesToCheck=getFruitSrc(); //nodes with fruit on their edges
-		List<Integer> nodes=new ArrayList<Integer>();
-		for (Integer currNode : nodesToCheck) { //cleans the list from two equal values.
-			if(!nodes.contains(currNode))
-				nodes.add(currNode);
-		}
+		List<Integer> nodes=getFruitSrc(); //nodes with fruit on their edges
 		List<Integer> ans= new ArrayList<Integer>(); 
 		int differanteNodes=nodes.size();
 		for(int i=0; i<differanteNodes; i++) { //gets the most valuable node and removes it from the list
@@ -143,8 +156,9 @@ public class MovingAlgo {
 		double maxVal=0;
 		for (int i = 0; i < list.size(); i++) {
 			int curr=list.get(i);
-			if(maxVal< getNodeVal(curr)) {
-				maxVal=getNodeVal(curr);
+			double currVal=getNodeVal(curr);
+			if(maxVal< currVal) {
+				maxVal=currVal;
 				maxNode=curr;
 			}
 		}
@@ -169,9 +183,11 @@ public class MovingAlgo {
 	 */
 	private static double getNodeVal(int node) {
 		double ans=0;
+		List<Integer> fruits=getFruitSrc();
 		for(int i=0; i<getFruitSrc().size();i++) {
-			if(getFruitSrc().get(i)==node)
-				ans+=HelpMe.getFruitValue(server.game.getFruits().get(i));
+			String f= server.game.getFruits().get(i);
+			if(findFruitSrc(f)==node)
+				ans+=HelpMe.getFruitValue(f);
 		}
 		return ans;
 	}
@@ -194,10 +210,11 @@ public class MovingAlgo {
 		double minDist=Double.MAX_VALUE;
 		int togo=-1;
 		for (int i = 0; i < fruitSrc.size(); i++) {
-			double currDest= MovingAlgo.algo.shortestPathDist(src, fruitSrc.get(i));
+			int current= fruitSrc.get(i);
+			double currDest= MovingAlgo.algo.shortestPathDist(src, current);
 			if(currDest<minDist) {
 				minDist=currDest;
-				togo=fruitSrc.get(i);
+				togo=current;
 			}
 		}
 		try {
@@ -232,14 +249,15 @@ public class MovingAlgo {
 	 * @param list list of nodes we don't want to get to (there is a robot going there already)
 	 * @return a neighbor of src that is not on the list if exist  
 	 */
-	private static int second(int src, List<Integer> list) {
+	private static int second(int src,int lastOption, List<Integer> list) {
 		Collection<edge_data> edges= MovingAlgo.algo.myGraph.getE(src);
 		for (Iterator<edge_data> it = edges.iterator(); it.hasNext();) {
 			edge_data e = (edge_data) it.next();
-			if(!list.contains(e.getDest()))
-				return e.getDest();
+			int dest=e.getDest();
+			if(!list.contains(dest))
+				return dest;
 		}
-		return whereToGo(src, getFruitSrc());
+		return lastOption;
 	}
 
 	/**
@@ -250,7 +268,9 @@ public class MovingAlgo {
 		Collection<String> fruits=server.game.getFruits();
 		ArrayList<Integer> list= new ArrayList<Integer>();
 		for (String f : fruits) {
-			list.add(findFruitSrc(f));
+			int src= findFruitSrc(f);
+			if(!list.contains(src))
+					list.add(src);
 		}
 		return list;
 	}
