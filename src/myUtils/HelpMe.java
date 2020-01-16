@@ -17,7 +17,7 @@ public final class HelpMe {
 		return ""+ jsonforObject.get(field);
 	}
 	
-	//getters for server
+	//getters for server 
 	public static int getRobotsNum(String json) {
 		try {
 			return Integer.parseInt(Json2value(json,"GameServer","robots"));
@@ -25,6 +25,7 @@ public final class HelpMe {
 		catch (JSONException e) {e.printStackTrace();}
 		return -1;
 	}
+	
 	//getters for robot
 	
 	public static int getRobotId(String json){

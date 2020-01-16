@@ -18,15 +18,33 @@ public class DGraph implements graph, Serializable{
 	private int mc;
 	private int edgeNum;
 
+
+	// static variable single_instance of server 
+	private static DGraph single_instance = null; 
+
+	// private constructor restricted to this class itself 
 	/////////Default constructor//////////
-	public DGraph() {
+	private DGraph() {
 		this.id =-1;
 		this.idToVertex = new HashMap<Integer,node_data>();
 		this.idToEdge = new HashMap<Integer,HashMap<Integer,edge_data>>();
 		this.mc = 0;
 		this.edgeNum=0;
 	}
-	
+
+	// static method to create instance of MovingAlgo class 
+	public static DGraph getDGraph() 
+	{ 
+		if (single_instance == null) {
+			synchronized (DGraph.class) {
+				if (single_instance == null)
+					single_instance = new DGraph(); 
+			}
+		}
+		return single_instance;
+	}
+
+
 	/**
 	 * return the node_data by the node_id,
 	 * @param key - the node_id
@@ -138,7 +156,7 @@ public class DGraph implements graph, Serializable{
 			this.idToEdge.remove(key);
 			this.mc++;
 		}
-		
+
 		return nodeToRemove;
 	}
 	/**

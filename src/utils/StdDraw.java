@@ -76,11 +76,12 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
-import algorithms.MovingAlgo;
 import dataStructure.node_data;
 import gameClient.GameManager;
+import gameClient.MyGameGUI;
 import myUtils.HelpMe;
 import myUtils.ManualGui;
+import myUtils.myServer;
 import utils.Point3D;
 
 /**
@@ -1662,11 +1663,17 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		FileDialog chooser = new FileDialog(StdDraw.frame, "Use a .png or .jpg extension", FileDialog.SAVE);
-		chooser.setVisible(true);
-		String filename = chooser.getFile();
-		if (filename != null) {
-			StdDraw.save(chooser.getDirectory() + File.separator + chooser.getFile());
+		String str = e.getActionCommand();
+		switch(str)
+		{
+		case "Save image":
+			FileDialog chooser = new FileDialog(StdDraw.frame, "Use a .png or .jpg extension", FileDialog.SAVE);
+			chooser.setVisible(true);
+			String filename = chooser.getFile();
+			if (filename != null) {
+				StdDraw.save(chooser.getDirectory() + File.separator + chooser.getFile());
+			}
+			break;
 		}
 	}
 
@@ -1738,7 +1745,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	 * return the node key that the user has clicked on
 	 */
 	private int findVertexWhenClicked(Point3D p) {
-		for (Iterator<node_data> iterator = MovingAlgo.algo.myGraph.getV().iterator(); iterator.hasNext();) {
+		for (Iterator<node_data> iterator = MyGameGUI.g.getV().iterator(); iterator.hasNext();) {
 			node_data v = (node_data) iterator.next();
 			if(similar(v.getLocation(),p)) {return v.getKey();}
 		}
@@ -1748,7 +1755,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	 * return the robot id that the user has clicked on
 	 */
 	private int findRobotWhenClicked(Point3D p) {
-		List<String> robots = MovingAlgo.game.getRobots();
+		List<String> robots = myServer.getServer().game.getRobots();
 		for (Iterator<String> iterator = robots.iterator(); iterator.hasNext();) {
 			String rJson = (String) iterator.next();
 			Point3D rPos = HelpMe.getRobotPosition(rJson);
@@ -1783,7 +1790,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 			id = findRobotWhenClicked(p);
 
 			if(firstClick) {
-				manual = new ManualGui(key,id);
+				manual = ManualGui.getManualGui(key,id);
 				Thread tManual = new Thread(manual);
 				tManual.start();
 				firstClick = false;

@@ -6,23 +6,52 @@ import java.util.Random;
 
 import javax.swing.JOptionPane;
 
-import Server.Game_Server;
-import algorithms.Graph_Algo;
-import algorithms.MovingAlgo;
 import dataStructure.DGraph;
 import dataStructure.edge_data;
+import dataStructure.graph;
 import dataStructure.node_data;
 import myUtils.HelpMe;
+import myUtils.myServer;
 import utils.Point3D;
 import utils.StdDraw;
 
 public class MyGameGUI implements Runnable {
-	
+
 	private static Color robotColor = Color.BLACK;
 	private static int scenarioNumber = 0;
 	private static int points = 0;
+	public static graph g = DGraph.getDGraph();
+	private static Logger_KML kml;
 
-	
+	private static myServer server = myServer.getServer();
+
+	// static variable single_instance of server 
+	private static MyGameGUI single_instance = null; 
+
+
+	// private constructor restricted to this class itself 
+	private MyGameGUI() {
+		Thread toPaint = new Thread(this);
+		toPaint.start();
+	} 
+
+	/** 
+	 * static method to create instance of myServer class 
+	 * @return the single instance of this class
+	 */
+	public static MyGameGUI getGui() 
+	{ 
+		if (single_instance == null) {
+			synchronized (MyGameGUI.class) {
+				if (single_instance == null)
+					single_instance = new MyGameGUI(); 
+			}
+		}
+		return single_instance;
+	}
+	/**
+	 * random color for the robots
+	 */
 	static {
 		Random random = new Random();
 		int r = random.nextInt(256); int g = random.nextInt(256); int b = random.nextInt(256);
@@ -30,65 +59,78 @@ public class MyGameGUI implements Runnable {
 		robotColor = new Color(r, g, b);
 	}
 
-	private MyGameGUI() {
-		Thread toPaint = new Thread(this);
-		toPaint.start();
-	} 
-
+	/**
+	 * this method creates the opening window for starting the game.
+	 * here the client chooses the scenario he wants to play and the way of moving the robots (manual or automatic)
+	 * according to the client choice the game begins
+	 * 
+	 * 
+	 */
 	public static void buildScenario() {
 		Object[]scenarioOptions = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23};
 		scenarioNumber = (Integer)JOptionPane.showInputDialog(null, "Pick the scenario number:",
 				"scenario options", JOptionPane.QUESTION_MESSAGE, null, scenarioOptions, null);
-		MovingAlgo.game = Game_Server.getServer(scenarioNumber); // you have [0,23] games
-		String gJason = MovingAlgo.game.getGraph();
-		DGraph g = new DGraph();
-		g.init(gJason);
-		MovingAlgo.algo = new Graph_Algo(g);
-		Object stringArray[] = { "Manual", "Automatic" };
+
+		server = myServer.getServer(scenarioNumber); // you have [0,23] games
+
+		String gJason = server.game.getGraph();
+		((DGraph) g).init(gJason);
+		Object option[] = { "Manual", "Automatic" };
 		int kindOfGame = JOptionPane.showOptionDialog(null, "Are you want to play manual or automatic?", "Select an Option",
-				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, stringArray,
-				null);
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, option,null);
 		StdDraw.enableDoubleBuffering();
-		if(kindOfGame == 0) { //Manual
+		if(kindOfGame == 0) { //Manual management
 			playManual();
 		}
-		else { //Automatic
-			playAuto();
+		else { //Automatic management
+			playAuto(scenarioNumber);
 		}
-		MyGameGUI gui = new MyGameGUI();
+		try {
+			Thread.sleep(800);
+		} catch(InterruptedException e) {
+			e.printStackTrace();
+		}
+		kml = Logger_KML.getLogger_KML(scenarioNumber); //starts the KML recording of the game
+		MyGameGUI gui = MyGameGUI.getGui(); //starts the gui thread 
 	}
 
+	/**
+	 * 
+	 * @return an array of the graph's keys
+	 */
 	private static Object[] keysList() {
-		Object[] keys = new Object[MovingAlgo.algo.myGraph.nodeSize()];
+		Object[] keys = new Object[g.nodeSize()];
 		int i = 0;
-		for (Iterator<node_data> iterator = MovingAlgo.algo.myGraph.getV().iterator(); iterator.hasNext();) {
+		for (Iterator<node_data> iterator = g.getV().iterator(); iterator.hasNext();) {
 			node_data v = (node_data) iterator.next();
 			keys[i++] = v.getKey();
 		}
 		return keys;
 	}
 
+	/**
+	 * Initiate a game according to the client choice of the robots location
+	 */	
 	private static void playManual() {
 		GameManager.isManual = true;
-		String info = MovingAlgo.game.toString();
-		MyGameGUI.paint(MovingAlgo.game.getRobots(), MovingAlgo.game.getFruits());
+		String info = server.game.toString();
+		MyGameGUI.paint(server.game.getRobots(), server.game.getFruits());
 		int numberOfRobots = HelpMe.getRobotsNum(info);
 		for (int i = 1; i <= numberOfRobots; i++) {
 			Object[] tempkeys = keysList();
 			int src_node = (Integer)JOptionPane.showInputDialog(null, "Pick a vertex to put robot "+i +":",
 					"Add robot", JOptionPane.QUESTION_MESSAGE, null, tempkeys, null);
-			MovingAlgo.game.addRobot(src_node);
+			server.game.addRobot(src_node);
 		}
 	}
-	private static void playAuto() {
-		GameManager.isManual = false;
-		MovingAlgo.addRobot();
-		GameManager man = new GameManager();
+
+	private static void playAuto(int scenarioNumber) {
+		GameManager man = GameManager.getGameManager(false ,scenarioNumber);
 	}
 	private static void paintInfoGame() {
-		long t = MovingAlgo.game.timeToEnd();
+		long t = server.game.timeToEnd();
 		points =0;
-		for (Iterator<String> iterator = MovingAlgo.game.getRobots().iterator(); iterator.hasNext();) {
+		for (Iterator<String> iterator = server.game.getRobots().iterator(); iterator.hasNext();) {
 			String robotj = (String) iterator.next();
 			points += HelpMe.getRobotValue(robotj);
 		}
@@ -107,13 +149,13 @@ public class MyGameGUI implements Runnable {
 	public static void paint(List<String> robots, List<String> fruits) {
 		if(firstPaint) {StdDraw.setCanvasSize(800,600); firstPaint = false;}
 		StdDraw.clear();
-		if(MovingAlgo.algo.myGraph != null) {
-			if(MovingAlgo.algo.myGraph.nodeSize() > 0) {
+		if(g != null) {
+			if(g.nodeSize() > 0) {
 				Xmin=Double.POSITIVE_INFINITY;
 				Xmax=Double.NEGATIVE_INFINITY;
 				Ymin=Double.POSITIVE_INFINITY;
 				Ymax=Double.NEGATIVE_INFINITY;
-				for (Iterator<node_data> iterator = MovingAlgo.algo.myGraph.getV().iterator(); iterator.hasNext();) {
+				for (Iterator<node_data> iterator = g.getV().iterator(); iterator.hasNext();) {
 					node_data v = (node_data) iterator.next();
 					if(v.getLocation().x() < Xmin) Xmin = v.getLocation().x();
 					if(v.getLocation().x() > Xmax) Xmax = v.getLocation().x();
@@ -129,21 +171,21 @@ public class MyGameGUI implements Runnable {
 			StdDraw.setYscale(Ymin,Ymax);
 		}
 		paintInfoGame();
-		for (Iterator<node_data> iterator = MovingAlgo.algo.myGraph.getV().iterator(); iterator.hasNext();) {
+		for (Iterator<node_data> iterator = g.getV().iterator(); iterator.hasNext();) {
 			node_data node = (node_data) iterator.next();
-			if(MovingAlgo.algo.myGraph.getE(node.getKey()) != null) {
-				for (Iterator<edge_data> iterator2 = MovingAlgo.algo.myGraph.getE(node.getKey()).iterator(); iterator2.hasNext();) {
+			if(g.getE(node.getKey()) != null) {
+				for (Iterator<edge_data> iterator2 = g.getE(node.getKey()).iterator(); iterator2.hasNext();) {
 					edge_data edge = (edge_data) iterator2.next();
 					drawEdge(edge);
 				}
 			}
 		}
-		for (Iterator<node_data> iterator = MovingAlgo.algo.myGraph.getV().iterator(); iterator.hasNext();) {
+		for (Iterator<node_data> iterator = g.getV().iterator(); iterator.hasNext();) {
 			node_data node = (node_data) iterator.next();
 			drawNode(node);
 		}
 		//paint fruits
-		for (Iterator<String> iterator = MovingAlgo.game.getFruits().iterator(); iterator.hasNext();) {
+		for (Iterator<String> iterator = server.game.getFruits().iterator(); iterator.hasNext();) {
 			String fruit = (String) iterator.next();
 			drawFruits(fruit);
 		}
@@ -165,31 +207,18 @@ public class MyGameGUI implements Runnable {
 	}
 
 	private static void drawFruits(String fruitJ) {
-			Point3D pos = HelpMe.getFruitPosition(fruitJ);
-			//find type
-			int type = HelpMe.getFruitType(fruitJ);
-			StdDraw.picture(pos.x(),pos.y(),(type == -1) ? "banana.jpeg" :"apple.jpeg", 0.00075, 0.00055);
+		Point3D pos = HelpMe.getFruitPosition(fruitJ);
+		//find type
+		int type = HelpMe.getFruitType(fruitJ);
+		StdDraw.picture(pos.x(),pos.y(),(type == -1) ? "banana.jpeg" :"apple.jpeg", 0.00075, 0.00055);
 	}
 
 	private static void drawEdge(edge_data edge) {
-		//		double rangeX=Xmax-Xmin;
-		//		double rangeY=Ymax-Ymin;
 		StdDraw.setPenRadius(0.005);
 		StdDraw.setPenColor(StdDraw.BLACK);
-		node_data src = MovingAlgo.algo.myGraph.getNode(edge.getSrc());
-		node_data dest = MovingAlgo.algo.myGraph.getNode(edge.getDest());
+		node_data src = g.getNode(edge.getSrc());
+		node_data dest = g.getNode(edge.getDest());
 		StdDraw.line(src.getLocation().x(),src.getLocation().y(),dest.getLocation().x() , dest.getLocation().y());
-		//		myStdDraw.setPenRadius(0.02);
-		//		myStdDraw.setPenColor(myStdDraw.ORANGE);
-		//		double relativex=(src.getLocation().x()+dest.getLocation().x()*7)/8;
-		//		double relativey=(src.getLocation().y()+dest.getLocation().y()*7)/8;
-		//		myStdDraw.point(relativex, relativey);
-		//		int round=(int)(edge.getWeight()*100);
-		//		double roundafter=round;
-		//		roundafter=roundafter/100;
-		//		myStdDraw.setPenColor(myStdDraw.RED);
-		//		myStdDraw.setPenRadius(0.02);
-		//		myStdDraw.text(relativex+(10*rangeX/800.0), relativey+(10*rangeY/600.0),""+roundafter);
 	}
 
 	private static void drawNode(node_data node) {
@@ -202,44 +231,50 @@ public class MyGameGUI implements Runnable {
 
 	@Override
 	public void run() {
-		while(MovingAlgo.game.isRunning()) {
-			MyGameGUI.paint(MovingAlgo.game.getRobots(), MovingAlgo.game.getFruits());
+		while(server.game.isRunning()) {
+			paint(server.game.getRobots(), server.game.getFruits());
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {e.printStackTrace();}
 		}
-		JOptionPane.showMessageDialog(null, "Game over:\nyou got "+points+" points","Game over",JOptionPane.INFORMATION_MESSAGE);
+		Object[] option = {"Yes","No"};
+		int toKML = JOptionPane.showOptionDialog(null, "Game over:\nyou got "+points+" points\n"
+				+ "Do you want to save this game to a kml file?","Game over",
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, option,null);
+		if(toKML == 0) {
+			kml.writeToFile();
+		}
 	}
 
 
 
-//	public static void main(String[] a) {
-//		//test unit for HelpMe
-//		for (Iterator<String> iterator = game.getRobots().iterator(); iterator.hasNext();) {
-//			String robotj = (String) iterator.next();
-//			System.out.println(HelpMe.getRobotValue(robotj));
-//			System.out.println(HelpMe.getRobotDest(robotj));
-//			System.out.println(HelpMe.getRobotId(robotj));
-//			System.out.println(HelpMe.getRobotSpeed(robotj));
-//			System.out.println(HelpMe.getRobotSrc(robotj));
-//			System.out.println(HelpMe.getRobotPosition(robotj));
-//		}
-//		for (Iterator<String> iterator = game.getFruits().iterator(); iterator.hasNext();) {
-//			String robotj = (String) iterator.next();
-//			System.out.println(HelpMe.getFruitType(robotj));
-//			System.out.println(HelpMe.getFruitValue(robotj));
-//			System.out.println(HelpMe.getFruitPosition(robotj));
-//		}
-//		test1();
-//	}
+	//	public static void main(String[] a) {
+	//		//test unit for HelpMe
+	//		for (Iterator<String> iterator = game.getRobots().iterator(); iterator.hasNext();) {
+	//			String robotj = (String) iterator.next();
+	//			System.out.println(HelpMe.getRobotValue(robotj));
+	//			System.out.println(HelpMe.getRobotDest(robotj));
+	//			System.out.println(HelpMe.getRobotId(robotj));
+	//			System.out.println(HelpMe.getRobotSpeed(robotj));
+	//			System.out.println(HelpMe.getRobotSrc(robotj));
+	//			System.out.println(HelpMe.getRobotPosition(robotj));
+	//		}
+	//		for (Iterator<String> iterator = game.getFruits().iterator(); iterator.hasNext();) {
+	//			String robotj = (String) iterator.next();
+	//			System.out.println(HelpMe.getFruitType(robotj));
+	//			System.out.println(HelpMe.getFruitValue(robotj));
+	//			System.out.println(HelpMe.getFruitPosition(robotj));
+	//		}
+	//		test1();
+	//	}
 	public static void test1() {
 		buildScenario();
-		String g = MovingAlgo.game.getGraph();
-		DGraph gg = new DGraph();
+		String g = server.game.getGraph();
+		DGraph gg = DGraph.getDGraph();
 		gg.init(g);
-		MovingAlgo.game.addRobot(1);
-		MovingAlgo.game.addRobot(0);
-		paint(MovingAlgo.game.getRobots(), MovingAlgo.game.getFruits());
+		server.game.addRobot(1);
+		server.game.addRobot(0);
+		paint(server.game.getRobots(), server.game.getFruits());
 
 	}
 }
