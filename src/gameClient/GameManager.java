@@ -7,9 +7,9 @@ import dataStructure.DGraph;
 import myUtils.myServer;
 
 public class GameManager implements Runnable {
-	
+
 	public static boolean isManual = false;
-	
+
 	private static myServer server;
 	private static MovingAlgo moveRobots;
 	// static variable single_instance of server 
@@ -22,7 +22,7 @@ public class GameManager implements Runnable {
 		Thread Master = new Thread(this);
 		Master.start();
 	} 
-	
+
 	// static method to create instance of MovingAlgo class 
 	public static GameManager getGameManager(boolean isManual , int scenarioNumber) 
 	{ 
@@ -34,9 +34,10 @@ public class GameManager implements Runnable {
 		}
 		return single_instance;
 	}
-	
+
 	@Override
 	public void run() {
+		int i=0;
 		if(!isManual) {
 			String gJason = server.game.getGraph();
 			DGraph g = DGraph.getDGraph();
@@ -45,12 +46,20 @@ public class GameManager implements Runnable {
 			moveRobots.addRobot();
 			server.game.startGame();
 			while(server.game.isRunning()) {
+
+				i++;
 				List<String> log = server.game.move();
 				moveRobots.logicWalk(log);
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					System.out.println("the error is here");
+				}
 			}
+			System.out.println("moves = "+i);
 		}
 		else {
-			
+
 		}
 	}
 

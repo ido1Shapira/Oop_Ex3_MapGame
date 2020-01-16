@@ -25,6 +25,14 @@ public final class HelpMe {
 		catch (JSONException e) {e.printStackTrace();}
 		return -1;
 	}
+
+	public static int getMoves(String json) {
+		try {
+			return Integer.parseInt(Json2value(json,"GameServer","moves"));
+		}
+		catch (JSONException e) {e.printStackTrace();}
+		return -1;
+	}
 	
 	//getters for robot
 	
@@ -96,5 +104,6 @@ public final class HelpMe {
 		catch (JSONException e) {e.printStackTrace();}
 		return null;
 	}
+
 
 }

@@ -85,11 +85,6 @@ public class MyGameGUI implements Runnable {
 		else { //Automatic management
 			playAuto(scenarioNumber);
 		}
-		try {
-			Thread.sleep(800);
-		} catch(InterruptedException e) {
-			e.printStackTrace();
-		}
 		kml = Logger_KML.getLogger_KML(scenarioNumber); //starts the KML recording of the game
 		MyGameGUI gui = MyGameGUI.getGui(); //starts the gui thread 
 	}
@@ -126,6 +121,11 @@ public class MyGameGUI implements Runnable {
 
 	private static void playAuto(int scenarioNumber) {
 		GameManager man = GameManager.getGameManager(false ,scenarioNumber);
+		try {
+			Thread.sleep(800);
+		} catch(InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	private static void paintInfoGame() {
 		long t = server.game.timeToEnd();
@@ -238,7 +238,9 @@ public class MyGameGUI implements Runnable {
 			} catch (InterruptedException e) {e.printStackTrace();}
 		}
 		Object[] option = {"Yes","No"};
-		int toKML = JOptionPane.showOptionDialog(null, "Game over:\nyou got "+points+" points\n"
+		String info = server.game.toString();
+		int moves = HelpMe.getMoves(info);
+		int toKML = JOptionPane.showOptionDialog(null, "Game over:\nyou got "+points+" points with "+ moves+" moves\n"
 				+ "Do you want to save this game to a kml file?","Game over",
 				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, option,null);
 		if(toKML == 0) {
