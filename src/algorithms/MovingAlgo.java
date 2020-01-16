@@ -5,42 +5,65 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import Server.game_service;
 import dataStructure.edge_data;
+import dataStructure.graph;
 import myUtils.HelpMe;
+import myUtils.myServer;
 import utils.Point3D;
 
 public class MovingAlgo {
 
-	public static game_service game;
+	private static myServer server = myServer.getServer();
+
+	// static variable single_instance of server 
+	private static MovingAlgo single_instance = null; 
+
 	public static Graph_Algo algo;
-	
+	// private constructor restricted to this class itself 
+	private MovingAlgo(graph g) 
+	{ 
+		algo = new Graph_Algo(g);
+	} 
+
+	// static method to create instance of MovingAlgo class 
+	public static MovingAlgo getMovingAlgo(graph g) 
+	{ 
+		if (single_instance == null) {
+			synchronized (MovingAlgo.class) {
+				if (single_instance == null)
+					single_instance = new MovingAlgo(g); 
+			}
+		}
+		return single_instance;
+	}
+
+
 	public static void logicWalk(List<String> log) {
 		ArrayList<Integer> destList= new ArrayList<Integer>();
-		for (int k = 0; k < MovingAlgo.game.getRobots().size(); k++) {
+		for (int k = 0; k < server.game.getRobots().size(); k++) {
 			String rob_json = log.get(k);
 			destList.add(HelpMe.getRobotDest(rob_json));	
 		}
-		for (int j = 0; j < MovingAlgo.game.getRobots().size(); j++) {
+		for (int j = 0; j < server.game.getRobots().size(); j++) {
 			String robot_json = log.get(j);
 			int rid = HelpMe.getRobotId(robot_json);
 			int src = HelpMe.getRobotSrc(robot_json);
 			int dest = HelpMe.getRobotDest(robot_json);
 			if(dest==-1) {
 				if(MovingAlgo.iHaveFruits(src)) {
-					MovingAlgo.game.chooseNextEdge(rid, MovingAlgo.bestNeighbor(src));
+					server.game.chooseNextEdge(rid, MovingAlgo.bestNeighbor(src));
 					destList.add(bestNeighbor(src));
 				}
 				else
 				{
 					int favNode= whereToGo(src, getFruitSrc());
 					if(!destList.contains(favNode)) {
-						MovingAlgo.game.chooseNextEdge(rid, favNode);
+						server.game.chooseNextEdge(rid, favNode);
 						destList.add(favNode);
 					}
 					else {
 						int secondOption=second(src, destList);
-						MovingAlgo.game.chooseNextEdge(rid, secondOption);
+						server.game.chooseNextEdge(rid, secondOption);
 						destList.add(secondOption);
 					}
 				}
@@ -49,17 +72,17 @@ public class MovingAlgo {
 	}
 
 	public static void randomWalk(List<String> log) {
-		for (int j = 0; j < MovingAlgo.game.getRobots().size(); j++) {
+		for (int j = 0; j < server.game.getRobots().size(); j++) {
 			String robot_json = log.get(j);
 			int rid = HelpMe.getRobotId(robot_json);
 			int src = HelpMe.getRobotSrc(robot_json);
 			int dest = HelpMe.getRobotDest(robot_json);
 			if(dest==-1) 
-				MovingAlgo.game.chooseNextEdge(rid, randomNextNode(src));
+				server.game.chooseNextEdge(rid, randomNextNode(src));
 		}
 	}
-	
-	
+
+
 	private static int randomNextNode(int src) {
 		int ans = -1;
 		Collection<edge_data> ee = MovingAlgo.algo.myGraph.getE(src);
@@ -104,10 +127,10 @@ public class MovingAlgo {
 
 
 	public static void addRobot() {
-		int robotSize = HelpMe.getRobotsNum(MovingAlgo.game.toString());
+		int robotSize = HelpMe.getRobotsNum(server.game.toString());
 		List<Integer> nodesByVal= nodesByValue();
 		for (int i = 0; i < robotSize; i++) {
-			MovingAlgo.game.addRobot(nodesByVal.get(i));			
+			server.game.addRobot(nodesByVal.get(i));			
 		}
 	}
 
@@ -116,7 +139,7 @@ public class MovingAlgo {
 		double ans=0;
 		for(int i=0; i<getFruitSrc().size();i++) {
 			if(getFruitSrc().get(i)==node)
-				ans+=HelpMe.getFruitValue(MovingAlgo.game.getFruits().get(i));
+				ans+=HelpMe.getFruitValue(server.game.getFruits().get(i));
 		}
 		return ans;
 	}
@@ -125,8 +148,8 @@ public class MovingAlgo {
 	private static boolean iHaveFruits(int src) {				
 		return getFruitSrc().contains(src);
 	}
-	
-	
+
+
 	private static int whereToGo(int src, List<Integer> fruitSrc) {
 		double minDist=Double.MAX_VALUE;
 		int togo=-1;
@@ -139,7 +162,7 @@ public class MovingAlgo {
 		}
 		try {
 			return MovingAlgo.algo.shortestPath(src, togo).get(1).getKey(); //get the second node on the list going from src to the edge has a fruit
-		
+
 		}
 		catch (Exception e) {
 			return MovingAlgo.algo.shortestPath(src, togo).get(1).getKey();
@@ -172,7 +195,7 @@ public class MovingAlgo {
 
 
 	private static List<Integer> getFruitSrc(){
-		Collection<String> fruits=MovingAlgo.game.getFruits();
+		Collection<String> fruits=server.game.getFruits();
 		ArrayList<Integer> list= new ArrayList<Integer>();
 		for (String f : fruits) {
 			list.add(findFruitSrc(f));
@@ -202,7 +225,7 @@ public class MovingAlgo {
 		for (Iterator<edge_data> iterator = ee.iterator(); iterator.hasNext();) {
 			edge_data edge = (edge_data) iterator.next();
 			double edgeVal=0;
-			Collection<String> fruits=MovingAlgo.game.getFruits();
+			Collection<String> fruits=server.game.getFruits();
 			for (String f : fruits) {
 				edgeVal+=isOnEdge(f, edge);
 			}			
