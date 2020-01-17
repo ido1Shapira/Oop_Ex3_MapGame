@@ -24,6 +24,8 @@ every edge has a weight filed that represents the "cost" of using this edge duri
 we would like to think about this cost as the time it takes to get from source node to destination node.  
 that is why nonpositive weight is not possible. 
 more information about Dgraph can be found here- https://github.com/idoshapira051/OPP_ex2-4 
+
+One method we added to Dgraph is init from a json string. This method gets a json Dgraph and convert the Dgraph it was aplied on to the graph described in the string
   
   ### game client- 
 in this package there are all of the classes managing the game 
