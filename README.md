@@ -24,6 +24,8 @@ every edge has a weight filed that represents the "cost" of using this edge duri
 we would like to think about this cost as the time it takes to get from source node to destination node.  
 that is why nonpositive weight is not possible. 
 more information about Dgraph can be found here- https://github.com/idoshapira051/OPP_ex2-4 
+
+One method we added to Dgraph is init from a json string. This method gets a json Dgraph and convert the Dgraph it was aplied on to the graph described in the string
   
   ### game client- 
 in this package there are all of the classes managing the game 
@@ -71,4 +73,9 @@ in this class there are many "getter" methods since we chose to work with the ac
 * MyServer- this class has one field of Game_Server object given from the jar.  
 all of the other classes use this single instance of server in order to get information about the game. 
    
+ game window for example
+ ![ללא שם](https://user-images.githubusercontent.com/57194044/72616158-f9355900-393e-11ea-89b7-5995426a5860.jpg)
  
+ kml window for example
+![kml](https://user-images.githubusercontent.com/57194044/72617437-9a251380-3941-11ea-8b63-834bf0734625.jpg)
+
