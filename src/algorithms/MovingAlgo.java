@@ -48,9 +48,6 @@ public class MovingAlgo {
 	 */
 	long time=0;
 	public double logicWalk(List<String> log) {
-		long start = System.currentTimeMillis();
-		
-		
 		ArrayList<Integer> destList= new ArrayList<Integer>(); //list of nodes we know that there is a robot going toward them
 		double minSpeed=10;
 		for (int k = 0; k < server.game.getRobots().size(); k++) { //Initialize the list with the known robots dests nodes
@@ -66,6 +63,7 @@ public class MovingAlgo {
 			int src = MyParser.getRobotSrc(robot_json);
 			int dest = MyParser.getRobotDest(robot_json);
 			if(dest==-1) {// if the robot needs redirection
+				minSpeed=-1;
 				if(MovingAlgo.iHaveFruits(src)) { //the robot stands on a node that has a fruit on one of its edges
 					server.game.chooseNextEdge(rid, MovingAlgo.bestNeighbor(src));
 					destList.add(bestNeighbor(src)); //adding the new dest to the list
@@ -85,15 +83,6 @@ public class MovingAlgo {
 				}
 			}
 		}
-		for (int k = 0; k < server.game.getRobots().size(); k++) { //Initialize the list with the known robots dests nodes
-			String rob_json = log.get(k);
-			if(MyParser.getRobotDest(rob_json)==-1);
-			return -1;
-		}
-		long end = System.currentTimeMillis();
-		time+=(end-start);
-		if (start!=end)
-		System.out.println(time);
 		return minSpeed;
 	}
 
@@ -183,7 +172,6 @@ public class MovingAlgo {
 	 */
 	private static double getNodeVal(int node) {
 		double ans=0;
-		List<Integer> fruits=getFruitSrc();
 		for(int i=0; i<getFruitSrc().size();i++) {
 			String f= server.game.getFruits().get(i);
 			if(findFruitSrc(f)==node)

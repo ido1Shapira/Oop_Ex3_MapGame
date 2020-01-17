@@ -77,7 +77,6 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
 import dataStructure.node_data;
-import gameClient.AutoManager;
 import gameClient.ManualManager;
 import gameClient.MyGameGUI;
 import myUtils.MyParser;
@@ -1784,13 +1783,13 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if(AutoManager.isManual) {
+		if(!MyGameGUI.autoManagerIsReady) {
 			Point3D p = getCoordinateOnScreen(new Point3D (e.getX(),e.getY()));
 			key = findVertexWhenClicked(p);
 			id = findRobotWhenClicked(p);
 
 			if(firstClick) {
-				manual = ManualManager.getManualGui(key,id);
+				manual = ManualManager.getManualManager(key,id);
 				Thread tManual = new Thread(manual);
 				tManual.start();
 				firstClick = false;

@@ -37,7 +37,7 @@ public class ManualManager implements Runnable {
 	 * @param key
 	 * @param idRobot
 	 */
-	public static ManualManager getManualGui(int key, int idRobot) 
+	public static ManualManager getManualManager(int key, int idRobot) 
 	{ 
 		if (single_instance == null) {
 			synchronized (Logger_KML.class) {

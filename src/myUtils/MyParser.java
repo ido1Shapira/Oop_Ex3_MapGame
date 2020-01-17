@@ -33,6 +33,15 @@ public final class MyParser {
 		catch (JSONException e) {e.printStackTrace();}
 		return -1;
 	}
+
+	public static String getBackGround(String json) {
+		try {
+			return Json2value(json,"GameServer","graph");
+		}
+		catch (JSONException e) {e.printStackTrace();}
+		return null;
+	}
+
 	
 	//getters for robot
 	
@@ -104,6 +113,7 @@ public final class MyParser {
 		catch (JSONException e) {e.printStackTrace();}
 		return null;
 	}
+
 
 
 }

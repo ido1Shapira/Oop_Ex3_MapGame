@@ -20,13 +20,15 @@ public class MyGameGUI implements Runnable {
 	private static Color robotColor = Color.BLACK;
 	private static int scenarioNumber = 0;
 	private static int points = 0;
-	public static graph g = DGraph.getDGraph();
+	public static graph g = new DGraph();
 	private static Logger_KML kml;
 
 	private static MyServer server = MyServer.getServer();
 
+	public static boolean autoManagerIsReady = false; 
+	
 	// static variable single_instance of server 
-	private static MyGameGUI single_instance = null; 
+	private static MyGameGUI single_instance = null;
 
 
 	// private constructor restricted to this class itself 
@@ -75,6 +77,7 @@ public class MyGameGUI implements Runnable {
 
 		String gJason = server.game.getGraph();
 		((DGraph) g).init(gJason);
+		MyGameGUI.paint(server.game.getRobots(), server.game.getFruits());
 		Object option[] = { "Manual", "Automatic" };
 		int kindOfGame = JOptionPane.showOptionDialog(null, "Are you want to play manual or automatic?", "Select an Option",
 				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, option,null);
@@ -85,13 +88,13 @@ public class MyGameGUI implements Runnable {
 		else { //Automatic management
 			playAuto(scenarioNumber);
 		}
-		kml = Logger_KML.getLogger_KML(scenarioNumber); //starts the KML recording of the game
+		kml = new Logger_KML(scenarioNumber); //starts the KML recording of the game
 		MyGameGUI gui = MyGameGUI.getGui(); //starts the gui thread 
 	}
 
 	/**
 	 * 
-	 * @return an array of the graph's keys
+	 * @return an array of the node's keys
 	 */
 	private static Object[] keysList() {
 		Object[] keys = new Object[g.nodeSize()];
@@ -107,7 +110,6 @@ public class MyGameGUI implements Runnable {
 	 * Initiate a game according to the client choice of the robots location
 	 */	
 	private static void playManual() {
-		AutoManager.isManual = true;
 		String info = server.game.toString();
 		MyGameGUI.paint(server.game.getRobots(), server.game.getFruits());
 		int numberOfRobots = MyParser.getRobotsNum(info);
@@ -123,11 +125,10 @@ public class MyGameGUI implements Runnable {
 	 * @param scenarioNumber the scenario to begin
 	 */
 	private static void playAuto(int scenarioNumber) {
-		AutoManager man = AutoManager.getGameManager(false ,scenarioNumber); //calling the game manager to start the game
-		try {
-			Thread.sleep(2000); //estimated time to locate all the robots in order to begin
-		} catch(InterruptedException e) {
-			e.printStackTrace();
+		AutoManager auto = new AutoManager(scenarioNumber); //calling the auto game manager to start the game
+		while(!autoManagerIsReady ) {
+			try {Thread.sleep(50); //estimated time to locate all the robots in order to begin
+			} catch(InterruptedException e) {e.printStackTrace();}
 		}
 	}
 	/**
@@ -160,9 +161,11 @@ public class MyGameGUI implements Runnable {
 	 * @param robots robots objects in a json format
 	 * @param fruits fruits objects in a json format
 	 */
-	public static void paint(List<String> robots, List<String> fruits) {
-		if(firstPaint) {StdDraw.setCanvasSize(800,600); firstPaint = false;}
-		StdDraw.clear(); //clear previous screen
+	private static void paint(List<String> robots, List<String> fruits) {
+		if(firstPaint) {
+			StdDraw.setCanvasSize(1239,595);
+			firstPaint = false;
+		}
 		if(g != null) {
 			if(g.nodeSize() > 0) {
 				Xmin=Double.POSITIVE_INFINITY;
@@ -178,12 +181,15 @@ public class MyGameGUI implements Runnable {
 				}
 				Xmin -= 0.002;
 				Xmax += 0.002;
-				Ymin -= 0.0015;
-				Ymax += 0.0015;
+				Ymin -= 0.002;
+				Ymax += 0.002;
 			}
 			StdDraw.setXscale(Xmin,Xmax);
 			StdDraw.setYscale(Ymin,Ymax);
 		}
+		StdDraw.clear(); //clear previous screen
+//				String background = MyParser.getBackGround(server.game.toString());
+//				StdDraw.picture((Xmax+Xmin)/2,(Ymax+Ymin)/2,"C:/Users/idsha/eclipse-workspace/OOP_ex3/"+background+".png");
 		paintInfoGame();
 		//draw edges
 		for (Iterator<node_data> iterator = g.getV().iterator(); iterator.hasNext();) {
@@ -299,14 +305,14 @@ public class MyGameGUI implements Runnable {
 	//		}
 	//		test1();
 	//	}
-//	public static void test1() {
-//		buildScenario();
-//		String g = server.game.getGraph();
-//		DGraph gg = DGraph.getDGraph();
-//		gg.init(g);
-//		server.game.addRobot(1);
-//		server.game.addRobot(0);
-//		paint(server.game.getRobots(), server.game.getFruits());
-//
-//	}
+	//	public static void test1() {
+	//		buildScenario();
+	//		String g = server.game.getGraph();
+	//		DGraph gg = DGraph.getDGraph();
+	//		gg.init(g);
+	//		server.game.addRobot(1);
+	//		server.game.addRobot(0);
+	//		paint(server.game.getRobots(), server.game.getFruits());
+	//
+	//	}
 }

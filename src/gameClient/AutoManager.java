@@ -8,79 +8,61 @@ import myUtils.MyServer;
 
 public class AutoManager implements Runnable {
 
-	public static boolean isManual = false;
-
 	private static MyServer server;
 	private static MovingAlgo moveRobots;
-	// static variable single_instance of server 
-	private static AutoManager single_instance = null; 
 
-	// private constructor restricted to this class itself 
-	private AutoManager(boolean isManual , int scenarioNumber) {
-		AutoManager.isManual = isManual;
+	public AutoManager(int scenarioNumber) {
 		server = MyServer.getServer(scenarioNumber);
+		server.game.startGame();
 		Thread Master = new Thread(this);
 		Master.start();
-	} 
-
-	// static method to create instance of MovingAlgo class 
-	public static AutoManager getGameManager(boolean isManual , int scenarioNumber) 
-	{ 
-		if (single_instance == null) {
-			synchronized (AutoManager.class) {
-				if (single_instance == null)
-					single_instance = new AutoManager(isManual ,scenarioNumber); 
-			}
-		}
-		return single_instance;
+	}
+	public AutoManager(int scenarioNumber, MyServer server) {
+		AutoManager.server = server;
+		server.game.startGame();
+		Thread Master = new Thread(this);
+		Master.start();
 	}
 
 	@Override
 	public void run() {
 		int i=0;
-		if(!isManual) {
-			String gJason = server.game.getGraph();
-			DGraph g = DGraph.getDGraph();
-			g.init(gJason);
-			moveRobots = MovingAlgo.getMovingAlgo(g);
-			moveRobots.addRobot();
-			server.game.startGame();
-			double speed;
-			while(server.game.isRunning()) {
-				i++;
-				List<String> log = server.game.move();
-				long start = System.currentTimeMillis();
-				speed = moveRobots.logicWalk(log);
-				long end = System.currentTimeMillis();
+		String gJason = server.game.getGraph();
+		DGraph g = new DGraph();
+		g.init(gJason); //case that we aren't using gui
+		moveRobots = MovingAlgo.getMovingAlgo(g);
+		moveRobots.addRobot();
+		server.game.startGame();
+		MyGameGUI.autoManagerIsReady = true;
+//		double speed;
+		System.out.println("start playing...");
+		while(server.game.isRunning()) {
+			//				System.out.println("The game is running");
+			i++;
+			List<String> log = server.game.move();
+//			speed = moveRobots.logicWalk(log);
+			moveRobots.logicWalk(log);
 			//	System.out.println(-start+end);
-				try {
-					if(speed==1)
-						Thread.sleep(250);//(int)(100/speed));
-					if(speed==2)
-						Thread.sleep(210);
-					if(speed==3)
-						Thread.sleep(200);
-					if(speed==4)
-						Thread.sleep(200);
-					if(speed==5)
-						Thread.sleep(150);
-					if(speed> 5)
-						System.out.println(speed);
-					if(speed==-1)
-						Thread.sleep(100);
-
-						
-					
-				} catch (InterruptedException e) {
-					System.out.println("the error is here");
-				}
-			}
-			System.out.println("moves = "+i);
+//			try {
+//				if(speed==1)
+//					Thread.sleep(250);//(int)(100/speed));
+//				if(speed==2)
+//					Thread.sleep(210);
+//				if(speed==3)
+//					Thread.sleep(200);
+//				if(speed==4)
+//					Thread.sleep(200);
+//				if(speed==5)
+//					Thread.sleep(150);
+//				if(speed> 5)
+//					System.out.println(speed);
+//				if(speed==-1)
+//					Thread.sleep(100);
+//
+//			} catch (InterruptedException e) {
+//				System.out.println("the error is here");
+//			}
 		}
-		else {
-
-		}
+		System.out.println("finish playing... moves = "+i);
 	}
-
-
 }

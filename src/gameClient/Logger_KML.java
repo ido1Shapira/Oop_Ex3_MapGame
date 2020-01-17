@@ -1,6 +1,5 @@
 package gameClient;
 
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -67,18 +66,18 @@ public class Logger_KML implements Runnable{
 
 	// kml string representing a place mark and a time stamp 
 	private static final String placeMark = "<Placemark>\r\n" + 
-			"      <TimeStamp>\r\n" + 
-			"        <when>date</when>\r\n" + 
-			"      </TimeStamp>\r\n" + 
+//			"      <TimeSpan>\r\n" + 
+//			"        <begin>dataStart</begin>\r\n" + 
+//			"        <end>dataEnd</end>\r\n" + 
+//			"      </TimeSpan>\r\n" +
+			" <TimeStamp>\r\n" + 
+			"          <when>date</when>\r\n" + 
+			"        </TimeStamp>" +
 			"      <styleUrl>#icon</styleUrl>\r\n" + 
 			"      <Point>\r\n" + 
 			"        <coordinates>(x,y)</coordinates>\r\n" + 
 			"      </Point>\r\n" + 
 			"    </Placemark>\n";
-
-
-	// static variable single_instance of server 
-		private static Logger_KML single_instance = null; 
 
 		private static MyServer server;
 
@@ -89,7 +88,7 @@ public class Logger_KML implements Runnable{
 		 * building a kml file and insert the standard header kml and the style for every object
 		 * @param fileName
 		 */
-		private Logger_KML(int scenarioNumber) {
+		public Logger_KML(int scenarioNumber) {
 			server = MyServer.getServer(scenarioNumber);
 			this.fileName = scenarioNumber+ ".kml";
 			this.content = new StringBuilder(headerFile);
@@ -99,32 +98,18 @@ public class Logger_KML implements Runnable{
 			Thread kmlThread = new Thread(this);
 			kmlThread.start();
 		}
-		/**
-		*  static method to create instance of myServer class 
-		*/
-		public static Logger_KML getLogger_KML(int scenarioNumber) 
-		{ 
-			if (single_instance == null) {
-				synchronized (Logger_KML.class) {
-					if (single_instance == null)
-						single_instance = new Logger_KML(scenarioNumber); 
-				}
-			}
-			return single_instance;
-		}
-	
-	
 	
 		/**
 		 * this method updates the data to the current date in a kml format
 		 */
 	private static void getKmlFormatDate() {
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 		Date date = new Date();  
-		String currentTime = formatter.format(date);
-		currentTime = currentTime.replace(" ", "T");
-		currentTime += 'Z';
-		data = currentTime;
+//		String currentTime = formatter.format(date);
+//		currentTime = currentTime.replace(" ", "T");
+//		currentTime += 'Z';
+//		data = currentTime;
+		data = formatter.format(date);
 	}
 	/**
 	 * Writes the log of the game in a KML format to a file 
@@ -149,10 +134,12 @@ public class Logger_KML implements Runnable{
 	 * @param p x and y coordinate of the place mark
 	 * @icon to pick the place mark style
 	 */
-	public void addPlaceMark(Point3D p , String icon) {
+	private void addPlaceMark(Point3D p , String icon) {
 		String placeMark = Logger_KML.placeMark;
 		placeMark = placeMark.replace("(x,y)",p.x()+","+p.y());
 		placeMark = placeMark.replace("date", data); //replace date to the current data kml format
+//		Logger_KML.getKmlFormatDate();
+//		placeMark = placeMark.replace("dateEnd", data); //replace date to the current data kml format
 		placeMark = placeMark.replace("icon", icon); //replace the word "icon" to specific icon match the current object
 		this.content.append(placeMark); //adds placeMark to the logger
 	}
@@ -195,13 +182,13 @@ public class Logger_KML implements Runnable{
 
 	}
 
-	public static void main(String args[]) throws FileNotFoundException {
-		String info = server.game.toString();
-		System.out.println(info);
+//	public static void main(String args[]) throws FileNotFoundException {
+//		String info = server.game.toString();
+//		System.out.println(info);
 //		Logger_KML kml = new Logger_KML("test");
 //		MyGameGUI.buildScenario(); // you have [0,23] games	
 //		server.game.startGame();
-	}
+//	}
 
 
 }

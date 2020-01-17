@@ -11,7 +11,7 @@ public class MyServer {
 	public game_service game;
 
 	// private constructor restricted to this class itself 
-	private MyServer(int scenarioNumber) 
+	public MyServer(int scenarioNumber) 
 	{ 
 		game = Game_Server.getServer(scenarioNumber); // you have [0,23] games
 //		game.startGame();

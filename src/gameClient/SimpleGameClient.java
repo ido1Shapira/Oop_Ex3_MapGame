@@ -24,16 +24,23 @@ public class SimpleGameClient {
 
 	public static void main(String[] a) {
 		test1();
+//	buildKmlFiles();
+	}
+	private static void buildKmlFiles() {
+		final int NumberOFScenario = 23;
+		for (int i = 0; i < NumberOFScenario; i++) {
+			runScenario run = new runScenario(i);
+			Thread t1 = new Thread(run);
+			t1.start();
+			try {t1.join();
+			} catch (InterruptedException e) {e.printStackTrace();}
+			System.out.println("finish playing scenario "+i);
+		}
+		System.out.println("finish playing all scenarios");
 	}
 	public static void test1() {
 		MyGameGUI.buildScenario(); // you have [0,23] games
 		server = MyServer.getServer();
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		server.game.startGame();
 	}
 }
