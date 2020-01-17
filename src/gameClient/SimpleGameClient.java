@@ -1,6 +1,6 @@
 package gameClient;
 
-import myUtils.myServer;
+import myUtils.MyServer;
 
 /**
  * This class represents a simple example for using the GameServer API:
@@ -20,14 +20,14 @@ import myUtils.myServer;
  */
 
 public class SimpleGameClient {
-	private static myServer server;
+	private static MyServer server;
 
 	public static void main(String[] a) {
 		test1();
 	}
 	public static void test1() {
 		MyGameGUI.buildScenario(); // you have [0,23] games
-		server = myServer.getServer();
+		server = MyServer.getServer();
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {

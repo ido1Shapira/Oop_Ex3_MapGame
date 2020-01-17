@@ -10,8 +10,8 @@ import dataStructure.DGraph;
 import dataStructure.edge_data;
 import dataStructure.graph;
 import dataStructure.node_data;
-import myUtils.HelpMe;
-import myUtils.myServer;
+import myUtils.MyParser;
+import myUtils.MyServer;
 import utils.Point3D;
 import utils.StdDraw;
 
@@ -23,7 +23,7 @@ public class MyGameGUI implements Runnable {
 	public static graph g = DGraph.getDGraph();
 	private static Logger_KML kml;
 
-	private static myServer server = myServer.getServer();
+	private static MyServer server = MyServer.getServer();
 
 	// static variable single_instance of server 
 	private static MyGameGUI single_instance = null; 
@@ -71,7 +71,7 @@ public class MyGameGUI implements Runnable {
 		scenarioNumber = (Integer)JOptionPane.showInputDialog(null, "Pick the scenario number:",
 				"scenario options", JOptionPane.QUESTION_MESSAGE, null, scenarioOptions, null);
 
-		server = myServer.getServer(scenarioNumber); // you have [0,23] games
+		server = MyServer.getServer(scenarioNumber); // you have [0,23] games
 
 		String gJason = server.game.getGraph();
 		((DGraph) g).init(gJason);
@@ -107,10 +107,10 @@ public class MyGameGUI implements Runnable {
 	 * Initiate a game according to the client choice of the robots location
 	 */	
 	private static void playManual() {
-		GameManager.isManual = true;
+		AutoManager.isManual = true;
 		String info = server.game.toString();
 		MyGameGUI.paint(server.game.getRobots(), server.game.getFruits());
-		int numberOfRobots = HelpMe.getRobotsNum(info);
+		int numberOfRobots = MyParser.getRobotsNum(info);
 		for (int i = 1; i <= numberOfRobots; i++) {
 			Object[] tempkeys = keysList();
 			int src_node = (Integer)JOptionPane.showInputDialog(null, "Pick a vertex to put robot "+i +":",
@@ -123,7 +123,7 @@ public class MyGameGUI implements Runnable {
 	 * @param scenarioNumber the scenario to begin
 	 */
 	private static void playAuto(int scenarioNumber) {
-		GameManager man = GameManager.getGameManager(false ,scenarioNumber); //calling the game manager to start the game
+		AutoManager man = AutoManager.getGameManager(false ,scenarioNumber); //calling the game manager to start the game
 		try {
 			Thread.sleep(2000); //estimated time to locate all the robots in order to begin
 		} catch(InterruptedException e) {
@@ -141,7 +141,7 @@ public class MyGameGUI implements Runnable {
 		points =0;
 		for (Iterator<String> iterator = server.game.getRobots().iterator(); iterator.hasNext();) {
 			String robotj = (String) iterator.next();
-			points += HelpMe.getRobotValue(robotj);
+			points += MyParser.getRobotValue(robotj);
 		}
 		StdDraw.setPenColor(Color.black);
 		StdDraw.text((Xmax+Xmin)/2, Ymax-0.001, "points: "+points);
@@ -219,7 +219,7 @@ public class MyGameGUI implements Runnable {
 	private static void drawRobot(String robotJ) {
 		StdDraw.setPenColor(robotColor);
 		StdDraw.setPenRadius(0.06);
-		Point3D pos = HelpMe.getRobotPosition(robotJ);
+		Point3D pos = MyParser.getRobotPosition(robotJ);
 		StdDraw.point(pos.x(),pos.y());
 	}
 	/**
@@ -227,9 +227,9 @@ public class MyGameGUI implements Runnable {
 	 * @param fruitJ a fruit object in a json format
 	 */
 	private static void drawFruits(String fruitJ) {
-		Point3D pos = HelpMe.getFruitPosition(fruitJ);
+		Point3D pos = MyParser.getFruitPosition(fruitJ);
 		//find type
-		int type = HelpMe.getFruitType(fruitJ);
+		int type = MyParser.getFruitType(fruitJ);
 		StdDraw.picture(pos.x(),pos.y(),(type == -1) ? "banana.jpeg" :"apple.jpeg", 0.00075, 0.00055);
 	}
 	/**
@@ -269,7 +269,7 @@ public class MyGameGUI implements Runnable {
 		}
 		Object[] option = {"Yes","No"};
 		String info = server.game.toString();
-		int moves = HelpMe.getMoves(info);
+		int moves = MyParser.getMoves(info);
 		int toKML = JOptionPane.showOptionDialog(null, "Game over:\nyou got "+points+" points with "+ moves+" moves\n"
 				+ "Do you want to save this game to a kml file?","Game over",
 				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, option,null);

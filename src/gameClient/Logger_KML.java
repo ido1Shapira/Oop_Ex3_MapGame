@@ -8,8 +8,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 
-import myUtils.HelpMe;
-import myUtils.myServer;
+import myUtils.MyParser;
+import myUtils.MyServer;
 import utils.Point3D;
 
 /**
@@ -80,7 +80,7 @@ public class Logger_KML implements Runnable{
 	// static variable single_instance of server 
 		private static Logger_KML single_instance = null; 
 
-		private static myServer server;
+		private static MyServer server;
 
 
 		 
@@ -90,7 +90,7 @@ public class Logger_KML implements Runnable{
 		 * @param fileName
 		 */
 		private Logger_KML(int scenarioNumber) {
-			server = myServer.getServer(scenarioNumber);
+			server = MyServer.getServer(scenarioNumber);
 			this.fileName = scenarioNumber+ ".kml";
 			this.content = new StringBuilder(headerFile);
 			this.content.append(Logger_KML.appleStyle);
@@ -178,8 +178,8 @@ public class Logger_KML implements Runnable{
 		Iterator<String> f_iter = server.game.getFruits().iterator();
 		while(f_iter.hasNext()) {
 			String f = f_iter.next();
-			Point3D p = HelpMe.getFruitPosition(f);
-			int type = HelpMe.getFruitType(f);
+			Point3D p = MyParser.getFruitPosition(f);
+			int type = MyParser.getFruitType(f);
 			if(type == 1)
 				this.addPlaceMark(p, "apple");
 			else
@@ -189,7 +189,7 @@ public class Logger_KML implements Runnable{
 		//robots
 		Iterator<String> r_iter = server.game.getRobots().iterator();
 		while(r_iter.hasNext()) {
-			Point3D p = HelpMe.getRobotPosition(r_iter.next());
+			Point3D p = MyParser.getRobotPosition(r_iter.next());
 			this.addPlaceMark(p, "robot");
 		}
 

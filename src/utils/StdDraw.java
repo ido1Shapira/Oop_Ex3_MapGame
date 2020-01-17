@@ -77,11 +77,11 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
 import dataStructure.node_data;
-import gameClient.GameManager;
+import gameClient.AutoManager;
+import gameClient.ManualManager;
 import gameClient.MyGameGUI;
-import myUtils.HelpMe;
-import myUtils.ManualGui;
-import myUtils.myServer;
+import myUtils.MyParser;
+import myUtils.MyServer;
 import utils.Point3D;
 
 /**
@@ -1755,11 +1755,11 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	 * return the robot id that the user has clicked on
 	 */
 	private int findRobotWhenClicked(Point3D p) {
-		List<String> robots = myServer.getServer().game.getRobots();
+		List<String> robots = MyServer.getServer().game.getRobots();
 		for (Iterator<String> iterator = robots.iterator(); iterator.hasNext();) {
 			String rJson = (String) iterator.next();
-			Point3D rPos = HelpMe.getRobotPosition(rJson);
-			if(similar(rPos,p)) {return HelpMe.getRobotId(rJson);}
+			Point3D rPos = MyParser.getRobotPosition(rJson);
+			if(similar(rPos,p)) {return MyParser.getRobotId(rJson);}
 		}
 		return -1;
 	}
@@ -1777,20 +1777,20 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 		return new Point3D(userX(PbyPixle.x()),userY(PbyPixle.y()));
 	}
 	private static boolean firstClick = true;
-	private static ManualGui manual;
+	private static ManualManager manual;
 
 	/*
 	 * In manual mode the user need to choose which robot move to which vertex.
 	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if(GameManager.isManual) {
+		if(AutoManager.isManual) {
 			Point3D p = getCoordinateOnScreen(new Point3D (e.getX(),e.getY()));
 			key = findVertexWhenClicked(p);
 			id = findRobotWhenClicked(p);
 
 			if(firstClick) {
-				manual = ManualGui.getManualGui(key,id);
+				manual = ManualManager.getManualGui(key,id);
 				Thread tManual = new Thread(manual);
 				tManual.start();
 				firstClick = false;

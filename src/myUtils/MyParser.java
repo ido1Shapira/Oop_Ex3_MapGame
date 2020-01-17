@@ -5,7 +5,7 @@ import org.json.JSONObject;
 
 import utils.Point3D;
 
-public final class HelpMe {
+public final class MyParser {
 
 	/*
 	 * Returns the requested field from the object

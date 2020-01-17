@@ -1,14 +1,14 @@
-package myUtils;
+package gameClient;
 
 import java.util.List;
 
-import gameClient.Logger_KML;
+import myUtils.MyServer;
 
 /**
  * This class represents the manual mode
  * @author ido shapira & edut cohen
  */
-public class ManualGui implements Runnable {
+public class ManualManager implements Runnable {
 
 	private static int prev_key;
 	private static int prev_idRobot;
@@ -17,19 +17,19 @@ public class ManualGui implements Runnable {
 	private int idRobot;
 
 	// static variable single_instance of server 
-	private static ManualGui single_instance = null; 
+	private static ManualManager single_instance = null; 
 
-	private static myServer server;
+	private static MyServer server;
 
 
 	/** private constructor restricted to this class itself
 	 * @param key
 	 * @param idRobot
 	 */
-	private ManualGui(int key, int idRobot) {
+	private ManualManager(int key, int idRobot) {
 		this.key = key;
 		this.idRobot = idRobot;
-		server = myServer.getServer();
+		server = MyServer.getServer();
 	}
 	
 	/**
@@ -37,12 +37,12 @@ public class ManualGui implements Runnable {
 	 * @param key
 	 * @param idRobot
 	 */
-	public static ManualGui getManualGui(int key, int idRobot) 
+	public static ManualManager getManualGui(int key, int idRobot) 
 	{ 
 		if (single_instance == null) {
 			synchronized (Logger_KML.class) {
 				if (single_instance == null)
-					single_instance = new ManualGui(key,idRobot); 
+					single_instance = new ManualManager(key,idRobot); 
 			}
 		}
 		return single_instance;

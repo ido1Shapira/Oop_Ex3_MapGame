@@ -1,36 +1,35 @@
 package gameClient;
 
-import java.util.Calendar;
 import java.util.List;
 
 import algorithms.MovingAlgo;
 import dataStructure.DGraph;
-import myUtils.myServer;
+import myUtils.MyServer;
 
-public class GameManager implements Runnable {
+public class AutoManager implements Runnable {
 
 	public static boolean isManual = false;
 
-	private static myServer server;
+	private static MyServer server;
 	private static MovingAlgo moveRobots;
 	// static variable single_instance of server 
-	private static GameManager single_instance = null; 
+	private static AutoManager single_instance = null; 
 
 	// private constructor restricted to this class itself 
-	private GameManager(boolean isManual , int scenarioNumber) {
-		GameManager.isManual = isManual;
-		server = myServer.getServer(scenarioNumber);
+	private AutoManager(boolean isManual , int scenarioNumber) {
+		AutoManager.isManual = isManual;
+		server = MyServer.getServer(scenarioNumber);
 		Thread Master = new Thread(this);
 		Master.start();
 	} 
 
 	// static method to create instance of MovingAlgo class 
-	public static GameManager getGameManager(boolean isManual , int scenarioNumber) 
+	public static AutoManager getGameManager(boolean isManual , int scenarioNumber) 
 	{ 
 		if (single_instance == null) {
-			synchronized (GameManager.class) {
+			synchronized (AutoManager.class) {
 				if (single_instance == null)
-					single_instance = new GameManager(isManual ,scenarioNumber); 
+					single_instance = new AutoManager(isManual ,scenarioNumber); 
 			}
 		}
 		return single_instance;

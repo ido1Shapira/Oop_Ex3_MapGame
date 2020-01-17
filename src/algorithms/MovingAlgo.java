@@ -7,13 +7,13 @@ import java.util.List;
 
 import dataStructure.edge_data;
 import dataStructure.graph;
-import myUtils.HelpMe;
-import myUtils.myServer;
+import myUtils.MyParser;
+import myUtils.MyServer;
 import utils.Point3D;
 
 public class MovingAlgo {
 
-	private static myServer server = myServer.getServer();
+	private static MyServer server = MyServer.getServer();
 
 	// static variable single_instance of server 
 	private static MovingAlgo single_instance = null; 
@@ -55,16 +55,16 @@ public class MovingAlgo {
 		double minSpeed=10;
 		for (int k = 0; k < server.game.getRobots().size(); k++) { //Initialize the list with the known robots dests nodes
 			String rob_json = log.get(k);
-			destList.add(HelpMe.getRobotDest(rob_json));
-			double currspeed=HelpMe.getRobotSpeed(rob_json);
+			destList.add(MyParser.getRobotDest(rob_json));
+			double currspeed=MyParser.getRobotSpeed(rob_json);
 			if(currspeed<minSpeed )
 				minSpeed= currspeed;
 		}
 		for (int j = 0; j < server.game.getRobots().size(); j++) {
 			String robot_json = log.get(j);
-			int rid = HelpMe.getRobotId(robot_json);
-			int src = HelpMe.getRobotSrc(robot_json);
-			int dest = HelpMe.getRobotDest(robot_json);
+			int rid = MyParser.getRobotId(robot_json);
+			int src = MyParser.getRobotSrc(robot_json);
+			int dest = MyParser.getRobotDest(robot_json);
 			if(dest==-1) {// if the robot needs redirection
 				if(MovingAlgo.iHaveFruits(src)) { //the robot stands on a node that has a fruit on one of its edges
 					server.game.chooseNextEdge(rid, MovingAlgo.bestNeighbor(src));
@@ -87,7 +87,7 @@ public class MovingAlgo {
 		}
 		for (int k = 0; k < server.game.getRobots().size(); k++) { //Initialize the list with the known robots dests nodes
 			String rob_json = log.get(k);
-			if(HelpMe.getRobotDest(rob_json)==-1);
+			if(MyParser.getRobotDest(rob_json)==-1);
 			return -1;
 		}
 		long end = System.currentTimeMillis();
@@ -104,9 +104,9 @@ public class MovingAlgo {
 	public void randomWalk(List<String> log) {
 		for (int j = 0; j < server.game.getRobots().size(); j++) {
 			String robot_json = log.get(j);
-			int rid = HelpMe.getRobotId(robot_json);
-			int src = HelpMe.getRobotSrc(robot_json);
-			int dest = HelpMe.getRobotDest(robot_json);
+			int rid = MyParser.getRobotId(robot_json);
+			int src = MyParser.getRobotSrc(robot_json);
+			int dest = MyParser.getRobotDest(robot_json);
 			if(dest==-1) 
 				server.game.chooseNextEdge(rid, randomNextNode(src));
 		}
@@ -169,7 +169,7 @@ public class MovingAlgo {
 	 * adds all the robots needed for the current scenario to the best place given from nodesByValue list
 	 */
 	public void addRobot() {
-		int robotSize = HelpMe.getRobotsNum(server.game.toString());
+		int robotSize = MyParser.getRobotsNum(server.game.toString());
 		List<Integer> nodesByVal= nodesByValue();
 		for (int i = 0; i < robotSize; i++) {
 			server.game.addRobot(nodesByVal.get(i));			
@@ -187,7 +187,7 @@ public class MovingAlgo {
 		for(int i=0; i<getFruitSrc().size();i++) {
 			String f= server.game.getFruits().get(i);
 			if(findFruitSrc(f)==node)
-				ans+=HelpMe.getFruitValue(f);
+				ans+=MyParser.getFruitValue(f);
 		}
 		return ans;
 	}
@@ -234,11 +234,11 @@ public class MovingAlgo {
 	private static double isOnEdge(String jfruit,  edge_data e ) {
 		Point3D src=MovingAlgo.algo.myGraph.getNode(e.getSrc()).getLocation();
 		Point3D dest=MovingAlgo.algo.myGraph.getNode(e.getDest()).getLocation();
-		Point3D fruit=HelpMe.getFruitPosition(jfruit);
-		double type=HelpMe.getFruitType(jfruit);
+		Point3D fruit=MyParser.getFruitPosition(jfruit);
+		double type=MyParser.getFruitType(jfruit);
 		if ( Math.abs(fruit.distance2D(src) + fruit.distance2D(dest)-src.distance2D(dest))<0.000001) { //fruit is on the edge
 			if((e.getSrc()>e.getDest() && type==-1)||(e.getSrc()<e.getDest() && type==1)) //type of fruit matches edge
-				return HelpMe.getFruitValue(jfruit);
+				return MyParser.getFruitValue(jfruit);
 		}
 		return 0;
 	}

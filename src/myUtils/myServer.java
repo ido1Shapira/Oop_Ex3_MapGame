@@ -3,32 +3,32 @@ package myUtils;
 import Server.Game_Server;
 import Server.game_service;
 
-public class myServer {
+public class MyServer {
 
 	// static variable single_instance of server 
-	private static myServer single_instance = null; 
+	private static MyServer single_instance = null; 
 
 	public game_service game;
 
 	// private constructor restricted to this class itself 
-	private myServer(int scenarioNumber) 
+	private MyServer(int scenarioNumber) 
 	{ 
 		game = Game_Server.getServer(scenarioNumber); // you have [0,23] games
 //		game.startGame();
 	} 
 
 	// static method to create instance of myServer class 
-	public static synchronized myServer getServer(int scenarioNumber) 
+	public static synchronized MyServer getServer(int scenarioNumber) 
 	{ 
 		if (single_instance == null) {
-			synchronized (myServer.class) {
+			synchronized (MyServer.class) {
 				if (single_instance == null)
-					single_instance = new myServer(scenarioNumber); 
+					single_instance = new MyServer(scenarioNumber); 
 			}
 		}
 		return single_instance;
 	}
-	public static myServer getServer() 
+	public static MyServer getServer() 
 	{
 		return single_instance;
 	}
