@@ -74,3 +74,5 @@ in this class there are many "getter" methods since we chose to work with the ac
 all of the other classes use this single instance of server in order to get information about the game. 
    
  
+ ![ללא שם](https://user-images.githubusercontent.com/57194044/72616158-f9355900-393e-11ea-89b7-5995426a5860.jpg)
+
