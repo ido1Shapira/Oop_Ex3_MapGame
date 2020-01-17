@@ -73,6 +73,9 @@ in this class there are many "getter" methods since we chose to work with the ac
 * MyServer- this class has one field of Game_Server object given from the jar.  
 all of the other classes use this single instance of server in order to get information about the game. 
    
- 
+ game window for example
  ![ללא שם](https://user-images.githubusercontent.com/57194044/72616158-f9355900-393e-11ea-89b7-5995426a5860.jpg)
+ 
+ kml window for example
+![kml](https://user-images.githubusercontent.com/57194044/72617437-9a251380-3941-11ea-8b63-834bf0734625.jpg)
 
