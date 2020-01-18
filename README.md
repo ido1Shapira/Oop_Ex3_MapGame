@@ -76,9 +76,12 @@ all of the other classes use this single instance of server in order to get info
  game window for example
  ![ללא שם](https://user-images.githubusercontent.com/57194044/72616158-f9355900-393e-11ea-89b7-5995426a5860.jpg)
  
+ 
  kml window for example!
- [kml](https://user-images.githubusercontent.com/57194044/72667269-9ae1a680-3a22-11ea-9c19-16c929f035cf.jpg)
+
+![kml](https://user-images.githubusercontent.com/57194044/72667269-9ae1a680-3a22-11ea-9c19-16c929f035cf.jpg)
 
 
 Maximum grades table:
+
 ![table](https://user-images.githubusercontent.com/57194044/72668093-c1f0a600-3a2b-11ea-875c-ed64c28d3fcb.jpg)
