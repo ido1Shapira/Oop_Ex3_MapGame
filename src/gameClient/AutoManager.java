@@ -14,14 +14,7 @@ public class AutoManager implements Runnable {
 	public AutoManager(int scenarioNumber) {
 		server = MyServer.getServer(scenarioNumber);
 		server.game.startGame();
-		Thread Master = new Thread(this);
-		Master.start();
-	}
-	public AutoManager(int scenarioNumber, MyServer server) {
-		AutoManager.server = server;
-		server.game.startGame();
-		Thread Master = new Thread(this);
-		Master.start();
+		
 	}
 
 	@Override

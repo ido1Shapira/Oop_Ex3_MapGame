@@ -33,8 +33,7 @@ public class MyGameGUI implements Runnable {
 
 	// private constructor restricted to this class itself 
 	private MyGameGUI() {
-		Thread toPaint = new Thread(this);
-		toPaint.start();
+		buildScenario();
 	} 
 
 	/** 
@@ -89,7 +88,8 @@ public class MyGameGUI implements Runnable {
 			playAuto(scenarioNumber);
 		}
 		kml = new Logger_KML(scenarioNumber); //starts the KML recording of the game
-		MyGameGUI gui = MyGameGUI.getGui(); //starts the gui thread 
+		Thread kmlThread = new Thread(kml);
+		kmlThread.start();
 	}
 
 	/**
@@ -126,6 +126,8 @@ public class MyGameGUI implements Runnable {
 	 */
 	private static void playAuto(int scenarioNumber) {
 		AutoManager auto = new AutoManager(scenarioNumber); //calling the auto game manager to start the game
+		Thread Master = new Thread(auto);
+		Master.start();
 		while(!autoManagerIsReady ) {
 			try {Thread.sleep(50); //estimated time to locate all the robots in order to begin
 			} catch(InterruptedException e) {e.printStackTrace();}

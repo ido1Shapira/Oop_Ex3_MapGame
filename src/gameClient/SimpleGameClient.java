@@ -1,7 +1,4 @@
 package gameClient;
-
-import myUtils.MyServer;
-
 /**
  * This class represents a simple example for using the GameServer API:
  * the main file performs the following tasks:
@@ -20,27 +17,16 @@ import myUtils.MyServer;
  */
 
 public class SimpleGameClient {
-	private static MyServer server;
 
 	public static void main(String[] a) {
 		test1();
 //	buildKmlFiles();
 	}
-	private static void buildKmlFiles() {
-		final int NumberOFScenario = 23;
-		for (int i = 0; i < NumberOFScenario; i++) {
-			runScenario run = new runScenario(i);
-			Thread t1 = new Thread(run);
-			t1.start();
-			try {t1.join();
-			} catch (InterruptedException e) {e.printStackTrace();}
-			System.out.println("finish playing scenario "+i);
-		}
-		System.out.println("finish playing all scenarios");
-	}
 	public static void test1() {
-		MyGameGUI.buildScenario(); // you have [0,23] games
-		server = MyServer.getServer();
-		server.game.startGame();
+		MyGameGUI gui = MyGameGUI.getGui(); //starts the gui thread 
+		Thread toPaint = new Thread(gui);
+		toPaint.start();
+		
+		
 	}
 }

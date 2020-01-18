@@ -90,13 +90,13 @@ public class Logger_KML implements Runnable{
 		 */
 		public Logger_KML(int scenarioNumber) {
 			server = MyServer.getServer(scenarioNumber);
+			server.game.startGame();
 			this.fileName = scenarioNumber+ ".kml";
 			this.content = new StringBuilder(headerFile);
 			this.content.append(Logger_KML.appleStyle);
 			this.content.append(Logger_KML.bananaStyle);
 			this.content.append(Logger_KML.robotStyle);
-			Thread kmlThread = new Thread(this);
-			kmlThread.start();
+			
 		}
 	
 		/**
