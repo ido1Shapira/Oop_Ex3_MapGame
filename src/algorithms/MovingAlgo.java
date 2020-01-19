@@ -7,6 +7,7 @@ import java.util.List;
 
 import dataStructure.edge_data;
 import dataStructure.graph;
+import dataStructure.node_data;
 import myUtils.MyParser;
 import myUtils.MyServer;
 import utils.Point3D;
@@ -46,23 +47,18 @@ public class MovingAlgo {
 	 * 
 	 * @param log the current state of robots and fruits given from the server
 	 */
-	long time=0;
-	public double logicWalk(List<String> log) {
+	public double logicWalk(List<String> log) {//, double [][] table) {
 		ArrayList<Integer> destList= new ArrayList<Integer>(); //list of nodes we know that there is a robot going toward them
 		double minSpeed=10;
-		for (int k = 0; k < server.game.getRobots().size(); k++) { //Initialize the list with the known robots dests nodes
-			String rob_json = log.get(k);
-			destList.add(MyParser.getRobotDest(rob_json));
-			double currspeed=MyParser.getRobotSpeed(rob_json);
-			if(currspeed<minSpeed )
-				minSpeed= currspeed;
-		}
 		for (int j = 0; j < server.game.getRobots().size(); j++) {
 			String robot_json = log.get(j);
-			int rid = MyParser.getRobotId(robot_json);
-			int src = MyParser.getRobotSrc(robot_json);
 			int dest = MyParser.getRobotDest(robot_json);
+			double currspeed=MyParser.getRobotSpeed(robot_json);
+			if(currspeed<minSpeed )
+				minSpeed= currspeed;
 			if(dest==-1) {// if the robot needs redirection
+				int rid = MyParser.getRobotId(robot_json);
+				int src = MyParser.getRobotSrc(robot_json);
 				minSpeed=-1;
 				if(this.iHaveFruits(src)) { //the robot stands on a node that has a fruit on one of its edges
 					server.game.chooseNextEdge(rid, this.bestNeighbor(src));
@@ -70,7 +66,7 @@ public class MovingAlgo {
 				}
 				else //all fruits are more then one step fur
 				{
-					int favNode= whereToGo(src, getFruitSrc()); //first step toward the nearest fruit 
+					int favNode= whereToGo(src, getFruitSrc());//, table); //first step toward the nearest fruit 
 					if(!destList.contains(favNode)) { //there isn't a robot going there
 						server.game.chooseNextEdge(rid, favNode); 
 						destList.add(favNode); //adding the new dest to the list
@@ -83,9 +79,27 @@ public class MovingAlgo {
 				}
 			}
 		}
+
 		return minSpeed;
 	}
 
+	public double logicWalkAlone(List<String> log) {
+		String robot_json = log.get(0);
+		int dest = MyParser.getRobotDest(robot_json);
+		if(dest==-1) {// if the robot needs redirection
+			int rid = MyParser.getRobotId(robot_json);
+			int src = MyParser.getRobotSrc(robot_json);
+			if(this.iHaveFruits(src)) { //the robot stands on a node that has a fruit on one of its edges
+				server.game.chooseNextEdge(rid, this.bestNeighbor(src));
+			}
+			else //all fruits are more then one step fur
+			{
+				int favNode= whereToGo(src, getFruitSrc());//, table); //first step toward the nearest fruit 
+				server.game.chooseNextEdge(rid, favNode); 
+			}
+		}
+		return 0;
+	}
 	/**
 	 *  this method's goal is to move the robots in a random way.
 	 * @param log the current state of robots and fruits given from the server
@@ -117,7 +131,7 @@ public class MovingAlgo {
 		ans = itr.next().getDest();
 		return ans;
 	}
-	
+
 	/**
 	 * this method make a list of nodes arranged by value according of where the fruits are at the moment
 	 * first at the list is the node with the biggest fruits value
@@ -194,17 +208,22 @@ public class MovingAlgo {
 	 * @param fruitSrc
 	 * @return the first step toward the nearest fruit to src node
 	 */
-	public int whereToGo(int src, List<Integer> fruitSrc) {
+	public int whereToGo(int src, List<Integer> fruitSrc) {//, double [][] table) {
 		double minDist=Double.MAX_VALUE;
 		int togo=-1;
 		for (int i = 0; i < fruitSrc.size(); i++) {
 			int current= fruitSrc.get(i);
-			double currDest= MovingAlgo.algo.shortestPathDist(src, current);
-			if(currDest<minDist) {
-				minDist=currDest;
+			double currDist= MovingAlgo.algo.shortestPathDist(src, current);//table[src][current];
+			if(currDist<minDist) {
+				minDist=currDist;
 				togo=current;
 			}
 		}
+		//		List<node_data> listToGo=MovingAlgo.algo.shortestPath(src, togo);
+		//		for (int j = 1; j <listToGo.size(); j++) {
+		//			if( destList.contains(listToGo.get(j).getKey()))
+		//				return -1;
+		//		}
 		try {
 			return MovingAlgo.algo.shortestPath(src, togo).get(1).getKey(); //get the second node on the list going from src to the edge has a fruit
 		}
@@ -258,7 +277,7 @@ public class MovingAlgo {
 		for (String f : fruits) {
 			int src= findFruitSrc(f);
 			if(!list.contains(src))
-					list.add(src);
+				list.add(src);
 		}
 		return list;
 	}

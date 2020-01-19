@@ -2,6 +2,7 @@ package Test;
 
 import static org.junit.Assert.fail;
 
+import java.awt.List;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
@@ -94,6 +95,7 @@ class MovingAlgoTest {
 		DGraph g= new DGraph();
 		g.init(MyServer.getServer().game.getGraph());
 		MovingAlgo m =MovingAlgo.getMovingAlgo(g);
+		ArrayList<Integer> list = new ArrayList<Integer>();
 		if(m.whereToGo(8, m.getFruitSrc())!=9)
 			fail("where to go failed");
 		if(m.whereToGo(10, m.getFruitSrc())!=9)
@@ -104,57 +106,4 @@ class MovingAlgoTest {
 			fail("where to go failed");
 	}
 	
-//	@Test
-//	public void testShortestPathDist() {
-//		DGraph g = new DGraph();
-//		Vertex v1=new Vertex(new Point3D(50,5,1),1,10);
-//		Vertex v2=new Vertex(new Point3D(10,80,1),2,20);
-//		Vertex v3=new Vertex(new Point3D(10,20,1),3,30);
-//		Vertex v4=new Vertex(new Point3D(7,65,1),4,40);
-//		g.addNode(v1);
-//		g.addNode(v2);
-//		g.addNode(v3);
-//		g.addNode(v4);
-//		g.connect(v1.getKey(), v2.getKey(), 30);
-//		g.connect(v1.getKey(), v3.getKey(), 10);
-//		g.connect(v3.getKey(), v4.getKey(), 5);
-//		g.connect(v4.getKey(), v2.getKey(), 7);
-//		Graph_Algo al= new Graph_Algo();
-//		al.init(g);
-//		SysteMovingAlgo.out.println(al.shortestPathDist(v1.getKey(), v2.getKey()));
-//		if(al.shortestPathDist(v1.getKey(), v2.getKey())!=22)
-//			fail("shortest path failed");
-//		if(al.shortestPathDist(v2.getKey(), v1.getKey())!=Integer.MAX_VALUE-1)
-//			fail("shortest path failed"); 
-//		SysteMovingAlgo.out.println("2 ERROR massages expected:");
-//		if(al.shortestPathDist(1, 5)!=-1)
-//			fail("shortest path failed");
-//		if(al.shortestPathDist(5, 5)!=-1)
-//			fail("shortest path failed");
-//		if(al.shortestPathDist(4, 4)!=0)
-//			fail("shortest path failed");
-//	}
-//
-////	@Test
-//	public void testShortestPath() {
-//		DGraph g = new DGraph();
-//		Vertex v1=new Vertex(new Point3D(50,5,1),1,10);
-//		Vertex v2=new Vertex(new Point3D(10,80,1),2,20);
-//		Vertex v3=new Vertex(new Point3D(10,20,1),3,30);
-//		Vertex v4=new Vertex(new Point3D(7,65,1),4,40);
-//		g.addNode(v1);
-//		g.addNode(v2);
-//		g.addNode(v3);
-//		g.addNode(v4);
-//		g.connect(v1.getKey(), v2.getKey(), 30);
-//		g.connect(v1.getKey(), v3.getKey(), 10);
-//		g.connect(v3.getKey(), v4.getKey(), 5);
-//		g.connect(v4.getKey(), v2.getKey(), 7);
-//		Graph_Algo al= new Graph_Algo();
-//		al.init(g);
-//		SysteMovingAlgo.out.println(al.shortestPath(v1.getKey(), v2.getKey()));
-//		if(al.shortestPath(v1.getKey(), v2.getKey()).size()!=4)//v1 -> v3 -> v4 ->v2
-//			fail("shortest path failed");
-//	}
-
 }

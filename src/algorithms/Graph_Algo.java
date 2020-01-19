@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -427,7 +428,7 @@ public class Graph_Algo implements graph_algorithms{
 	 * @param nodeList list of nodes to insert the table
 	 * @return the table
 	 */
-	private double [] [] drawTable (List<node_data> nodeList) {
+	public double [] [] drawTable (List<node_data> nodeList) {
 		int i=0;
 		int j=0;
 		int n= nodeList.size();

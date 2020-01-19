@@ -43,13 +43,11 @@ public class Ex4_Client implements Runnable{
 		int id = 999;
 		Game_Server.login(id);
 		game_service game = Game_Server.getServer(scenario_num); // you have [0,23] games
-		
 		String g = game.getGraph();
 		List<String> fruits = game.getFruits();
 		OOP_DGraph gg = new OOP_DGraph();
 		gg.init(g);
 		init(game);
-		
 		game.startGame();
 		int ind=0;
 		long dt=200;

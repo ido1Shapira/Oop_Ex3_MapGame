@@ -1,4 +1,7 @@
 package gameClient;
+
+import myUtils.MyServer;
+
 /**
  * This class represents a simple example for using the GameServer API:
  * the main file performs the following tasks:
@@ -19,14 +22,13 @@ package gameClient;
 public class SimpleGameClient {
 
 	public static void main(String[] a) {
+		
 		test1();
-//	buildKmlFiles();
 	}
 	public static void test1() {
 		MyGameGUI gui = MyGameGUI.getGui(); //starts the gui thread 
 		Thread toPaint = new Thread(gui);
 		toPaint.start();
-		
-		
+		//MyServer.getServer().game.
 	}
 }
