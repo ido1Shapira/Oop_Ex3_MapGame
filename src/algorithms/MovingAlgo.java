@@ -50,6 +50,39 @@ public class MovingAlgo {
 	public double logicWalk(List<String> log) {//, double [][] table) {
 		ArrayList<Integer> destList= new ArrayList<Integer>(); //list of nodes we know that there is a robot going toward them
 		double minSpeed=10;
+		boolean allGood=true;
+		ArrayList<Integer> fruits =(ArrayList<Integer>) getFruitSrc();
+		for (int k = 0; k < server.game.getRobots().size(); k++) {
+			String robot_json = log.get(k);
+//			double currSpeed=MyParser.getRobotSpeed(robot_json);
+//			if(currSpeed<minSpeed)
+//				minSpeed=currSpeed;
+			int dest = MyParser.getRobotDest(robot_json);
+			if(dest==-1)
+				allGood=false;
+			if(fruits.contains(MyParser.getRobotSrc(robot_json)))
+				allGood=false;
+		}
+		 
+		double minTime=Double.MAX_VALUE;
+		if(allGood ) {
+			for (int i = 0; i < server.game.getRobots().size(); i++) {
+				String robot_json = log.get(i);
+				Point3D rob= MyParser.getRobotPosition(robot_json);
+				Point3D src= algo.myGraph.getNode(MyParser.getRobotSrc(robot_json)).getLocation();
+				Point3D dest= algo.myGraph.getNode(MyParser.getRobotDest(robot_json)).getLocation();
+				double distRobDest= rob.distance2D(dest);
+				double edgeDist= src.distance2D(dest);
+				double mid= distRobDest/edgeDist;
+				double timeToGoEdge= algo.myGraph.getEdge(MyParser.getRobotSrc(robot_json),MyParser.getRobotDest(robot_json)).getWeight();
+				double reltiveTime=1000*((timeToGoEdge*mid)/MyParser.getRobotSpeed(robot_json));
+				if(reltiveTime<minTime)
+					minTime=reltiveTime;
+			}
+//
+//			System.out.println(minTime);
+			return minTime;
+		}
 		for (int j = 0; j < server.game.getRobots().size(); j++) {
 			String robot_json = log.get(j);
 			int dest = MyParser.getRobotDest(robot_json);
