@@ -64,8 +64,8 @@ public class MovingAlgo {
 			int dest = MyParser.getRobotDest(robot_json);
 			if(dest==-1) {// if the robot needs redirection
 				minSpeed=-1;
-				if(MovingAlgo.iHaveFruits(src)) { //the robot stands on a node that has a fruit on one of its edges
-					server.game.chooseNextEdge(rid, MovingAlgo.bestNeighbor(src));
+				if(this.iHaveFruits(src)) { //the robot stands on a node that has a fruit on one of its edges
+					server.game.chooseNextEdge(rid, this.bestNeighbor(src));
 					destList.add(bestNeighbor(src)); //adding the new dest to the list
 				}
 				else //all fruits are more then one step fur
@@ -124,7 +124,7 @@ public class MovingAlgo {
 	 * @return list of nodes arranged by value.
 	 * 
 	 */
-	private static List<Integer> nodesByValue(){
+	public List<Integer> nodesByValue(){
 		List<Integer> nodes=getFruitSrc(); //nodes with fruit on their edges
 		List<Integer> ans= new ArrayList<Integer>(); 
 		int differanteNodes=nodes.size();
@@ -140,7 +140,7 @@ public class MovingAlgo {
 	 * @param list the list to choose from
 	 * @return the best choice from the list
 	 */
-	private static int getMax(List<Integer> list) {
+	private int getMax(List<Integer> list) {
 		int maxNode=0;
 		double maxVal=0;
 		for (int i = 0; i < list.size(); i++) {
@@ -170,7 +170,7 @@ public class MovingAlgo {
 	 * @param node the current node we now check
 	 * @return the node's value
 	 */
-	private static double getNodeVal(int node) {
+	private double getNodeVal(int node) {
 		double ans=0;
 		for(int i=0; i<getFruitSrc().size();i++) {
 			String f= server.game.getFruits().get(i);
@@ -184,7 +184,7 @@ public class MovingAlgo {
 	 * @param src
 	 * @return true if there is a fruit on one of the edges starting from src
 	 */
-	private static boolean iHaveFruits(int src) {				
+	private boolean iHaveFruits(int src) {				
 		return getFruitSrc().contains(src);
 	}
 
@@ -194,7 +194,7 @@ public class MovingAlgo {
 	 * @param fruitSrc
 	 * @return the first step toward the nearest fruit to src node
 	 */
-	private static int whereToGo(int src, List<Integer> fruitSrc) {
+	public int whereToGo(int src, List<Integer> fruitSrc) {
 		double minDist=Double.MAX_VALUE;
 		int togo=-1;
 		for (int i = 0; i < fruitSrc.size(); i++) {
@@ -219,7 +219,7 @@ public class MovingAlgo {
 	 * @param e the edge we now check
 	 * @return the value of the fruit if its on the edge, 0 otherwise
 	 */
-	private static double isOnEdge(String jfruit,  edge_data e ) {
+	public double isOnEdge(String jfruit,  edge_data e ) {
 		Point3D src=MovingAlgo.algo.myGraph.getNode(e.getSrc()).getLocation();
 		Point3D dest=MovingAlgo.algo.myGraph.getNode(e.getDest()).getLocation();
 		Point3D fruit=MyParser.getFruitPosition(jfruit);
@@ -252,7 +252,7 @@ public class MovingAlgo {
 	 * 
 	 * @return list of keys representing the nodes that the fruits are on (the src nodes of the edges) 
 	 */
-	private static List<Integer> getFruitSrc(){
+	public List<Integer> getFruitSrc(){
 		Collection<String> fruits=server.game.getFruits();
 		ArrayList<Integer> list= new ArrayList<Integer>();
 		for (String f : fruits) {
@@ -268,13 +268,13 @@ public class MovingAlgo {
 	 * @param jfruit string representing the fruit
 	 * @return src node key
 	 */
-	private static int findFruitSrc(String jfruit) {
+	public int findFruitSrc(String jfruit) {
 		int ans=-1;
 		for (int i = 0; i < MovingAlgo.algo.myGraph.nodeSize(); i++) {
 			Collection<edge_data> e =MovingAlgo.algo.myGraph.getE(i);
 			for (Iterator<edge_data> iterator = e.iterator(); iterator.hasNext();) {
 				edge_data currE = (edge_data) iterator.next();
-				if(isOnEdge(jfruit, currE)!=0)
+				if(this.isOnEdge(jfruit, currE)!=0)
 					return i;
 			}
 		}
@@ -286,7 +286,7 @@ public class MovingAlgo {
 	 * @param src the node we are on
 	 * @return dest node of best edge
 	 */
-	private static int bestNeighbor(int src) {
+	private int bestNeighbor(int src) {
 		double maxEvalue=0;
 		int maxEidDest=-1;
 		Collection<edge_data> ee = MovingAlgo.algo.myGraph.getE(src);
@@ -295,7 +295,7 @@ public class MovingAlgo {
 			double edgeVal=0;
 			Collection<String> fruits=server.game.getFruits();
 			for (String f : fruits) {
-				edgeVal+=isOnEdge(f, edge);
+				edgeVal+=this.isOnEdge(f, edge);
 			}			
 			if(maxEvalue<edgeVal) {
 				maxEvalue=edgeVal;

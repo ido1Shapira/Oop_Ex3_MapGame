@@ -285,36 +285,4 @@ public class MyGameGUI implements Runnable {
 			kml.writeToFile();
 		}
 	}
-
-
-
-	//	public static void main(String[] a) {
-	//		//test unit for HelpMe
-	//		for (Iterator<String> iterator = game.getRobots().iterator(); iterator.hasNext();) {
-	//			String robotj = (String) iterator.next();
-	//			System.out.println(HelpMe.getRobotValue(robotj));
-	//			System.out.println(HelpMe.getRobotDest(robotj));
-	//			System.out.println(HelpMe.getRobotId(robotj));
-	//			System.out.println(HelpMe.getRobotSpeed(robotj));
-	//			System.out.println(HelpMe.getRobotSrc(robotj));
-	//			System.out.println(HelpMe.getRobotPosition(robotj));
-	//		}
-	//		for (Iterator<String> iterator = game.getFruits().iterator(); iterator.hasNext();) {
-	//			String robotj = (String) iterator.next();
-	//			System.out.println(HelpMe.getFruitType(robotj));
-	//			System.out.println(HelpMe.getFruitValue(robotj));
-	//			System.out.println(HelpMe.getFruitPosition(robotj));
-	//		}
-	//		test1();
-	//	}
-	//	public static void test1() {
-	//		buildScenario();
-	//		String g = server.game.getGraph();
-	//		DGraph gg = DGraph.getDGraph();
-	//		gg.init(g);
-	//		server.game.addRobot(1);
-	//		server.game.addRobot(0);
-	//		paint(server.game.getRobots(), server.game.getFruits());
-	//
-	//	}
 }

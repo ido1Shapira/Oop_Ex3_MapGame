@@ -1,23 +1,16 @@
 package Test;
 
 import static org.junit.Assert.fail;
-import static org.junit.jupiter.api.Assertions.*;
 
-import java.awt.List;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
 
-import algorithms.Graph_Algo;
 import algorithms.MovingAlgo;
 import dataStructure.DGraph;
 import dataStructure.Edge;
-import dataStructure.Vertex;
-import gameClient.AutoManager;
-import gameClient.SimpleGameClient;
 import myUtils.MyParser;
 import myUtils.MyServer;
-import utils.Point3D;
 
 class MovingAlgoTest {
 
@@ -26,7 +19,7 @@ class MovingAlgoTest {
 		MyServer s= MyServer.getServer(2);
 		DGraph g= new DGraph();
 		g.init(MyServer.getServer().game.getGraph());
-		MovingAlgo m =new MovingAlgo(g);
+		MovingAlgo m = MovingAlgo.getMovingAlgo(g);
 //		SysteMovingAlgo.out.println(MovingAlgo.getFruitSrc());
 //		SysteMovingAlgo.out.println(MovingAlgo.nodesByValue());
 		int nodeMax=0;
@@ -34,7 +27,7 @@ class MovingAlgoTest {
 		double valMax=0;
 		double valMin=100;
 		for(int i=0; i<MyServer.getServer().game.getFruits().size(); i++) {
-			int currLoc=MovingAlgo.getFruitSrc().get(i);
+			int currLoc=m.getFruitSrc().get(i);
 			double currVal= MyParser.getFruitValue(MyServer.getServer().game.getFruits().get(i));
 //			SysteMovingAlgo.out.print("the value of the fruit that is on "+currLoc+"  is ");
 //			SysteMovingAlgo.out.println(currVal);
@@ -47,7 +40,7 @@ class MovingAlgoTest {
 				nodeMin=currLoc;
 			}
 		}
-		if(MovingAlgo.nodesByValue().get(0)!=nodeMax || MovingAlgo.nodesByValue().get(MovingAlgo.nodesByValue().size()-1)!=nodeMin)
+		if(m.nodesByValue().get(0)!=nodeMax || m.nodesByValue().get(m.nodesByValue().size()-1)!=nodeMin)
 			fail("nodes by value failed");
 		
 	}
@@ -57,13 +50,13 @@ class MovingAlgoTest {
 		MyServer s= MyServer.getServer(2);
 		DGraph g= new DGraph();
 		g.init(MyServer.getServer().game.getGraph());
-		MovingAlgo m =new MovingAlgo(g);
+		MovingAlgo m =MovingAlgo.getMovingAlgo(g);
 	//	SysteMovingAlgo.out.println(MovingAlgo.getFruitSrc());
 		ArrayList<Integer> list =new ArrayList<Integer>();
 		list.add(9);
 		list.add(4);
 		list.add(3);
-		if(!MovingAlgo.getFruitSrc().containsAll(list))
+		if(!m.getFruitSrc().containsAll(list))
 			fail("get fruit src failed");
 	}
 	@Test
@@ -71,12 +64,12 @@ class MovingAlgoTest {
 		MyServer s= MyServer.getServer(2);
 		DGraph g= new DGraph();
 		g.init(MyServer.getServer().game.getGraph());
-		MovingAlgo m =new MovingAlgo(g);
+		MovingAlgo m =MovingAlgo.getMovingAlgo(g);
 	//	SysteMovingAlgo.out.println(MovingAlgo.getFruitSrc());
 	//	SysteMovingAlgo.out.println(MyServer.getServer().game.getFruits().get(0));
-		if(MovingAlgo.isOnEdge(MyServer.getServer().game.getFruits().get(0), new Edge(9,8,0))==0)
+		if(m.isOnEdge(MyServer.getServer().game.getFruits().get(0), new Edge(9,8,0))==0)
 			fail("is on edge failed");
-		if(MovingAlgo.isOnEdge(MyServer.getServer().game.getFruits().get(0), new Edge(8,9,0))!=0)
+		if(m.isOnEdge(MyServer.getServer().game.getFruits().get(0), new Edge(8,9,0))!=0)
 			fail("is on edge failed");
 	}
 	@Test
@@ -84,13 +77,13 @@ class MovingAlgoTest {
 		MyServer s= MyServer.getServer(2);
 		DGraph g= new DGraph();
 		g.init(MyServer.getServer().game.getGraph());
-		MovingAlgo m =new MovingAlgo(g);
+		MovingAlgo m =MovingAlgo.getMovingAlgo(g);
 		ArrayList<Integer> list =new ArrayList<Integer>();
 		list.add(9);
 		list.add(4);
 		list.add(3);
 		for(int i=0; i<MyServer.getServer().game.getFruits().size(); i++) {
-			if(!list.contains(MovingAlgo.findFruitSrc(MyServer.getServer().game.getFruits().get(i))))
+			if(!list.contains(m.findFruitSrc(MyServer.getServer().game.getFruits().get(i))))
 				fail("get fruit src failed");	
 		}
 	}
@@ -100,14 +93,14 @@ class MovingAlgoTest {
 		MyServer s= MyServer.getServer(2);
 		DGraph g= new DGraph();
 		g.init(MyServer.getServer().game.getGraph());
-		MovingAlgo m =new MovingAlgo(g);
-		if(MovingAlgo.whereToGo(8, MovingAlgo.getFruitSrc())!=9)
+		MovingAlgo m =MovingAlgo.getMovingAlgo(g);
+		if(m.whereToGo(8, m.getFruitSrc())!=9)
 			fail("where to go failed");
-		if(MovingAlgo.whereToGo(10, MovingAlgo.getFruitSrc())!=9)
+		if(m.whereToGo(10, m.getFruitSrc())!=9)
 			fail("where to go failed");
-		if(MovingAlgo.whereToGo(2, MovingAlgo.getFruitSrc())!=3)
+		if(m.whereToGo(2, m.getFruitSrc())!=3)
 			fail("where to go failed");
-		if(MovingAlgo.whereToGo(5, MovingAlgo.getFruitSrc())!=4)
+		if(m.whereToGo(5, m.getFruitSrc())!=4)
 			fail("where to go failed");
 	}
 	

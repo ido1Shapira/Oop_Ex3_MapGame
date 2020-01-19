@@ -18,6 +18,7 @@ public class DGraph implements graph, Serializable{
 	private int mc;
 	private int edgeNum;
 
+	
 
 	public DGraph() {
 		this.id =-1;

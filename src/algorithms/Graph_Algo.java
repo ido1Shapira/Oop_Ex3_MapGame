@@ -155,13 +155,13 @@ public class Graph_Algo implements graph_algorithms{
 		if(this.mcGraph != this.myGraph.getMC()) this.init(myGraph);
 		infoTagWeightReset();		
 		if(!this.checkLegal())  return false; //there is a node that is not reachable to any other node
-		int i=1;
+		int i=0;
 		while (this.myGraph.getNode(i) == null) i++; //finds the first node that exists
 		node_data mySrc= this.myGraph.getNode(i);
 		this.tagKids(mySrc);
 		if(this.countTags(1)!=this.myGraph.nodeSize()) { //if not all the vertices are reachable from src
 			return false;
-		}		
+		}		 
 		this.tagDads(mySrc);
 		if(this.countTags(2)!=this.myGraph.nodeSize()) { //if not all the vertices can reach to src
 			return false;
