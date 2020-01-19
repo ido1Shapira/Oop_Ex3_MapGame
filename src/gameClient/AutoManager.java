@@ -40,33 +40,33 @@ public class AutoManager implements Runnable {
 			List<String> log = server.game.move();
 
 			speed = moveRobots.logicWalk(log);
-			System.out.println(speed);
-			//	System.out.println(-start+end);
-			try {
-				if(stage<5)
-					Thread.sleep(80);
-				if(stage <=5) {
-					if(speed>5)
-						Thread.sleep((long) speed);
-					if(speed==1)
-						Thread.sleep(100);//(int)(100/speed));
-					if(speed==2)
-						Thread.sleep(100);
-					if(speed==3)
-						Thread.sleep(100);
-					if(speed==4)
-						Thread.sleep(100);
-					if(speed==5)
-						Thread.sleep(100);
-					if(speed> 5)
-						System.out.println(speed);
-					if(speed==-1)
-						Thread.sleep(100);
-				}
-
-			} catch (InterruptedException e) {
-				System.out.println("the error is here");
-			}
+			//			System.out.println(speed);
+			//			//	System.out.println(-start+end);
+			//			try {
+			//				if(stage>5)
+			//					Thread.sleep(100);
+			//				if(stage <=5) {
+			//					if(speed>5)
+			//						Thread.sleep((long) speed);
+			//					if(speed==1)
+			//						Thread.sleep(100);//(int)(100/speed));
+			//					if(speed==2)
+			//						Thread.sleep(100);
+			//					if(speed==3)
+			//						Thread.sleep(100);
+			//					if(speed==4)
+			//						Thread.sleep(100);
+			//					if(speed==5)
+			//						Thread.sleep(100);
+			//					if(speed> 5)
+			//						System.out.println(speed);
+			//					if(speed==-1)
+			//						Thread.sleep(100);
+			//				}
+			//
+			//			} catch (InterruptedException e) {
+			//				System.out.println("the error is here");
+			//			}
 		}
 		System.out.println("finish playing... moves = "+i);
 	}

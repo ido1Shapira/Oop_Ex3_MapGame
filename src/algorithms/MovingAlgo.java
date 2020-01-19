@@ -47,42 +47,14 @@ public class MovingAlgo {
 	 * 
 	 * @param log the current state of robots and fruits given from the server
 	 */
-	public double logicWalk(List<String> log) {//, double [][] table) {
+	public double logicWalk(List<String> log)  {
 		ArrayList<Integer> destList= new ArrayList<Integer>(); //list of nodes we know that there is a robot going toward them
-		double minSpeed=10;
-		boolean allGood=true;
-		ArrayList<Integer> fruits =(ArrayList<Integer>) getFruitSrc();
-		for (int k = 0; k < server.game.getRobots().size(); k++) {
-			String robot_json = log.get(k);
-//			double currSpeed=MyParser.getRobotSpeed(robot_json);
-//			if(currSpeed<minSpeed)
-//				minSpeed=currSpeed;
+		for (int j = 0; j < server.game.getRobots().size(); j++) {
+			String robot_json = log.get(j);
 			int dest = MyParser.getRobotDest(robot_json);
-			if(dest==-1)
-				allGood=false;
-			if(fruits.contains(MyParser.getRobotSrc(robot_json)))
-				allGood=false;
+			destList.add(dest);
 		}
-		 
-		double minTime=Double.MAX_VALUE;
-		if(allGood ) {
-			for (int i = 0; i < server.game.getRobots().size(); i++) {
-				String robot_json = log.get(i);
-				Point3D rob= MyParser.getRobotPosition(robot_json);
-				Point3D src= algo.myGraph.getNode(MyParser.getRobotSrc(robot_json)).getLocation();
-				Point3D dest= algo.myGraph.getNode(MyParser.getRobotDest(robot_json)).getLocation();
-				double distRobDest= rob.distance2D(dest);
-				double edgeDist= src.distance2D(dest);
-				double mid= distRobDest/edgeDist;
-				double timeToGoEdge= algo.myGraph.getEdge(MyParser.getRobotSrc(robot_json),MyParser.getRobotDest(robot_json)).getWeight();
-				double reltiveTime=1000*((timeToGoEdge*mid)/MyParser.getRobotSpeed(robot_json));
-				if(reltiveTime<minTime)
-					minTime=reltiveTime;
-			}
-//
-//			System.out.println(minTime);
-			return minTime;
-		}
+		double minSpeed=10;
 		for (int j = 0; j < server.game.getRobots().size(); j++) {
 			String robot_json = log.get(j);
 			int dest = MyParser.getRobotDest(robot_json);
@@ -115,24 +87,99 @@ public class MovingAlgo {
 
 		return minSpeed;
 	}
+	
+	//please ignore!!
+//	public double logicWalk4(List<String> log) {//, double [][] table) {
+//		ArrayList<Integer> destList= new ArrayList<Integer>(); //list of nodes we know that there is a robot going toward them
+//		double minSpeed=10;
+//	
+//		ArrayList<Integer> fruits =(ArrayList<Integer>) getFruitSrc();
+//		for (int k = 0; k < server.game.getRobots().size(); k++) {
+//			String robot_json = log.get(k);
+////			double currSpeed=MyParser.getRobotSpeed(robot_json);
+////			if(currSpeed<minSpeed)
+////				minSpeed=currSpeed;
+//			
+//			int dest = MyParser.getRobotDest(robot_json);
+//			destList.add(dest);
+////			if(dest==-1) {
+////				onANode=true;
+////				allGood=false;
+////			}
+////			if(fruits.contains(MyParser.getRobotSrc(robot_json)))
+////				allGood=false;
+//		}
+//		double minTime=Double.MAX_VALUE;
+////		boolean allGood=true;
+////		boolean onANode= false;
+////		if(allGood && !onANode) {
+////			for (int i = 0; i < server.game.getRobots().size(); i++) {
+////				String robot_json = log.get(i);
+////				Point3D rob= MyParser.getRobotPosition(robot_json);
+////				
+////				Point3D src= algo.myGraph.getNode(MyParser.getRobotSrc(robot_json)).getLocation();
+////				Point3D dest= algo.myGraph.getNode(MyParser.getRobotDest(robot_json)).getLocation();
+////				double distRobDest= rob.distance2D(dest);
+////				double edgeDist= src.distance2D(dest);
+////				double mid= distRobDest/edgeDist;
+////				double timeToGoEdge= algo.myGraph.getEdge(MyParser.getRobotSrc(robot_json),MyParser.getRobotDest(robot_json)).getWeight();
+////				double reltiveTime=1000*((timeToGoEdge*mid)/MyParser.getRobotSpeed(robot_json));
+////				if(reltiveTime<minTime)
+////					minTime=reltiveTime;
+////			}
+//////			System.out.println(minTime);
+////			return minTime;
+////		}
+//		for (int j = 0; j < server.game.getRobots().size(); j++) {
+//			String robot_json = log.get(j);
+//			int dest = MyParser.getRobotDest(robot_json);
+//			double currspeed=MyParser.getRobotSpeed(robot_json);
+//			if(currspeed<minSpeed )
+//				minSpeed= currspeed;
+//			if(dest==-1) {// if the robot needs redirection
+//				int rid = MyParser.getRobotId(robot_json);
+//				int src = MyParser.getRobotSrc(robot_json);
+//				minSpeed=-1;
+//				if(this.iHaveFruits(src)) { //the robot stands on a node that has a fruit on one of its edges
+//					server.game.chooseNextEdge(rid, this.bestNeighbor(src));
+//					destList.add(bestNeighbor(src)); //adding the new dest to the list
+//				}
+//				else //all fruits are more then one step fur
+//				{
+//					int favNode= whereToGo(src, getFruitSrc());//, table); //first step toward the nearest fruit 
+//					if(!destList.contains(favNode)) { //there isn't a robot going there
+//						server.game.chooseNextEdge(rid, favNode); 
+//						destList.add(favNode); //adding the new dest to the list
+//					}
+//					else { //there isn't a robot going there already
+//						int secondOption=second(src,favNode, destList);  //go the other way
+//						server.game.chooseNextEdge(rid, secondOption);
+//						destList.add(secondOption); ////adding the new dest to the list
+//					}
+//				}
+//			}
+//		}
+//
+//		return minSpeed;
+//	}
 
-	public double logicWalkAlone(List<String> log) {
-		String robot_json = log.get(0);
-		int dest = MyParser.getRobotDest(robot_json);
-		if(dest==-1) {// if the robot needs redirection
-			int rid = MyParser.getRobotId(robot_json);
-			int src = MyParser.getRobotSrc(robot_json);
-			if(this.iHaveFruits(src)) { //the robot stands on a node that has a fruit on one of its edges
-				server.game.chooseNextEdge(rid, this.bestNeighbor(src));
-			}
-			else //all fruits are more then one step fur
-			{
-				int favNode= whereToGo(src, getFruitSrc());//, table); //first step toward the nearest fruit 
-				server.game.chooseNextEdge(rid, favNode); 
-			}
-		}
-		return 0;
-	}
+//	public double logicWalkAlone(List<String> log) {
+//		String robot_json = log.get(0);
+//		int dest = MyParser.getRobotDest(robot_json);
+//		if(dest==-1) {// if the robot needs redirection
+//			int rid = MyParser.getRobotId(robot_json);
+//			int src = MyParser.getRobotSrc(robot_json);
+//			if(this.iHaveFruits(src)) { //the robot stands on a node that has a fruit on one of its edges
+//				server.game.chooseNextEdge(rid, this.bestNeighbor(src));
+//			}
+//			else //all fruits are more then one step fur
+//			{
+//				int favNode= whereToGo(src, getFruitSrc());//, table); //first step toward the nearest fruit 
+//				server.game.chooseNextEdge(rid, favNode); 
+//			}
+//		}
+//		return 0;
+//	}
 	/**
 	 *  this method's goal is to move the robots in a random way.
 	 * @param log the current state of robots and fruits given from the server

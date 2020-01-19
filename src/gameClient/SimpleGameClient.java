@@ -29,6 +29,5 @@ public class SimpleGameClient {
 		MyGameGUI gui = MyGameGUI.getGui(); //starts the gui thread 
 		Thread toPaint = new Thread(gui);
 		toPaint.start();
-		//MyServer.getServer().game.
 	}
 }
