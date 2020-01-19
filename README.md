@@ -79,9 +79,8 @@ all of the other classes use this single instance of server in order to get info
  
  kml window for example!
 
-![kml](https://user-images.githubusercontent.com/57194044/72667269-9ae1a680-3a22-11ea-9c19-16c929f035cf.jpg)
-
+![kml](https://user-images.githubusercontent.com/57194044/72685501-828d8c80-3af3-11ea-8ee9-ce62e1eb0c47.jpg)
 
 Maximum grades table:
 
-![table](https://user-images.githubusercontent.com/57194044/72668093-c1f0a600-3a2b-11ea-875c-ed64c28d3fcb.jpg)
+![table](https://user-images.githubusercontent.com/57194044/72685503-86211380-3af3-11ea-98e9-1ee1ffa3e5c6.jpg)
