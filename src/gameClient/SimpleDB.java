@@ -86,6 +86,7 @@ public class SimpleDB {
 				}
 				return ans;
 			}
+			
 		public static int allUsers() {
 			int ans = 0;
 			String allCustomersQuery = "SELECT * FROM Users;";

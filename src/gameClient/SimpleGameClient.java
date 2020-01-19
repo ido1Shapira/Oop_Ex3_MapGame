@@ -1,7 +1,5 @@
 package gameClient;
 
-import myUtils.MyServer;
-
 /**
  * This class represents a simple example for using the GameServer API:
  * the main file performs the following tasks:

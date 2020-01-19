@@ -74,9 +74,11 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 import dataStructure.node_data;
+import gameClient.DBquery;
 import gameClient.ManualManager;
 import gameClient.MyGameGUI;
 import myUtils.MyParser;
@@ -725,11 +727,37 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menu = new JMenu("File");
 		menuBar.add(menu);
-		JMenuItem menuItem1 = new JMenuItem(" Save...   ");
+		JMenuItem menuItem1 = new JMenuItem("Save image");
 		menuItem1.addActionListener(std);
 		menuItem1.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
 				Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		menu.add(menuItem1);
+		
+		JMenu option = new JMenu("Option");
+		menuBar.add(option);
+		
+		JMenuItem getInfo = new JMenuItem("Get info");
+		getInfo.addActionListener(std);
+		option.add(getInfo);
+		
+		JMenuItem getPosInClass = new JMenuItem("Get position in class");
+		getPosInClass.addActionListener(std);
+		option.add(getPosInClass);
+		
+		
+//		JMenuItem numberOfGames = new JMenuItem(" Number of games   ");
+//		numberOfGames.addActionListener(std);
+//		option.add(numberOfGames);
+//
+//		JMenuItem currentLevel = new JMenuItem(" Current level   ");
+//		currentLevel.addActionListener(std);
+//		option.add(currentLevel);
+//
+//		JMenuItem bestOutCome = new JMenuItem(" Best out come in all scenario  ");
+//		currentLevel.addActionListener(std);
+//		option.add(currentLevel);
+				
+		
 		return menuBar;
 	}
 
@@ -1672,6 +1700,18 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 			if (filename != null) {
 				StdDraw.save(chooser.getDirectory() + File.separator + chooser.getFile());
 			}
+			break;
+		case "Get info":
+			String idForInfo = JOptionPane.showInputDialog("Enter id student");
+			DBquery q = new DBquery(idForInfo);
+			String answer = q.getInfo();
+			JOptionPane.showMessageDialog(null,answer);
+			break;
+		case "Get position in class":
+			String idForPosition = JOptionPane.showInputDialog("Enter id student");
+			DBquery q1 = new DBquery(idForPosition);
+			String answer1 = q1.getPosition();
+			JOptionPane.showMessageDialog(null,answer1);
 			break;
 		}
 	}
