@@ -7,6 +7,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 
+import dataStructure.DGraph;
+import dataStructure.edge_data;
+import dataStructure.node_data;
 import myUtils.MyParser;
 import myUtils.MyServer;
 import utils.Point3D;
@@ -21,6 +24,8 @@ public class Logger_KML implements Runnable{
 	private static String data;
 	private String fileName;
 	private StringBuilder content;
+	private MyServer server;
+
 	//header file is the opening of the file required for every kml file
 	private static final String headerFile = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + 
 			"<kml xmlns=\"http://earth.google.com/kml/2.2\">\r\n" + 
@@ -63,13 +68,9 @@ public class Logger_KML implements Runnable{
 			"    </Icon>\r\n" + 
 			"  </IconStyle>\r\n" + 
 			"</Style>\n";
-
+	
 	// kml string representing a place mark and a time stamp 
 	private static final String placeMark = "<Placemark>\r\n" + 
-//			"      <TimeSpan>\r\n" + 
-//			"        <begin>dataStart</begin>\r\n" + 
-//			"        <end>dataEnd</end>\r\n" + 
-//			"      </TimeSpan>\r\n" +
 			" <TimeStamp>\r\n" + 
 			"          <when>date</when>\r\n" + 
 			"        </TimeStamp>" +
@@ -78,10 +79,21 @@ public class Logger_KML implements Runnable{
 			"        <coordinates>(x,y)</coordinates>\r\n" + 
 			"      </Point>\r\n" + 
 			"    </Placemark>\n";
-
-		private static MyServer server;
-
-
+	
+	private static final String path = "  <Placemark>\r\n" + 
+			"	   		<LineString>\r\n" + 
+			"	   			<coordinates>\r\n" + 
+			"	   				(x1,y1),0\n\r(x2,y2),0\r\n" + 
+			"	   			</coordinates>\r\n" + 
+			"	   		</LineString>\r\n" + 
+			" 			<Style> \r\n" + 
+			"  				<LineStyle>  \r\n" + 
+			"   				<color>#ff00aaff</color>\r\n" + 
+			"   				<width>3</width>\r\n" + 
+			"  				</LineStyle> \r\n" + 
+			" 			</Style>" +
+			"	   	</Placemark>";
+	
 		 
 		/**
 		 * private constructor restricted to this class itself
@@ -144,10 +156,33 @@ public class Logger_KML implements Runnable{
 		this.content.append(placeMark); //adds placeMark to the logger
 	}
 	/**
+	 * add a path to the kml file
+	 * @param p1 p2 points that represent the path
+	 */
+	private void addPath(Point3D p1, Point3D p2) {
+		String path = Logger_KML.path;
+		path = path.replace("(x1,y1)",p1.x()+","+p1.y());
+		path = path.replace("(x2,y2)",p2.x()+","+p2.y());
+		this.content.append(path); //adds path to the logger
+	}
+	
+	
+	
+	/**
 	 * five times in a second this class takes a screenshot of the game converts it to a kml format and adds it the the logger
 	 */
 	@Override
 	public void run() {
+		String jDgraph = this.server.game.getGraph();
+		DGraph dg = new DGraph();
+		dg.init(jDgraph);
+		for (Iterator<node_data> iterator = dg.getV().iterator(); iterator.hasNext();) {
+			node_data v = (node_data) iterator.next();
+			for (Iterator<edge_data> iterator2 = dg.getE(v.getKey()).iterator(); iterator2.hasNext();) {
+				edge_data e = (edge_data) iterator2.next();
+				this.addPath(dg.getNode(e.getSrc()).getLocation(),dg.getNode(e.getDest()).getLocation());
+			}
+		}
 		while(server.game.isRunning()) {
 			this.screenShot();
 			try {
@@ -159,7 +194,7 @@ public class Logger_KML implements Runnable{
 	/**
 	 * convert the positions of all the robots and fruits to a kml format and adds it to the logger
 	 */
-	private void screenShot() {
+	public void screenShot() {
 		Logger_KML.getKmlFormatDate(); //update current date
 		//fruits
 		Iterator<String> f_iter = server.game.getFruits().iterator();
@@ -182,13 +217,13 @@ public class Logger_KML implements Runnable{
 
 	}
 
-//	public static void main(String args[]) throws FileNotFoundException {
-//		String info = server.game.toString();
-//		System.out.println(info);
-//		Logger_KML kml = new Logger_KML("test");
-//		MyGameGUI.buildScenario(); // you have [0,23] games	
-//		server.game.startGame();
-//	}
+	public static void main(String args[]) {
+//		Logger_KML kml = new Logger_KML();
+//		kml.addPath(new Point3D("35.19597880064568,32.10154696638656,0"), new Point3D("35.19597880064578,32.10154696638666,0"));
+//		System.out.println(kml.content);
+//		System.out.println(kml.footerFile);
+		
+	}
 
 
 }
