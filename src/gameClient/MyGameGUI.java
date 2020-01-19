@@ -238,7 +238,7 @@ public class MyGameGUI implements Runnable {
 		Point3D pos = MyParser.getFruitPosition(fruitJ);
 		//find type
 		int type = MyParser.getFruitType(fruitJ);
-		StdDraw.picture(pos.x(),pos.y(),(type == -1) ? "banana.jpeg" :"apple.jpeg", 0.00075, 0.00055);
+		StdDraw.picture(pos.x(),pos.y(),(type == -1) ? "data/banana.jpeg" :"data/apple.jpeg", 0.00075, 0.00055);
 	}
 	/**
 	 * draw edge according to the edge_data given
