@@ -128,17 +128,17 @@ public class Logger_KML implements Runnable{
 	 * this method takes the string that the class built during the game and adds it to the kml file.
 	 * it also adds the footer of the kml file
 	 */
-	public boolean writeToFile(){
+	public String writeToFile(){
 		try {
 			FileWriter fileWriter = new FileWriter(this.fileName, true);
 			PrintWriter pw = new PrintWriter(fileWriter);
+			this.content.append(footerFile);
 			pw.println(this.content); //content = header+ game screenshots
-			pw.println(footerFile);
 			pw.close();
-			return true;
+			return this.content.substring(0);
 		} catch (IOException e) {
 			e.printStackTrace();
-			return false;
+			return null;
 		}
 	}
 	/**

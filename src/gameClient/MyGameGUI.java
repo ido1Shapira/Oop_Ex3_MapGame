@@ -6,6 +6,7 @@ import java.util.Random;
 
 import javax.swing.JOptionPane;
 
+import Server.Game_Server;
 import dataStructure.DGraph;
 import dataStructure.edge_data;
 import dataStructure.graph;
@@ -30,9 +31,12 @@ public class MyGameGUI implements Runnable {
 	// static variable single_instance of server 
 	private static MyGameGUI single_instance = null;
 
-
+	public static DBquery q = new DBquery("0"); //Default id in case the client  not to log in
 	// private constructor restricted to this class itself 
 	private MyGameGUI() {
+		String id = JOptionPane.showInputDialog("Log in:","enter id");
+		q = new DBquery(id);
+		Game_Server.login(Integer.parseInt(id));
 		buildScenario();
 	} 
 
@@ -280,15 +284,19 @@ public class MyGameGUI implements Runnable {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {e.printStackTrace();}
 			}
-			Object[] option = {"Yes","No"};
-			String info = server.game.toString();
-			int moves = MyParser.getMoves(info);
-			int toKML = JOptionPane.showOptionDialog(null, "Game over:\nyou got "+points+" points with "+ moves+" moves\n"
-					+ "Do you want to save this game to a kml file?","Game over",
-					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, option,null);
-			if(toKML == 0) {
-				kml.writeToFile();
-			}
+//			Object[] option = {"Yes","No"};
+//			String info = server.game.toString();
+//			int moves = MyParser.getMoves(info);
+//			int toKML = JOptionPane.showOptionDialog(null, "Game over:\nyou got "+points+" points with "+ moves+" moves\n"
+//					+ "Do you want to save this game to a kml file?","Game over",
+//					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, option,null);
+//			if(toKML == 0) {
+//				kml.writeToFile();
+//			}
+			String res = server.game.toString();
+			String remark = kml.writeToFile();
+			server.game.sendKML(remark); // Should be your KML
+			System.out.println(res);
 		}
 	}
 }

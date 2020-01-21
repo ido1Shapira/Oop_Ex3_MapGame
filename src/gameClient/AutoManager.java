@@ -1,13 +1,9 @@
 package gameClient;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import algorithms.Graph_Algo;
 import algorithms.MovingAlgo;
 import dataStructure.DGraph;
-import dataStructure.node_data;
 import myUtils.MyServer;
 
 public class AutoManager implements Runnable {
@@ -66,7 +62,7 @@ public class AutoManager implements Runnable {
 						Thread.sleep(90);
 					else {
 						if(speed!=-1 && speed>10) {
-							Thread.sleep(Math.min((long) speed, 150));
+							Thread.sleep(Math.min((long) speed, 200));
 						}
 						else {
 							if(speed ==-1)

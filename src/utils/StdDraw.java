@@ -78,7 +78,6 @@ import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 import dataStructure.node_data;
-import gameClient.DBquery;
 import gameClient.ManualManager;
 import gameClient.MyGameGUI;
 import myUtils.MyParser;
@@ -1702,15 +1701,11 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 			}
 			break;
 		case "Get info":
-			String idForInfo = JOptionPane.showInputDialog("Enter id student");
-			DBquery q = new DBquery(idForInfo);
-			String answer = q.getInfo();
+			String answer = MyGameGUI.q.getInfo();
 			JOptionPane.showMessageDialog(null,answer);
 			break;
 		case "Get position in class":
-			String idForPosition = JOptionPane.showInputDialog("Enter id student");
-			DBquery q1 = new DBquery(idForPosition);
-			String answer1 = q1.getPosition();
+			String answer1 = MyGameGUI.q.getPosition();
 			JOptionPane.showMessageDialog(null,answer1);
 			break;
 		}
