@@ -1,12 +1,8 @@
 package Test;
 
 import static org.junit.Assert.fail;
-
-import java.awt.List;
 import java.util.ArrayList;
-
 import org.junit.jupiter.api.Test;
-
 import algorithms.MovingAlgo;
 import dataStructure.DGraph;
 import dataStructure.Edge;
@@ -17,12 +13,10 @@ class MovingAlgoTest {
 
 	@Test
 	void testNodesByValue() {
-		MyServer s= MyServer.getServer(2);
+		MyServer.getServer(2);
 		DGraph g= new DGraph();
 		g.init(MyServer.getServer().game.getGraph());
 		MovingAlgo m = MovingAlgo.getMovingAlgo(g);
-//		SysteMovingAlgo.out.println(MovingAlgo.getFruitSrc());
-//		SysteMovingAlgo.out.println(MovingAlgo.nodesByValue());
 		int nodeMax=0;
 		int nodeMin=0;
 		double valMax=0;
@@ -30,8 +24,6 @@ class MovingAlgoTest {
 		for(int i=0; i<MyServer.getServer().game.getFruits().size(); i++) {
 			int currLoc=m.getFruitSrc().get(i);
 			double currVal= MyParser.getFruitValue(MyServer.getServer().game.getFruits().get(i));
-//			SysteMovingAlgo.out.print("the value of the fruit that is on "+currLoc+"  is ");
-//			SysteMovingAlgo.out.println(currVal);
 			if(currVal>= valMax) {
 				valMax= currVal;
 				nodeMax=currLoc;
@@ -41,18 +33,17 @@ class MovingAlgoTest {
 				nodeMin=currLoc;
 			}
 		}
-		if(m.nodesByValue().get(0)!=nodeMax || m.nodesByValue().get(m.nodesByValue().size()-1)!=nodeMin)
+		if(m.nodesByValue(m.getFruitSrc()).get(0)!=nodeMax || m.nodesByValue(m.getFruitSrc()).get(m.nodesByValue(m.getFruitSrc()).size()-1)!=nodeMin)
 			fail("nodes by value failed");
 		
 	}
 	
 	@Test
 	void testGetFruitSrc() {
-		MyServer s= MyServer.getServer(2);
+		MyServer.getServer(2);
 		DGraph g= new DGraph();
 		g.init(MyServer.getServer().game.getGraph());
 		MovingAlgo m =MovingAlgo.getMovingAlgo(g);
-	//	SysteMovingAlgo.out.println(MovingAlgo.getFruitSrc());
 		ArrayList<Integer> list =new ArrayList<Integer>();
 		list.add(9);
 		list.add(4);
@@ -62,12 +53,10 @@ class MovingAlgoTest {
 	}
 	@Test
 	void testIsOnEdge() {
-		MyServer s= MyServer.getServer(2);
+		MyServer.getServer(2);
 		DGraph g= new DGraph();
 		g.init(MyServer.getServer().game.getGraph());
 		MovingAlgo m =MovingAlgo.getMovingAlgo(g);
-	//	SysteMovingAlgo.out.println(MovingAlgo.getFruitSrc());
-	//	SysteMovingAlgo.out.println(MyServer.getServer().game.getFruits().get(0));
 		if(m.isOnEdge(MyServer.getServer().game.getFruits().get(0), new Edge(9,8,0))==0)
 			fail("is on edge failed");
 		if(m.isOnEdge(MyServer.getServer().game.getFruits().get(0), new Edge(8,9,0))!=0)
@@ -75,7 +64,7 @@ class MovingAlgoTest {
 	}
 	@Test
 	void testFindFruitSrc() {
-		MyServer s= MyServer.getServer(2);
+		MyServer.getServer(2);
 		DGraph g= new DGraph();
 		g.init(MyServer.getServer().game.getGraph());
 		MovingAlgo m =MovingAlgo.getMovingAlgo(g);
@@ -91,11 +80,10 @@ class MovingAlgoTest {
 	
 	@Test
 	void testWhereToGo() {
-		MyServer s= MyServer.getServer(2);
+		MyServer.getServer(2);
 		DGraph g= new DGraph();
 		g.init(MyServer.getServer().game.getGraph());
 		MovingAlgo m =MovingAlgo.getMovingAlgo(g);
-		ArrayList<Integer> list = new ArrayList<Integer>();
 		if(m.whereToGo(8, m.getFruitSrc())!=9)
 			fail("where to go failed");
 		if(m.whereToGo(10, m.getFruitSrc())!=9)

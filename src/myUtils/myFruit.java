@@ -10,8 +10,14 @@ public class myFruit  {
 	private Point3D pos;
 	private int type;
 	private double value;
-	private boolean haveRobot;
 	
+	
+	public myFruit(String jfruit) {
+		pos= MyParser.getFruitPosition(jfruit);
+		type= MyParser.getFruitType(jfruit);
+		value= MyParser.getFruitValue(jfruit);
+	}
+
 	public Point3D getLocation() {
 		return pos;
 	}
@@ -24,13 +30,13 @@ public class myFruit  {
 		return value;
 	}
 
-	public boolean isHaveRobot() {
-		return haveRobot;
-	}
-
-	public void setHaveRobot(boolean haveRobot) {
-		this.haveRobot = haveRobot;
-	}
+//	public boolean isHaveRobot() {
+//		return haveRobot;
+//	}
+//
+//	public void setHaveRobot(boolean haveRobot) {
+//		this.haveRobot = haveRobot;
+//	}
 	
 	
 

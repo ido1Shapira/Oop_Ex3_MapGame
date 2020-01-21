@@ -29,44 +29,57 @@ public class AutoManager implements Runnable {
 		DGraph g = new DGraph();
 		g.init(gJason); //case that we aren't using gui
 		moveRobots = MovingAlgo.getMovingAlgo(g);
-		moveRobots.addRobot();
+		if(stage!=23 && stage!=16)
+			moveRobots.addRobot();
+		if(stage ==16 )
+			moveRobots.addRobotFor16();
+		else
+			moveRobots.addRobotFor23();
 		server.game.startGame();
 		MyGameGUI.autoManagerIsReady = true;
 		double speed;
 		System.out.println("start playing...");
-		System.out.println(stage);
+		System.out.println("stage is "+stage);
 		while(server.game.isRunning()) {
 			i++;
 			List<String> log = server.game.move();
-
-			speed = moveRobots.logicWalk(log);
-			//			System.out.println(speed);
-			//			//	System.out.println(-start+end);
-			//			try {
-			//				if(stage>5)
-			//					Thread.sleep(100);
-			//				if(stage <=5) {
-			//					if(speed>5)
-			//						Thread.sleep((long) speed);
-			//					if(speed==1)
-			//						Thread.sleep(100);//(int)(100/speed));
-			//					if(speed==2)
-			//						Thread.sleep(100);
-			//					if(speed==3)
-			//						Thread.sleep(100);
-			//					if(speed==4)
-			//						Thread.sleep(100);
-			//					if(speed==5)
-			//						Thread.sleep(100);
-			//					if(speed> 5)
-			//						System.out.println(speed);
-			//					if(speed==-1)
-			//						Thread.sleep(100);
-			//				}
-			//
-			//			} catch (InterruptedException e) {
-			//				System.out.println("the error is here");
-			//			}
+			if(stage==23) {
+				speed = moveRobots.logicWalkFor23(log);
+				try {
+					Thread.sleep(30);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			if(stage==16) {
+				speed = moveRobots.logicWalkFor16(log);
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			if(stage !=23 && stage!=16) {
+				speed = moveRobots.logicNewWalk(log);
+				try {
+					if(stage ==11)
+						Thread.sleep(90);
+					else {
+						if(speed!=-1 && speed>10) {
+							Thread.sleep(Math.min((long) speed, 150));
+						}
+						else {
+							if(speed ==-1)
+								Thread.sleep(150);
+							else
+								Thread.sleep(50);
+						}
+					}
+				}
+				catch (InterruptedException e) {
+					System.out.println("the error is here");
+				}
+			}
 		}
 		System.out.println("finish playing... moves = "+i);
 	}
