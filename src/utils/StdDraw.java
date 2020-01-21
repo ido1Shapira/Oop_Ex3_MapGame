@@ -733,7 +733,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 				Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		menu.add(menuItem1);
 		
-		JMenu option = new JMenu("Option");
+		JMenu option = new JMenu("Options");
 		menuBar.add(option);
 		
 		JMenuItem getInfo = new JMenuItem("Get info");

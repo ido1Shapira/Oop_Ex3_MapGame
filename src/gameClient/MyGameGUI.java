@@ -26,7 +26,7 @@ public class MyGameGUI implements Runnable {
 	private static MyServer server = MyServer.getServer();
 
 	public static boolean autoManagerIsReady = false; 
-	
+
 	// static variable single_instance of server 
 	private static MyGameGUI single_instance = null;
 
@@ -68,10 +68,14 @@ public class MyGameGUI implements Runnable {
 	 * 
 	 */
 	public static void buildScenario() {
-		Object[]scenarioOptions = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23};
-		scenarioNumber = (Integer)JOptionPane.showInputDialog(null, "Pick the scenario number:",
-				"scenario options", JOptionPane.QUESTION_MESSAGE, null, scenarioOptions, null);
-
+		try {
+			Object[]scenarioOptions = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23};
+			scenarioNumber = (Integer)JOptionPane.showInputDialog(null, "Pick the scenario number:",
+					"scenario options", JOptionPane.QUESTION_MESSAGE, null, scenarioOptions, null);
+		}
+		catch (NullPointerException e) {
+			return;
+		}
 		server = MyServer.getServer(scenarioNumber); // you have [0,23] games
 
 		String gJason = server.game.getGraph();
@@ -190,8 +194,8 @@ public class MyGameGUI implements Runnable {
 			StdDraw.setYscale(Ymin,Ymax);
 		}
 		StdDraw.clear(); //clear previous screen
-//				String background = MyParser.getBackGround(server.game.toString());
-//				StdDraw.picture((Xmax+Xmin)/2,(Ymax+Ymin)/2,"C:/Users/idsha/eclipse-workspace/OOP_ex3/"+background+".png");
+		//				String background = MyParser.getBackGround(server.game.toString());
+		//				StdDraw.picture((Xmax+Xmin)/2,(Ymax+Ymin)/2,"C:/Users/idsha/eclipse-workspace/OOP_ex3/"+background+".png");
 		paintInfoGame();
 		//draw edges
 		for (Iterator<node_data> iterator = g.getV().iterator(); iterator.hasNext();) {
@@ -269,20 +273,22 @@ public class MyGameGUI implements Runnable {
 	 */
 	@Override
 	public void run() {
-		while(server.game.isRunning()) {
-			paint(server.game.getRobots(), server.game.getFruits());
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {e.printStackTrace();}
-		}
-		Object[] option = {"Yes","No"};
-		String info = server.game.toString();
-		int moves = MyParser.getMoves(info);
-		int toKML = JOptionPane.showOptionDialog(null, "Game over:\nyou got "+points+" points with "+ moves+" moves\n"
-				+ "Do you want to save this game to a kml file?","Game over",
-				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, option,null);
-		if(toKML == 0) {
-			kml.writeToFile();
+		if(server != null) {
+			while(server.game.isRunning()) {
+				paint(server.game.getRobots(), server.game.getFruits());
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {e.printStackTrace();}
+			}
+			Object[] option = {"Yes","No"};
+			String info = server.game.toString();
+			int moves = MyParser.getMoves(info);
+			int toKML = JOptionPane.showOptionDialog(null, "Game over:\nyou got "+points+" points with "+ moves+" moves\n"
+					+ "Do you want to save this game to a kml file?","Game over",
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, option,null);
+			if(toKML == 0) {
+				kml.writeToFile();
+			}
 		}
 	}
 }
