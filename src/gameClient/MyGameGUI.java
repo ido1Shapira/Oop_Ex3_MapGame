@@ -324,12 +324,7 @@ public class MyGameGUI implements Runnable {
 			String info = server.game.toString();
 			System.out.println(info);
 			int moves = MyParser.getMoves(info);
-			ArrayList<Double> allBestscoreByIdLevel = q.getBestScoreById(q.getId());
-			boolean newRecored = false;
-			if (allBestscoreByIdLevel.get(scenarioNumber) < points) {
-				newRecored = true;
-			}
-			JOptionPane.showMessageDialog(null,"Game over:\nkml file has been saved on your computer\nyou got "+points+" points with "+ moves+" moves "+ (newRecored ? ("<b>new recored</b>") : "") +"\n","Game over", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(null,"Game over:\nkml file has been saved on your computer\nyou got "+points+" points with "+ moves+" moves","Game over", JOptionPane.INFORMATION_MESSAGE);
 //			Object[] option = {"Play again","Exit"};
 //			int moves = MyParser.getMoves(info);
 //			int toPlayAgain = JOptionPane.showOptionDialog(null, "Game over:\nkml file has been saved on your computer\nyou got "+points+" points with "+ moves+" moves\n"

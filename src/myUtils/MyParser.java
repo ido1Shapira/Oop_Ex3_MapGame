@@ -49,7 +49,7 @@ public final class MyParser {
 		try {
 			return Integer.parseInt(Json2value(json,"Robot","id"));
 		}
-		catch (JSONException e) {e.printStackTrace();}
+		catch (JSONException e) {e.printStackTrace();} 
 		return -1;
 	}
 
