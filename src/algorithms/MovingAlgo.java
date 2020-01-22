@@ -13,13 +13,15 @@ import myUtils.myRobot;
 import utils.Point3D;
 /**
  * this Class is  responsible of all the moving algorithms needed for the game
- * main 2 algorithms are randomWalk and logicNewWalk
+ * two main algorithms are randomWalk and logicNewWalk
+ * in addition we added methods for level 16 and 23 
+ * more information about each method can be found on its java dock
  * @author Ido Shapira & Edut Cohen
  *
  */
 public class MovingAlgo {
 
-	private static MyServer server = MyServer.getServer();
+	private static MyServer server = MyServer.getServer(); //gameServer
 
 	// static variable single_instance of server 
 	private static MovingAlgo single_instance = null; 

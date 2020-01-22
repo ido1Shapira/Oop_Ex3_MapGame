@@ -1,9 +1,16 @@
 package myUtils;
 
+import org.json.JSONObject;
+
 import Server.fruits;
 import Server.robot;
 import oop_utils.OOP_Point3D;
 import utils.Point3D;
+/**
+ * this class represents a fruit in the game
+ * @author Ido Shapira & Edut Cohen
+ *
+ */
 
 public class myFruit  {
 	
@@ -11,11 +18,20 @@ public class myFruit  {
 	private int type;
 	private double value;
 	
-	
+	/**
+	 * constructor from a json string
+	 * @param jfruit
+	 */
 	public myFruit(String jfruit) {
-		pos= MyParser.getFruitPosition(jfruit);
-		type= MyParser.getFruitType(jfruit);
-		value= MyParser.getFruitValue(jfruit);
+		JSONObject line;
+		try {
+			line = new JSONObject(jfruit);
+			JSONObject f= line.getJSONObject("Fruit");
+			pos= new Point3D (f.getString("pos"));
+			type= f.getInt("type");
+			value= f.getDouble("value");
+		}
+		catch (Exception e) { }
 	}
 
 	public Point3D getLocation() {
@@ -30,13 +46,7 @@ public class myFruit  {
 		return value;
 	}
 
-//	public boolean isHaveRobot() {
-//		return haveRobot;
-//	}
-//
-//	public void setHaveRobot(boolean haveRobot) {
-//		this.haveRobot = haveRobot;
-//	}
+
 	
 	
 

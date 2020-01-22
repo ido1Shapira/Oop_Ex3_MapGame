@@ -6,7 +6,11 @@ import org.json.JSONObject;
 import Server.robot;
 import oop_utils.OOP_Point3D;
 import utils.Point3D;
-
+/**
+ * this class represents a robot in the game
+ * @author Ido Shapira & Edut Cohen
+ *
+ */
 public class myRobot {
 	private int id;
 	private double value;
@@ -16,6 +20,7 @@ public class myRobot {
 	private double speed;
 	private boolean hasDest;
 
+	
 	public myRobot(String jRobot) {
 		JSONObject line;
 		try {

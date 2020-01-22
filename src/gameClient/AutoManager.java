@@ -54,22 +54,22 @@ public class AutoManager implements Runnable {
 			switch(stage) {
 			case 0:
 				speed = moveRobots.logicNewWalk(log);			
-				try { 	Thread.sleep(Math.min((long) speed, 150)); }
+				try { 	Thread.sleep(Math.min((long) speed, 250)); }
 				 catch (InterruptedException e1) { e1.printStackTrace();}
 				break;
-			case 1:
-				speed = moveRobots.logicNewWalk(log);			
-				try { 	Thread.sleep(Math.min((long) speed, 200)); }
-				 catch (InterruptedException e1) { e1.printStackTrace();}
-				break;
-			case 3:
-				speed = moveRobots.logicNewWalk(log);			
-				try { 	Thread.sleep(Math.min((long) speed, 190)); }
-				 catch (InterruptedException e1) { e1.printStackTrace();}
-				break;
+//			case 1:
+//				speed = moveRobots.logicNewWalk(log);			
+//				try { 	Thread.sleep(Math.min((long) speed, 250)); }
+//				 catch (InterruptedException e1) { e1.printStackTrace();}
+//				break;
+//			case 3:
+//				speed = moveRobots.logicNewWalk(log);			
+//				try { 	Thread.sleep(Math.min((long) speed, 190)); }
+//				 catch (InterruptedException e1) { e1.printStackTrace();}
+//				break;
 			case 9:
 				speed = moveRobots.logicNewWalk(log);			
-				try { 	Thread.sleep(Math.min((long) speed, 135)); }
+				try { 	Thread.sleep(Math.min((long) speed, 150)); }
 				 catch (InterruptedException e1) { e1.printStackTrace();}
 				break;
 			case 11:
@@ -77,11 +77,11 @@ public class AutoManager implements Runnable {
 				try { Thread.sleep(100);}
 				 catch (InterruptedException e1) { e1.printStackTrace();}
 				break;
-			case 13:
-				speed = moveRobots.logicNewWalk(log);			
-				try { 	Thread.sleep(Math.min((long) speed, 125)); }
-				 catch (InterruptedException e1) { e1.printStackTrace();}
-				break;	
+//			case 13:
+//				speed = moveRobots.logicNewWalk(log);			
+//				try { 	Thread.sleep(Math.min((long) speed, 125)); }
+//				 catch (InterruptedException e1) { e1.printStackTrace();}
+//				break;	
 			case 16:
 				speed = moveRobots.logicWalkFor16(log);
 				try {
@@ -102,10 +102,10 @@ public class AutoManager implements Runnable {
 				break;	
 			case 23:
 				speed = moveRobots.logicWalkFor23(log);
-				try { Thread.sleep(30);}
+				try { Thread.sleep(40);}
 				catch (InterruptedException e) { e.printStackTrace();}
 				break;
-						default:
+			default:
 				speed = moveRobots.logicNewWalk(log);			
 				if(speed!=-1 && speed>10) { //the robot is very close to a node
 					try { Thread.sleep(Math.min((long) speed, 200));} 
