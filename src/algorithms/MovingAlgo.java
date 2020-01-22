@@ -489,7 +489,6 @@ public class MovingAlgo {
 					server.game.chooseNextEdge(rid, 4);
 				if(src==2 && fruits.contains(0) && fruits.contains(29))
 					server.game.chooseNextEdge(rid, 30);
-
 				else {
 					if(this.iHaveFruits(src)) { //the robot stands on a node that has a fruit on one of its edges
 						server.game.chooseNextEdge(rid, this.bestNeighbor(src));

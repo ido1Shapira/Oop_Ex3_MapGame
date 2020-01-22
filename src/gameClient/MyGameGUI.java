@@ -278,7 +278,7 @@ public class MyGameGUI implements Runnable {
 	@Override
 	public void run() {
 		if(server != null) {
-			while(server.game.isRunning()) {
+			while(server.game.isRunning() && server.game.getRobots()!=null && server.game.getFruits()!=null) {
 				paint(server.game.getRobots(), server.game.getFruits());
 				try {
 					Thread.sleep(100);

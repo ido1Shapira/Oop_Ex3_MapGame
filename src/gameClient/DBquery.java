@@ -30,19 +30,20 @@ public class DBquery {
 	private static enum col{ //all the columns in the Logs table
 		levelID, moves, time, score, UserID, logID,
 	}
-	private static HashMap<Integer, ArrayList<Integer>> toSuccsessLevel = new HashMap<Integer,ArrayList<Integer>>();
-	private static void initiateSuccsessParam() {
+	private static HashMap<Integer, ArrayList<Integer>> getFilter(){
+		HashMap<Integer, ArrayList<Integer>> toSuccsessLevel = new HashMap<Integer,ArrayList<Integer>>();
+
 		//level 0:
 		toSuccsessLevel.put(0,new ArrayList<Integer>());
-		toSuccsessLevel.get(0).add(145);
+		toSuccsessLevel.get(0).add(125);
 		toSuccsessLevel.get(0).add(290);
 		//level 1:
 		toSuccsessLevel.put(1,new ArrayList<Integer>());
-		toSuccsessLevel.get(1).add(450);
+		toSuccsessLevel.get(1).add(436);
 		toSuccsessLevel.get(1).add(580);
 		//level 3:
 		toSuccsessLevel.put(3,new ArrayList<Integer>());
-		toSuccsessLevel.get(3).add(720);
+		toSuccsessLevel.get(3).add(713);
 		toSuccsessLevel.get(3).add(580);
 		//level 5:
 		toSuccsessLevel.put(5,new ArrayList<Integer>());
@@ -50,7 +51,7 @@ public class DBquery {
 		toSuccsessLevel.get(5).add(500);
 		//level 9:
 		toSuccsessLevel.put(9,new ArrayList<Integer>());
-		toSuccsessLevel.get(9).add(510);
+		toSuccsessLevel.get(9).add(480);
 		toSuccsessLevel.get(9).add(580);
 		//level 11:
 		toSuccsessLevel.put(11,new ArrayList<Integer>());
@@ -76,13 +77,13 @@ public class DBquery {
 		toSuccsessLevel.put(23,new ArrayList<Integer>());
 		toSuccsessLevel.get(23).add(1000);
 		toSuccsessLevel.get(23).add(1140);
+		return toSuccsessLevel;
 	}
 
 	public DBquery(String idForInfo) {
-//		initiateSuccsessParam();
 		this.id = idForInfo;
 	}
-	
+
 	/**
 	 * in the start this method is activated in order to get a quick access to the table
 	 * @param table the name of the table
@@ -119,25 +120,28 @@ public class DBquery {
 		catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		//return keepOnlyStudentsPassed(ans);
-		return ans;
+
+		return keepOnlyStudentsPassed(ans, getFilter());
 	}
 	/**
 	 * this method get the all table and return the students only if they passed the level
 	 * @param ans
 	 * @return
 	 */
-	private static ArrayList<ArrayList<String>> keepOnlyStudentsPassed(ArrayList<ArrayList<String>> table) {
+	private static ArrayList<ArrayList<String>> keepOnlyStudentsPassed(ArrayList<ArrayList<String>> table,
+			HashMap<Integer, ArrayList<Integer>> filter) {
 		ArrayList<ArrayList<String>> ans = new ArrayList<ArrayList<String>>();
-		System.out.println(toSuccsessLevel);
-		for (Iterator<ArrayList<String>> iterator = ans.iterator(); iterator.hasNext();) {
+		for (Iterator<ArrayList<String>> iterator = table.iterator(); iterator.hasNext();) {
 			ArrayList<String> row = (ArrayList<String>) iterator.next();
 			int level = Integer.parseInt(row.get(col.levelID.ordinal()));
-			int points = Integer.parseInt(row.get(col.score.ordinal()));
+			double points = Double.parseDouble(row.get(col.score.ordinal()));
 			int moves = Integer.parseInt(row.get(col.moves.ordinal()));
-			if(toSuccsessLevel.get(level).get(0) <= points && toSuccsessLevel.get(level).get(1) >= moves) {
-				ans.add(row);
+			try {
+				if(filter.get(level).get(0) <= points && filter.get(level).get(1) >= moves) {
+					ans.add(row);
+				}
 			}
+			catch (NullPointerException e) {} //in case the level is not checked by the server
 		}
 		return ans;
 	}
@@ -226,8 +230,7 @@ public class DBquery {
 		int level = 0;
 		ArrayList<Double> allBestscoreByIdLevel = this.getBestScoreById(this.id);
 		while(allBestscoreByIdLevel.remove((double)-1));
-		ans.append("\t3) Best out come in each level:\n");
-		System.out.println(allBestscoreByIdLevel);
+		ans.append("\t3) Best outcome in each level:\n");
 		for (Iterator<Double> iterator = allBestscoreByIdLevel.iterator(); iterator.hasNext();) {
 			if(level == 2 || level == 4 || (level >= 6 && level <= 8) || level == 10 || level == 12 || level == 14 || level == 15 || level == 17 || level == 18 || level == 21 || level == 22) {
 				level++;
@@ -302,14 +305,17 @@ public class DBquery {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String id = "205666407";
-		DBquery q = new DBquery(id);
+		String itay = "205666407";
+		String edut = "208825539";
+		String eden = "302313184";
+		String ido = "207950577";
+		DBquery q = new DBquery(edut);
 		//print the table from the database
-		System.out.println("levelID, moves, time, score, UserID, logID"); //the columns
-		for (Iterator<ArrayList<String>> iterator = logsTable.iterator(); iterator.hasNext();) {
-			ArrayList<String> row = (ArrayList<String>) iterator.next();
-			System.out.println(row);
-		}
+		//		System.out.println("levelID, moves, time, score, UserID, logID"); //the columns
+		//		for (Iterator<ArrayList<String>> iterator = logsTable.iterator(); iterator.hasNext();) {
+		//			ArrayList<String> row = (ArrayList<String>) iterator.next();
+		//			System.out.println(row);
+		//		}
 		//print the info of the student with this id
 		System.out.println(q.getInfo());
 		//print in each level the student's position
