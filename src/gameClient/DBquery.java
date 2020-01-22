@@ -180,7 +180,7 @@ public class DBquery {
 	 * this method get an id and return a list of his best score
 	 * if the student has not gotten to a level it return -1 for the specific level.
 	 */
-	private ArrayList<Double> getBestScoreById(String id){
+	public ArrayList<Double> getBestScoreById(String id){
 		ArrayList<Double> ans = new ArrayList<Double>();
 		for (int i = 0; i <= NumberOfLevels; i++) {			
 			ArrayList<Double> allscoreByIdLevel = new ArrayList<Double>();
@@ -205,7 +205,7 @@ public class DBquery {
 		ArrayList<Integer> allLevelInfoById = new ArrayList<Integer>();
 		for (Iterator<ArrayList<String>> iterator = logsTable.iterator(); iterator.hasNext();) {
 			ArrayList<String> row = (ArrayList<String>) iterator.next();
-			if(row.get(col.UserID.ordinal()).equals(this.id)) {
+			if(row.get(col.UserID.ordinal()).equals(this.getId())) {
 				allLevelInfoById.add(Integer.parseInt(row.get(col.levelID.ordinal())));
 			}
 		}
@@ -226,11 +226,11 @@ public class DBquery {
 		ArrayList<Integer> allLevelInfoById = new ArrayList<Integer>();
 		for (Iterator<ArrayList<String>> iterator = logsTable.iterator(); iterator.hasNext();) {
 			ArrayList<String> row = (ArrayList<String>) iterator.next();
-			if(row.get(col.UserID.ordinal()).equals(this.id)) {
+			if(row.get(col.UserID.ordinal()).equals(this.getId())) {
 				allLevelInfoById.add(Integer.parseInt(row.get(col.levelID.ordinal())));
 			}
 		}
-		StringBuilder ans = new StringBuilder("statiscis for: "+this.id+"\n\t1) Number of games are: "+ allLevelInfoById.size() + '\n');
+		StringBuilder ans = new StringBuilder("statiscis for: "+this.getId()+"\n\t1) Number of games are: "+ allLevelInfoById.size() + '\n');
 
 		if(allLevelInfoById.size() > 0) {
 			if(allLevelInfoById.contains(23)) {
@@ -244,7 +244,7 @@ public class DBquery {
 			ans.append("\t2) Current level is: 0\n");
 		}
 		int level = 0;
-		ArrayList<Double> allBestscoreByIdLevel = this.getBestScoreById(this.id);
+		ArrayList<Double> allBestscoreByIdLevel = this.getBestScoreById(this.getId());
 		while(allBestscoreByIdLevel.remove((double)-1));
 		ans.append("\t3) Best outcome in each level:\n");
 		for (Iterator<Double> iterator = allBestscoreByIdLevel.iterator(); iterator.hasNext();) {
@@ -270,8 +270,8 @@ public class DBquery {
 	 */
 	public String getPosition() {
 		StringBuilder ans = new StringBuilder();
-		ArrayList<Double> myBestScoreByLevel = this.getBestScoreById(this.id);
-		ans.append("Position of "+this.id+" on each level:\n");
+		ArrayList<Double> myBestScoreByLevel = this.getBestScoreById(this.getId());
+		ans.append("Position of "+this.getId()+" on each level:\n");
 		HashSet<String> users = this.getUsersId();
 		ArrayList<ArrayList<Double>> allusersBestScores = new ArrayList<ArrayList<Double>>();
 		for (Iterator<String> iterator = users.iterator(); iterator.hasNext();) {
@@ -334,6 +334,10 @@ public class DBquery {
 		System.out.println(q.getInfo());
 		//print in each level the student's position
 		System.out.println(q.getPosition());
+	}
+
+	public String getId() {
+		return id;
 	}
 }
 

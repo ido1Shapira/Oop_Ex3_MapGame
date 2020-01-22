@@ -1,5 +1,6 @@
 package gameClient;
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -321,10 +322,15 @@ public class MyGameGUI implements Runnable {
 			String remark = kml.writeToFile();
 			server.game.sendKML(remark); // Should be your KML
 			String info = server.game.toString();
+			System.out.println(info);
 			int moves = MyParser.getMoves(info);
-			JOptionPane.showInputDialog(null, "Game over:\nkml file has been saved on your computer\nyou got "+points+" points with "+ moves+" moves\n","Game over");
+			ArrayList<Double> allBestscoreByIdLevel = q.getBestScoreById(q.getId());
+			boolean newRecored = false;
+			if (allBestscoreByIdLevel.get(scenarioNumber) < points) {
+				newRecored = true;
+			}
+			JOptionPane.showMessageDialog(null,"Game over:\nkml file has been saved on your computer\nyou got "+points+" points with "+ moves+" moves "+ (newRecored ? ("<b>new recored</b>") : "") +"\n","Game over", JOptionPane.INFORMATION_MESSAGE);
 //			Object[] option = {"Play again","Exit"};
-//			String info = server.game.toString();
 //			int moves = MyParser.getMoves(info);
 //			int toPlayAgain = JOptionPane.showOptionDialog(null, "Game over:\nkml file has been saved on your computer\nyou got "+points+" points with "+ moves+" moves\n"
 //					+ "Do you want to play again ?","Game over",
