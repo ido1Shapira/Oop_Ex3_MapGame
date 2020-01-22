@@ -1,4 +1,4 @@
-# the maze of waze ex #3 
+# the maze of waze ex #3+4 
   
 Our project represents a game. 
   
@@ -13,6 +13,20 @@ The game itself has two ways of playing
 * Automatic management means that our algorithm is responsible of locating the robots and 
 move them toward the fruits in order to achieve as many fruits as possible 
   
+# assignment.4 extends assignment.3
+
+main differences between assignment 3 and assignment 4 
+
+* within assignment 4 every time someone plays the game the program sends the player resoults to a DataBase.
+
+* by using the DataBase we manage to see what is our best grade in each level and what is our position in relation to the class
+
+* in assignment 4 there are mendetory parameter the player needs to pass before playing next stage.
+mendetory resoult are spesific for each level and contains number of points we have to get and number of moves we must'nt cross.
+
+* in assignment 4 in order to play a stage the player has to pass all the previos stages according to the menedory resoults
+
+
 ## Our classes 
   
  ### data structures-  
@@ -34,6 +48,9 @@ in this package there are all of the classes managing the game
   
 * ManualManager - this class is responsible of managing the game in a manual way according to the client decisions. this class is actually a thread activated during the game and moving the robots according to the client's mouse 
   
+* DBquery- This class is responsible of the communication with the server's DataBase in this class every method is in charge of a DB query or organizing information we got from the DB To shorten the waiting time, the class will keep a copy of the Logs table.
+This class helps the client watch database information about his grades in the game and his position in relation to rest of the class
+ 
 * Logger_KML - this class represents a thread recording the game in a kml format. The thread is activated every 100 milliseconds 
 and screenshots the game in a kml format using the data from the server  
   
@@ -61,6 +78,10 @@ we do it by finding all of the fruit src node and calculate which fruit is the n
 by using "shortestPathDist", after finding the closest fruit we calculate the quickest path 
 using "shortestPath" and sending the robot to the first node in that list. 
 Our way of preventing robots from uniting is to make sure that every robot has a different destination node. 
+ ****this methos is used only in assignment 3
+
+logicNewWalk- this method's goal is to move the robots in a logical way. logical way means that after the game ends the robots' value would be the biggest under the given circumstances. of course that our algorithm is not optimal, but it is yet a good algorithm. the main thinking of moving the robots is a greedy algorithm  that moves every robot one step toward the nearest fruit from where he stands at the moment Our way of preventing robots from uniting is to make sure that every robot has a different destination node.
+  ****this methos is used only in assignment 4
   
 randomWalk- this method's goal is to move the robots in a random way. 
      
@@ -73,9 +94,14 @@ in this class there are many "getter" methods since we chose to work with the ac
 * MyServer- this class has one field of Game_Server object given from the jar.  
 all of the other classes use this single instance of server in order to get information about the game. 
    
- game window for example
- ![ללא שם](https://user-images.githubusercontent.com/57194044/72616158-f9355900-393e-11ea-89b7-5995426a5860.jpg)
- 
+* myFruit-  this class represents a fruit in the game
+
+*myRobot - this class represents a robot in the game
+
+a game window for example:
+
+![ללא שם](https://user-images.githubusercontent.com/57194044/72616158-f9355900-393e-11ea-89b7-5995426a5860.jpg)
+
  
  kml window for example!
 
