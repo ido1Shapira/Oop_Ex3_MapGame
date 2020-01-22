@@ -19,6 +19,16 @@ import utils.StdDraw;
 public class MyGameGUI implements Runnable {
 
 	private static Color robotColor = Color.BLACK;
+	/**
+	 * random color for the robots
+	 */
+	static {
+		Random random = new Random();
+		int r = random.nextInt(256); int g = random.nextInt(256); int b = random.nextInt(256);
+		StdDraw.setPenColor(r,g,b);
+		robotColor = new Color(r, g, b);
+	}
+	
 	private static int scenarioNumber = 0;
 	private static int points = 0;
 	public static graph g = new DGraph();
@@ -31,12 +41,26 @@ public class MyGameGUI implements Runnable {
 	// static variable single_instance of server 
 	private static MyGameGUI single_instance = null;
 
-	public static DBquery q = new DBquery("0"); //Default id in case the client  not to log in
+	public static DBquery q; //Default id in case the client  not to log in
+	
 	// private constructor restricted to this class itself 
 	private MyGameGUI() {
-		String id = JOptionPane.showInputDialog("Log in:","enter id");
-		q = new DBquery(id);
-		Game_Server.login(Integer.parseInt(id));
+		int id = -1;
+		while(id == -1) { //check validation of the id
+			try {
+				id = Integer.parseInt(JOptionPane.showInputDialog("Log in:","enter id"));
+				String idStr = ""+id;
+				if(idStr.length() != 9) {
+					id = -1;
+					JOptionPane.showMessageDialog(null,"Id must be the appropriate length","Error", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+			catch (Exception e2) {
+				JOptionPane.showMessageDialog(null,"invalid input","Error", JOptionPane.ERROR_MESSAGE);
+			}
+		}
+		q = new DBquery(""+id);
+		Game_Server.login(id);
 		buildScenario();
 	} 
 
@@ -54,15 +78,6 @@ public class MyGameGUI implements Runnable {
 		}
 		return single_instance;
 	}
-	/**
-	 * random color for the robots
-	 */
-	static {
-		Random random = new Random();
-		int r = random.nextInt(256); int g = random.nextInt(256); int b = random.nextInt(256);
-		StdDraw.setPenColor(r,g,b);
-		robotColor = new Color(r, g, b);
-	}
 
 	/**
 	 * this method creates the opening window for starting the game.
@@ -73,7 +88,11 @@ public class MyGameGUI implements Runnable {
 	 */
 	public static void buildScenario() {
 		try {
-			Object[]scenarioOptions = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23};
+			int currentLevel = q.GetCurrentLevel();
+			Object[]scenarioOptions = new Object[currentLevel +1];
+			for (int i = 0; i <= currentLevel; i++) {
+				scenarioOptions[i] = i;
+			}
 			scenarioNumber = (Integer)JOptionPane.showInputDialog(null, "Pick the scenario number:",
 					"scenario options", JOptionPane.QUESTION_MESSAGE, null, scenarioOptions, null);
 		}
@@ -159,7 +178,21 @@ public class MyGameGUI implements Runnable {
 		StdDraw.textRight(Xmax-0.002, Ymax-0.001, "time to end: "+t/1000);
 		StdDraw.textLeft(Xmin+0.002, Ymax-0.001, "Number scenario: "+scenarioNumber);
 	}
-
+	/**
+	 * method thar resets all the game parameters
+	 */
+	private static void resetGameParam() {
+		firstPaint = true;
+		scenarioNumber = 0;
+		points = 0;
+		g = new DGraph();
+		kml = null;
+		server = MyServer.getServer();
+		autoManagerIsReady = false; 
+		single_instance = null;
+		q = new DBquery("0");
+	}
+	
 	public static double Xmin;
 	public static double Xmax;
 	public static double Ymin;
@@ -174,6 +207,7 @@ public class MyGameGUI implements Runnable {
 	private static void paint(List<String> robots, List<String> fruits) {
 		if(firstPaint) {
 			StdDraw.setCanvasSize(1239,595);
+			StdDraw.clear();
 			firstPaint = false;
 		}
 		if(g != null) {
@@ -284,19 +318,23 @@ public class MyGameGUI implements Runnable {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {e.printStackTrace();}
 			}
-//			Object[] option = {"Yes","No"};
-//			String info = server.game.toString();
-//			int moves = MyParser.getMoves(info);
-//			int toKML = JOptionPane.showOptionDialog(null, "Game over:\nyou got "+points+" points with "+ moves+" moves\n"
-//					+ "Do you want to save this game to a kml file?","Game over",
-//					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, option,null);
-//			if(toKML == 0) {
-//				kml.writeToFile();
-//			}
-			String res = server.game.toString();
 			String remark = kml.writeToFile();
 			server.game.sendKML(remark); // Should be your KML
-			System.out.println(res);
+			String info = server.game.toString();
+			int moves = MyParser.getMoves(info);
+			JOptionPane.showInputDialog(null, "Game over:\nkml file has been saved on your computer\nyou got "+points+" points with "+ moves+" moves\n","Game over");
+//			Object[] option = {"Play again","Exit"};
+//			String info = server.game.toString();
+//			int moves = MyParser.getMoves(info);
+//			int toPlayAgain = JOptionPane.showOptionDialog(null, "Game over:\nkml file has been saved on your computer\nyou got "+points+" points with "+ moves+" moves\n"
+//					+ "Do you want to play again ?","Game over",
+//					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, option,null);
+//			if(toPlayAgain == 0) {
+//				resetGameParam();
+//				SimpleGameClient.main(null);
+//			}
 		}
 	}
+
+	
 }

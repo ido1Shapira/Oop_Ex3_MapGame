@@ -25,7 +25,8 @@ public class DBquery {
 
 	private static final int NumberOfLevels = 23;
 	//To shorten the waiting time, the class will keep a copy of the Logs table
-	private static ArrayList<ArrayList<String>> logsTable = DBquery.getTable("Logs"); 
+	private static ArrayList<ArrayList<String>> logsFilterTable = DBquery.getTable("Logs" , true); 
+	private static ArrayList<ArrayList<String>> logsTable = DBquery.getTable("Logs" , false); 
 	private String id; //id student
 	private static enum col{ //all the columns in the Logs table
 		levelID, moves, time, score, UserID, logID,
@@ -89,7 +90,7 @@ public class DBquery {
 	 * @param table the name of the table
 	 * @return a copy of the table from the server only for The students who passed the level
 	 */
-	private static ArrayList<ArrayList<String>> getTable(String table) {
+	private static ArrayList<ArrayList<String>> getTable(String table , boolean toFilter) {
 		ArrayList<ArrayList<String>> ans = new ArrayList<ArrayList<String>>();
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -120,8 +121,9 @@ public class DBquery {
 		catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-
-		return keepOnlyStudentsPassed(ans, getFilter());
+		if(toFilter)
+			return keepOnlyStudentsPassed(ans, getFilter());
+		return ans;
 	}
 	/**
 	 * this method get the all table and return the students only if they passed the level
@@ -182,7 +184,7 @@ public class DBquery {
 		ArrayList<Double> ans = new ArrayList<Double>();
 		for (int i = 0; i <= NumberOfLevels; i++) {			
 			ArrayList<Double> allscoreByIdLevel = new ArrayList<Double>();
-			for (Iterator<ArrayList<String>> iterator = logsTable.iterator(); iterator.hasNext();) {
+			for (Iterator<ArrayList<String>> iterator = logsFilterTable.iterator(); iterator.hasNext();) {
 				ArrayList<String> row = (ArrayList<String>) iterator.next();
 				if(row.get(col.levelID.ordinal()).equals(""+i) && row.get(col.UserID.ordinal()).equals(id)) {
 					allscoreByIdLevel.add(Double.parseDouble(row.get(col.score.ordinal())));
@@ -199,6 +201,20 @@ public class DBquery {
 		return ans;
 	}
 
+	public int GetCurrentLevel() {
+		ArrayList<Integer> allLevelInfoById = new ArrayList<Integer>();
+		for (Iterator<ArrayList<String>> iterator = logsTable.iterator(); iterator.hasNext();) {
+			ArrayList<String> row = (ArrayList<String>) iterator.next();
+			if(row.get(col.UserID.ordinal()).equals(this.id)) {
+				allLevelInfoById.add(Integer.parseInt(row.get(col.levelID.ordinal())));
+			}
+		}
+		if(allLevelInfoById.size() > 0) {
+				return Collections.max(allLevelInfoById);
+		}
+		return 0;
+	}
+	
 	/**
 	 * 
 	 * @return for the database the next details:
@@ -221,7 +237,7 @@ public class DBquery {
 				ans.append("\t2) Current level is: finish !!!\n");
 			}
 			else {
-				ans.append("\t2) Current level is: "+ (Collections.max(allLevelInfoById)+1) + '\n');
+				ans.append("\t2) Current level is: "+ (Collections.max(allLevelInfoById)) + '\n');
 			}
 		}
 		else {
@@ -305,17 +321,15 @@ public class DBquery {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String itay = "205666407";
 		String edut = "208825539";
-		String eden = "302313184";
 		String ido = "207950577";
 		DBquery q = new DBquery(edut);
 		//print the table from the database
-		//		System.out.println("levelID, moves, time, score, UserID, logID"); //the columns
-		//		for (Iterator<ArrayList<String>> iterator = logsTable.iterator(); iterator.hasNext();) {
-		//			ArrayList<String> row = (ArrayList<String>) iterator.next();
-		//			System.out.println(row);
-		//		}
+				System.out.println("levelID, moves, time, score, UserID, logID"); //the columns
+				for (Iterator<ArrayList<String>> iterator = logsTable.iterator(); iterator.hasNext();) {
+					ArrayList<String> row = (ArrayList<String>) iterator.next();
+					System.out.println(row);
+				}
 		//print the info of the student with this id
 		System.out.println(q.getInfo());
 		//print in each level the student's position
