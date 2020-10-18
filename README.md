@@ -1,3 +1,5 @@
+# Extention of "OopEx2-Maze-of-Waze"
+
 # the maze of waze ex #3+4 
   
 Our project represents a game. 
